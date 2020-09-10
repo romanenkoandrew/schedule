@@ -14,7 +14,7 @@ const linkStyle = () => css`
 const Main: React.FC = () => {
   return (
     <div>
-      <TestComponent />
+      {/* <TestComponent /> */}
       <div css={linkStyle}>
         <Link to="/calendar">to Calendar</Link>
         <Link to="/list">to List</Link>
