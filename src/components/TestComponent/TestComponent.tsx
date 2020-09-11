@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from 'antd';
 import { css } from '@emotion/core';
+import { ActionType } from 'src/types';
 
 const buttons = css`
   display: flex;
@@ -16,13 +17,15 @@ const scoreStyle = css`
 
 interface ITestComponent {
   score: number;
-  increment: any;
-  decrement: any;
-  reset: any;
+  increment: ActionType;
+  decrement: ActionType;
+  reset: ActionType;
 }
 
 const TestComponent: React.FC<ITestComponent> = props => {
   const { score, increment, decrement, reset } = props;
+  console.log({ increment: score });
+
   const handleClickInc = () => {
     increment({ increment: score });
   };

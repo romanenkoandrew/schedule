@@ -1,1 +1,4 @@
-export type A = string;
+export type ActionType = (payload: {}) => {
+  type: string;
+  payload: {};
+};
