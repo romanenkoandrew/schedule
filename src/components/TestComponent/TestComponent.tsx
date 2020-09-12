@@ -1,7 +1,8 @@
 import React from 'react';
 import { Button } from 'antd';
 import { css } from '@emotion/core';
-import { ActionType } from 'src/types';
+import { ActionType, ActionTypeProps } from 'types';
+import Textarea from '../Textarea';
 
 const buttons = css`
   display: flex;
@@ -14,16 +15,21 @@ const scoreStyle = css`
   font-size: 20px;
   font-weight: bold;
 `;
+const margin = css`
+  margin: 20px;
+`;
 
 interface ITestComponent {
   score: number;
-  increment: ActionType;
-  decrement: ActionType;
-  reset: ActionType;
+  data: {};
+  increment: ActionTypeProps;
+  decrement: ActionTypeProps;
+  reset: ActionTypeProps;
+  getData: ActionType;
 }
 
 const TestComponent: React.FC<ITestComponent> = props => {
-  const { score, increment, decrement, reset } = props;
+  const { score, data, increment, decrement, reset, getData } = props;
   console.log({ increment: score });
 
   const handleClickInc = () => {
@@ -34,6 +40,9 @@ const TestComponent: React.FC<ITestComponent> = props => {
   };
   const handleClickReset = () => {
     reset({ reset: score });
+  };
+  const handleClickData = () => {
+    getData();
   };
   return (
     <div>
@@ -48,6 +57,12 @@ const TestComponent: React.FC<ITestComponent> = props => {
         <Button danger onClick={handleClickReset}>
           Reset
         </Button>
+      </div>
+      <div css={margin}>
+        <Button type="primary" onClick={handleClickData}>
+          GetData
+        </Button>
+        <Textarea />
       </div>
     </div>
   );
