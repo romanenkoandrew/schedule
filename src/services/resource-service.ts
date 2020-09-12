@@ -19,7 +19,7 @@ export interface Organizer {
 }
 
 export default class ResourceService {
-  _teamId = `group66612`;
+  _teamId = `group999`;
   _baseUrl = `https://rs-react-schedule.firebaseapp.com/api/team/${this._teamId}`;
 
   getResource = async (url: string) => {
@@ -58,7 +58,6 @@ export default class ResourceService {
     if (res.status === 400) {
       throw new ServiceError('Bad request', res.status);
     }
-
     const errorText = await res.text();
     throw new ServiceError(errorText, res.status);
   };

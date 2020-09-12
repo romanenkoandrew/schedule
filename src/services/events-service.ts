@@ -1,32 +1,73 @@
-import ResourceService, { Event } from './resource-service';
+import {
+  getDataRequest,
+  postDataRequest,
+  putDataRequest,
+  deleteDataByIdRequest,
+  getDataByIdRequest
+} from '../action-creators';
+import ActionTypes from 'action-types';
 
+export interface Event {
+  id: string;
+  name: string;
+  description: string;
+  descriptionUrl: string;
+  type: string;
+  timeZone: string;
+  dateTime: string;
+  place: string;
+  comment: string;
+  [propName: string]: any;
+}
 export default class EventsService {
-  resourceService = new ResourceService();
-
-  getEvents = async () => {
-    const events = await this.resourceService.getResource(`/events`);
-    return events.data.sort((a: any, b: any) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime());
+  getEvents = () => {
+    const url = `/events`;
+    const types = [
+      ActionTypes.GET_EVENTS_DATA_REQUEST,
+      ActionTypes.GET_EVENTS_DATA_SUCCESS,
+      ActionTypes.GET_EVENTS_DATA_FAILURE
+    ];
+    return getDataRequest(url, types);
   };
 
-  addNewEvent = async (eventData: Event) => {
+  addNewEvent = (eventData: Event) => {
     const url = `/event`;
-    await this.resourceService.postResource(url, eventData);
+    const types = [
+      ActionTypes.POST_EVENT_DATA_REQUEST,
+      ActionTypes.POST_EVENT_DATA_SUCCESS,
+      ActionTypes.POST_EVENT_DATA_FAILURE
+    ];
+    return postDataRequest(url, eventData, types);
   };
 
-  getEventById = async (id: string) => {
+  getEventById = (id: string) => {
     const url = `/event/${id}`;
-    const event = await this.resourceService.getResource(url);
-    return event;
+    const types = [
+      ActionTypes.GET_EVENT_DATA_BY_ID_REQUEST,
+      ActionTypes.GET_EVENT_DATA_BY_ID_SUCCESS,
+      ActionTypes.GET_EVENT_DATA_BY_ID_FAILURE
+    ];
+    return getDataByIdRequest(url, types);
   };
 
-  updateEvent = async (eventData: Event) => {
+  updateEvent = (eventData: any) => {
     const id = eventData.id;
     const url = `/event/${id}`;
-    await this.resourceService.putResource(url, eventData);
+    const types = [
+      ActionTypes.PUT_EVENT_DATA_REQUEST,
+      ActionTypes.PUT_EVENT_DATA_SUCCESS,
+      ActionTypes.PUT_EVENT_DATA_FAILURE
+    ];
+    return putDataRequest(url, eventData, types);
   };
 
-  deleteEvent = async (id: string) => {
+  deleteEvent = (id: string) => {
     const url = `/event/${id}`;
-    await this.resourceService.deleteResource(url);
+    const types = [
+      ActionTypes.DELETE_EVENT_DATA_BY_ID_REQUEST,
+      ActionTypes.DELETE_EVENT_DATA_BY_ID_SUCCESS,
+      ActionTypes.DELETE_EVENT_DATA_BY_ID_FAILURE
+    ];
+    return deleteDataByIdRequest(url, types);
   };
 }

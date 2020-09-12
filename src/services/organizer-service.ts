@@ -1,32 +1,65 @@
-import ResourceService, { Organizer } from './resource-service';
+import {
+  getDataRequest,
+  postDataRequest,
+  putDataRequest,
+  deleteDataByIdRequest,
+  getDataByIdRequest
+} from '../action-creators';
+import ActionTypes from 'action-types';
 
+export interface Organizer {
+  id: string;
+  name: string;
+}
 export default class OrganizerService {
-  resourceService = new ResourceService();
-
-  getOrganizers = async () => {
-    const events = await this.resourceService.getResource(`/organizers`);
-    return events.data;
+  getOrganizers = () => {
+    const url = `/organizers`;
+    const types = [
+      ActionTypes.GET_ORGANIZERS_DATA_REQUEST,
+      ActionTypes.GET_ORGANIZERS_DATA_SUCCESS,
+      ActionTypes.GET_ORGANIZERS_DATA_FAILURE
+    ];
+    return getDataRequest(url, types);
   };
 
-  addNewOrganizer = async (organizerData: Organizer) => {
+  addNewOrganizer = (organizerData: Organizer) => {
     const url = `/organizer`;
-    await this.resourceService.postResource(url, organizerData);
+    const types = [
+      ActionTypes.POST_ORGANIZER_DATA_REQUEST,
+      ActionTypes.POST_ORGANIZER_DATA_SUCCESS,
+      ActionTypes.POST_ORGANIZER_DATA_FAILURE
+    ];
+    return postDataRequest(url, organizerData, types);
   };
 
-  getOrganizerById = async (id: string) => {
+  getOrganizerById = (id: string) => {
     const url = `/organizer/${id}`;
-    const event = await this.resourceService.getResource(url);
-    return event;
+    const types = [
+      ActionTypes.GET_ORGANIZER_DATA_BY_ID_REQUEST,
+      ActionTypes.GET_ORGANIZER_DATA_BY_ID_SUCCESS,
+      ActionTypes.GET_ORGANIZER_DATA_BY_ID_FAILURE
+    ];
+    return getDataByIdRequest(url, types);
   };
 
-  updateOrganizer = async (organizerData: Organizer) => {
+  updateOrganizer = (organizerData: Organizer) => {
     const id = organizerData.id;
     const url = `/organizer/${id}`;
-    await this.resourceService.putResource(url, organizerData);
+    const types = [
+      ActionTypes.PUT_ORGANIZER_DATA_REQUEST,
+      ActionTypes.PUT_ORGANIZER_DATA_SUCCESS,
+      ActionTypes.PUT_ORGANIZER_DATA_FAILURE
+    ];
+    return putDataRequest(url, organizerData, types);
   };
 
-  deleteOrganizer = async (id: string) => {
+  deleteOrganizer = (id: string) => {
     const url = `/organizer/${id}`;
-    await this.resourceService.deleteResource(url);
+    const types = [
+      ActionTypes.DELETE_ORGANIZER_DATA_BY_ID_REQUEST,
+      ActionTypes.DELETE_ORGANIZER_DATA_BY_ID_SUCCESS,
+      ActionTypes.DELETE_ORGANIZER_DATA_BY_ID_FAILURE
+    ];
+    return deleteDataByIdRequest(url, types);
   };
 }
