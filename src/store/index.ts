@@ -1,5 +1,6 @@
 import rootReducer from 'reducers';
 import { applyMiddleware, createStore, compose } from 'redux';
+import { apiMiddleware } from 'redux-api-middleware';
 import createSagaMiddleware from 'redux-saga';
 import rootSaga from 'sagas';
 import history from './history';
@@ -8,7 +9,7 @@ const initialState = {};
 
 const enhancers = [];
 const sagaMiddleware = createSagaMiddleware();
-const middleware = [sagaMiddleware];
+const middleware = [sagaMiddleware, apiMiddleware];
 
 if (process.env.NODE_ENV === 'development') {
   const devToolsExtension = (window as any).__REDUX_DEVTOOLS_EXTENSION__;

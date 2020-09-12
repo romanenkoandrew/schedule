@@ -9,11 +9,13 @@ export const initState: IState = {
   score: 0
 };
 
-const reducer = (state = initState, action: { type: string; payload: { data: {} } }) => {
-  switch (action.type) {
-    case ActionTypes.REQUEST_SUCCESS:
-      return { ...initState, ...state, ...action.payload.data };
+interface IAction {
+  type: string;
+  payload: {};
+}
 
+const reducer = (state = initState, action: IAction) => {
+  switch (action.type) {
     case ActionTypes.INCREMENT: {
       let score = get(action.payload, 'increment');
       console.log(action);
