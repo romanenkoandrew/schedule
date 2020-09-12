@@ -2,18 +2,18 @@ import ActionTypes from 'action-types';
 import { createAction as createAPIAction } from 'redux-api-middleware';
 import { createAction } from 'redux-actions';
 
-export const loadReportFromAssets = () =>
+export const getDataRequest = () =>
   createAPIAction({
-    endpoint: `assets/report`,
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json;charset=utf-8'
-    },
+    method: 'GET',
+    endpoint: `https://jsonplaceholder.typicode.com/todos/1`,
+    // headers: {
+    //   'Content-Type': 'application/json;charset=utf-8'
+    // },
     // body: JSON.stringify(body),
-    types: [ActionTypes.REQUEST_START, ActionTypes.REQUEST_SUCCESS, ActionTypes.REQUEST_FAILURE]
+    types: [ActionTypes.GET_DATA_REQUEST, ActionTypes.GET_DATA_SUCCESS, ActionTypes.GET_DATA_FAILURE]
   });
 
-export const newAction = createAction(ActionTypes.REQUEST);
+export const getData = createAction(ActionTypes.GET_DATA);
 
 export const increment = createAction(ActionTypes.INCREMENT);
 export const decrement = createAction(ActionTypes.DECREMENT);
