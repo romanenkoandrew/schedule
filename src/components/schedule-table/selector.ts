@@ -1,6 +1,7 @@
-import { scoreSelector } from 'selectors';
+import { eventsDataSelector, loadingDataSelector } from 'selectors';
 import { createStructuredSelector } from 'reselect';
 
 export default createStructuredSelector({
-  score: scoreSelector
+  eventsData: eventsDataSelector,
+  loading: loadingDataSelector
 });

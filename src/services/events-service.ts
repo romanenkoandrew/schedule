@@ -71,3 +71,24 @@ export default class EventsService {
     return deleteDataByIdRequest(url, types);
   };
 }
+
+/*
+{
+  "id": ""uHFF2obtR8iw3xcELOpI"",
+  "name": "Что такое Markdown",
+  "description": "Студент знаком с синтаксисом Markdown и может его применить",
+  "descriptionUrl": "https://guides.hexlet.io/markdown/",
+  "type": "selfEducation",
+  "timeZone": "3",
+  "dateTime": "15-09-2020",
+  "place": "string",
+  "comment": "Создан и размещён на gh-pages файл cv md с cv студента",
+  "trainee": "Антон Белый",
+  "courseName": "jsFrontEnd",
+  "timeToComplete": "3h",
+  "broadcastUrl": "Link on Video",
+  "materialsLinks": ["link1", "link2"],
+  "block": "Markdown",
+  "result": "Студент знаком с синтаксисом Markdown и может его применить",
+}
+*/

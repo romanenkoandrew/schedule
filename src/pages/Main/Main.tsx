@@ -1,6 +1,6 @@
 import React from 'react';
 import TestComponent from 'components/TestComponent';
-import ScheduleTable from 'src/components/schedule-table';
+import ScheduleTable from 'components/schedule-table';
 import { Link } from 'react-router-dom';
 import { css } from '@emotion/core';
 
