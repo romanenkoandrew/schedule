@@ -62,6 +62,8 @@ export const addNewOrganizer = createAction(ActionTypes.POST_ORGANIZER_DATA);
 export const updateOrganizer = createAction(ActionTypes.PUT_ORGANIZER_DATA);
 export const deleteOrganizer = createAction(ActionTypes.DELETE_ORGANIZER_DATA_BY_ID);
 
+export const switchMentorStudent = createAction(ActionTypes.SWITCH_MENTOR_STUDENT);
+
 export const increment = createAction(ActionTypes.INCREMENT);
 export const decrement = createAction(ActionTypes.DECREMENT);
 export const reset = createAction(ActionTypes.RESET);
