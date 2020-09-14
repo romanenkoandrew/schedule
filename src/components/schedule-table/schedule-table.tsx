@@ -4,64 +4,17 @@ import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
 import { TYPES_WITH_COLORS, FILTERS } from 'constants/dataForTable';
 import { css } from '@emotion/core';
-import { any } from 'ramda';
-import { isArguments } from 'lodash';
-
-const data: any = [
-  {
-    id: '1',
-    name: 'Html',
-    // description:
-    //   'Пройти этот курс рекомендует EPAM. Из описания: Данный тренинг может быть хорошим стартом для дальнейшего изучения программирования и инженерной работы в IT сфере.',
-    descriptionUrl: 'http://epa.ms/upskill-start',
-    type: 'theory',
-    timeZone: 'UTF11+',
-    dateTime: '2020-01-04',
-    place: 'street',
-    comment: 'comment',
-    workTime: '12',
-    trainee: 'Shalyapin',
-    tags: ['interview', 'deadline']
-  },
-  {
-    id: '2',
-    name: 'Computer Science Basics',
-    description:
-      'Пройти этот курс рекомендует EPAM. Из описания: Данный тренинг может быть хорошим стартом для дальнейшего изучения программирования и инженерной работы в IT сфере.',
-    descriptionUrl: 'http://epa.ms/upskill-start',
-    type: 'theory',
-    timeZone: 'UTF11+',
-    dateTime: '2020-01-14',
-    place: 'street',
-    comment: 'comment',
-    workTime: '12',
-    trainee: 'Shalyapin',
-    tags: ['warmup']
-  },
-  {
-    id: '3',
-    name: 'Computer Science Basics',
-    description:
-      'Пройти этот курс рекомендует EPAM. Из описания: Данный тренинг может быть хорошим стартом для дальнейшего изучения программирования и инженерной работы в IT сфере.',
-    descriptionUrl: 'http://epa.ms/upskill-start',
-    type: 'theory',
-    timeZone: 'UTF11+',
-    dateTime: '2020-05-23',
-    place: 'street',
-    comment: 'comment',
-    workTime: '12',
-    trainee: 'Shalyapin',
-    tags: ['newTask']
-  }
-];
+import TestBackend from '../test-backend';
 
 const ScheduleTable = (props: any) => {
   const { getEvents, eventsData, loading } = props;
 
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const initialSelect: any[] = [];
+
+  const [selectedRowKeys, setSelectedRowKeys] = useState(initialSelect);
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
-  const [data1, setData1] = useState([]);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     getEvents();
@@ -72,21 +25,20 @@ const ScheduleTable = (props: any) => {
       item.key = item.id;
       return item;
     });
-    setData1(newData);
+    setData(newData);
   }, [eventsData]);
 
-  const onClickRow = (record: any) => {
-    console.log(record);
-    // const key: any = record.key;
-    // const newSelectedRowKeys = [...selectedRowKeys];
-    // const index = newSelectedRowKeys.findIndex((item: any) => item.key === key);
-    // newSelectedRowKeys.includes(key)
-    //   ? newSelectedRowKeys.splice(index, 1)
-    //   : newSelectedRowKeys.push(key);
+  const onClickRow = (record: { key: string }) => {
+    const { key } = record;
+    const newSelectedRowKeys: {}[] = [...selectedRowKeys];
+    const index = newSelectedRowKeys.findIndex((item: any) => {
+      return item === key;
+    });
+    newSelectedRowKeys.includes(key) ? newSelectedRowKeys.splice(index, 1) : newSelectedRowKeys.push(key);
+    setSelectedRowKeys(newSelectedRowKeys);
   };
 
   const onSelectChange = (selectedRowKeys: any) => {
-    console.log(selectedRowKeys);
     setSelectedRowKeys(selectedRowKeys);
   };
 
@@ -213,6 +165,11 @@ const ScheduleTable = (props: any) => {
       key: 'description'
     },
     {
+      title: 'Place',
+      dataIndex: 'place',
+      key: 'place'
+    },
+    {
       title: 'Time Theory & practice',
       dataIndex: 'timeToComplete',
       key: 'timeToComplete'
@@ -224,6 +181,16 @@ const ScheduleTable = (props: any) => {
       ...getColumnSearchProps('trainee')
     },
     {
+      title: 'Result',
+      dataIndex: 'result',
+      key: 'result'
+    },
+    {
+      title: 'Comment',
+      dataIndex: 'comment',
+      key: 'comment'
+    },
+    {
       title: 'Action',
       dataIndex: '',
       key: 'x',
@@ -231,13 +198,14 @@ const ScheduleTable = (props: any) => {
     }
   ];
 
-  // if (loading && data1.length === 0) return <Spin />;
+  if (loading && data.length === 0) return <Spin />;
+
   return (
     <div className="schedule-table-container" css={container}>
       <Table
         rowSelection={rowSelection}
         columns={columns}
-        dataSource={data1}
+        dataSource={data}
         onRow={(record: any, rowIndex: any) => {
           return {
             onClick: () => onClickRow(record)
@@ -245,7 +213,7 @@ const ScheduleTable = (props: any) => {
         }}
         scroll={{ x: 1500, y: 900 }}
       ></Table>
-      ;
+      <TestBackend />
     </div>
   );
 };

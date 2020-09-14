@@ -74,14 +74,14 @@ export default class EventsService {
 
 /*
 {
-  "id": ""uHFF2obtR8iw3xcELOpI"",
+  "id": "uHFF2obtR8iw3xcELOpI",
   "name": "Что такое Markdown",
   "description": "Студент знаком с синтаксисом Markdown и может его применить",
   "descriptionUrl": "https://guides.hexlet.io/markdown/",
   "type": "selfEducation",
-  "timeZone": "3",
-  "dateTime": "15-09-2020",
-  "place": "string",
+  "timeZone": "Asia/Shanghai",
+  "dateTime": "12432432423",
+  "place": "class",
   "comment": "Создан и размещён на gh-pages файл cv md с cv студента",
   "trainee": "Антон Белый",
   "courseName": "jsFrontEnd",
