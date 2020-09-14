@@ -1,12 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Calendar from 'components/Calendar';
 
-const Calendar: React.FC = () => {
+const CalendarPage: React.FC = () => {
   return (
     <div>
-      <Link to="/main">to Main</Link>
+      {<Calendar />}
+      <div>
+        <Link to="/main">to Main</Link>
+      </div>
     </div>
   );
 };
 
-export default Calendar;
+export default CalendarPage;
