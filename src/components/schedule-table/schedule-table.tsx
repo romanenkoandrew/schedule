@@ -5,6 +5,7 @@ import { SearchOutlined } from '@ant-design/icons';
 import { TYPES_WITH_COLORS, FILTERS } from 'constants/dataForTable';
 import { css } from '@emotion/core';
 import TestBackend from '../test-backend';
+import Item from 'antd/lib/list/Item';
 
 const { Option } = Select;
 
@@ -31,6 +32,7 @@ const ScheduleTable = (props: any) => {
   const [searchedColumn, setSearchedColumn] = useState('');
   const [data, setData] = useState([]);
   const [options, setOptions] = useState(optionsForSelect);
+  const [hideRows, setHideRows] = useState(initialSelect);
 
   const showColumn = false;
 
@@ -47,6 +49,9 @@ const ScheduleTable = (props: any) => {
   }, [eventsData]);
 
   const onClickRow = (record: { key: string }, event: any) => {
+    if (event.target.classList.contains('button-hide')) {
+      return;
+    }
     const { key } = record;
     let newSelectedRowKeys: {}[] = [...selectedRowKeys];
     const index = newSelectedRowKeys.findIndex((item: any) => {
@@ -57,13 +62,118 @@ const ScheduleTable = (props: any) => {
       setSelectedRowKeys(newSelectedRowKeys);
       return;
     }
+    if (newSelectedRowKeys.length !== 0 && newSelectedRowKeys.includes(key)) {
+      newSelectedRowKeys = [];
+      setSelectedRowKeys(newSelectedRowKeys);
+      return;
+    }
     newSelectedRowKeys = [];
     newSelectedRowKeys.push(key);
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
+  const transformRow = (row: any) => {
+    const newDataItem: any = {};
+    for (let key in row) {
+      if (key === 'key') {
+        newDataItem[key] = row.key;
+        continue;
+      }
+      newDataItem[key] = '';
+    }
+    return newDataItem;
+  };
+
+  const hideHandle = (row: { [propName: string]: any }) => {
+    const newData: any = [...data];
+    const newHideRows: any = [...hideRows];
+    const index = newData.findIndex((item: { [propName: string]: any }) => item.key === row.key);
+    console.log('newHideRows', newHideRows);
+    const hideRowKeys = newHideRows.map((item: any) => item.key);
+
+    if (!selectedRowKeys.includes(row.key)) {
+      if (hideRowKeys.includes(row.key)) {
+        const showRow = newHideRows.find((item: any) => item.key === row.key);
+        const idx = newHideRows.findIndex((item: any) => item.key === row.key);
+        newData[index] = showRow;
+        newHideRows.splice(idx, 1);
+        setHideRows(newHideRows);
+        setData(newData);
+        setSelectedRowKeys([]);
+        return;
+      }
+
+      const newDataItem: any = transformRow(row);
+      newHideRows.push(newData[index]);
+      newData[index] = newDataItem;
+      setHideRows(newHideRows);
+      setData(newData);
+      setSelectedRowKeys([]);
+    }
+
+    if (selectedRowKeys.includes(row.id)) {
+      if (hideRowKeys.includes(row.key)) {
+        // const filteredData =
+        newData.forEach((item: any) => {
+          if (selectedRowKeys.includes(item.key) && hideRowKeys.includes(item.key)) {
+            const showRow = newHideRows.find((item: any) => item.key === row.key);
+            const idx = newHideRows.findIndex((item: any) => item.key === row.key);
+            newData[index] = showRow;
+            newHideRows.splice(idx, 1);
+            // setHideRows(newHideRows);
+            // setData(newData);
+            // setSelectedRowKeys([]);
+          }
+          newHideRows.push(item);
+          const newDataItem: any = transformRow(item);
+          return newDataItem;
+          return item;
+        });
+      }
+
+      setHideRows(newHideRows);
+      setData(filteredData);
+      setSelectedRowKeys([]);
+      return;
+    }
+  };
+
   const onSelectChange = (selectedRowKeys: any) => {
     setSelectedRowKeys(selectedRowKeys);
+  };
+
+  const showHandle = (row: { [propName: string]: any }) => {
+    const newData: any = [...data];
+    const newHideRows: any = [...hideRows];
+    const index = newData.findIndex((item: { [propName: string]: any }) => item.id === row.id);
+
+    // if (selectedRowKeys.includes(row.id)) {
+    //   const filteredData = newData.map((item: any) => {
+    //     if (selectedRowKeys.includes(item.id)) {
+    //       newHideRows.push(item);
+    //       const newDataItem: any = transformRow(item);
+    //       return newDataItem;
+    //     }
+    //     return item;
+    //   });
+    //   setHideRows(newHideRows);
+    //   setData(filteredData);
+    //   setSelectedRowKeys([]);
+    //   return;
+    // }
+
+    newHideRows.forEach((item: any) => {
+      if (item.key === row.key && selectedRowKeys.includes(row.id)) {
+        newData[index] = item;
+        newHideRows.splice(index, 1);
+        setSelectedRowKeys([]);
+      } else if (item.key === row.key) {
+        newData[index] = item;
+        newHideRows.splice(index, 1);
+      }
+    });
+    setHideRows(newHideRows);
+    setData(newData);
   };
 
   const rowSelection = {
@@ -193,7 +303,6 @@ const ScheduleTable = (props: any) => {
       dataIndex: 'place',
       key: 'place',
       render: (...args: any) => {
-        console.log(args);
         return <p></p>;
       }
     },
@@ -223,13 +332,9 @@ const ScheduleTable = (props: any) => {
       dataIndex: '',
       key: 'x',
       height: 500,
-      render: (props: {}) => (
-        <a
-          onClick={() => {
-            console.log(props);
-          }}
-        >
-          Hide
+      render: (props: any) => (
+        <a className="button-hide" onClick={() => hideHandle(props)}>
+          {hideRows.some(item => item.key === props.key) ? 'Show' : 'Hide'}
         </a>
       )
     }
@@ -296,6 +401,7 @@ export default ScheduleTable;
 const container = css`
   // display: flex;
   margin: 20px;
+  user-select: none;
 `;
 
 const hide = css`
