@@ -46,13 +46,19 @@ const ScheduleTable = (props: any) => {
     setData(newData);
   }, [eventsData]);
 
-  const onClickRow = (record: { key: string }) => {
+  const onClickRow = (record: { key: string }, event: any) => {
     const { key } = record;
-    const newSelectedRowKeys: {}[] = [...selectedRowKeys];
+    let newSelectedRowKeys: {}[] = [...selectedRowKeys];
     const index = newSelectedRowKeys.findIndex((item: any) => {
       return item === key;
     });
-    newSelectedRowKeys.includes(key) ? newSelectedRowKeys.splice(index, 1) : newSelectedRowKeys.push(key);
+    if (event.shiftKey) {
+      newSelectedRowKeys.includes(key) ? newSelectedRowKeys.splice(index, 1) : newSelectedRowKeys.push(key);
+      setSelectedRowKeys(newSelectedRowKeys);
+      return;
+    }
+    newSelectedRowKeys = [];
+    newSelectedRowKeys.push(key);
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
@@ -261,7 +267,6 @@ const ScheduleTable = (props: any) => {
         onDeselect={option => {
           const newOptions = [...options];
           const index = newOptions.findIndex(item => item.value === option);
-          console.log(newOptions, index);
           newOptions.splice(index, 1);
           setOptions(newOptions);
         }}
@@ -276,7 +281,7 @@ const ScheduleTable = (props: any) => {
         bordered
         onRow={(record: any, rowIndex: any) => {
           return {
-            onClick: () => onClickRow(record)
+            onClick: event => onClickRow(record, event)
           };
         }}
         scroll={{ x: 1500, y: 900 }}
