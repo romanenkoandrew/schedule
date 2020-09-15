@@ -115,6 +115,7 @@ const TestBackend = (props: any) => {
 
   const getDataHandle = () => {
     const data = createObject();
+    console.log(new Date(data.dateTime));
     getEvents();
   };
 
@@ -181,7 +182,7 @@ const TestBackend = (props: any) => {
           </div>
           <div>
             dateTime:
-            <input type="date" onChange={dateTimeChange} placeholder="15-09-2020" css={input} />
+            <input type="time" onChange={dateTimeChange} placeholder="15-09-2020" css={input} />
           </div>
           <div>
             place:

@@ -1,20 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Button, Space, Input, Spin } from 'antd';
+import { Table, Tag, Button, Space, Input, Spin, Select } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
 import { TYPES_WITH_COLORS, FILTERS } from 'constants/dataForTable';
 import { css } from '@emotion/core';
 import TestBackend from '../test-backend';
 
+const { Option } = Select;
+
 const ScheduleTable = (props: any) => {
   const { getEvents, eventsData, loading } = props;
 
   const initialSelect: any[] = [];
+  const optionsForSelect = [
+    { value: 'Date/time' },
+    { value: 'Blocks' },
+    { value: 'Type' },
+    { value: 'Task' },
+    { value: 'Description' },
+    { value: 'Place' },
+    { value: 'Time Theory & practice' },
+    { value: 'Trainee' },
+    { value: 'Result' },
+    { value: 'Comment' },
+    { value: 'Action' }
+  ];
 
   const [selectedRowKeys, setSelectedRowKeys] = useState(initialSelect);
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const [data, setData] = useState([]);
+  const [options, setOptions] = useState(optionsForSelect);
+
+  const showColumn = false;
 
   useEffect(() => {
     getEvents();
@@ -120,7 +138,7 @@ const ScheduleTable = (props: any) => {
     setSearchText('');
   };
 
-  const columns = [
+  const columns: any = [
     {
       title: 'Date/time',
       dataIndex: 'dateTime',
@@ -167,7 +185,11 @@ const ScheduleTable = (props: any) => {
     {
       title: 'Place',
       dataIndex: 'place',
-      key: 'place'
+      key: 'place',
+      render: (...args: any) => {
+        console.log(args);
+        return <p></p>;
+      }
     },
     {
       title: 'Time Theory & practice',
@@ -194,18 +216,64 @@ const ScheduleTable = (props: any) => {
       title: 'Action',
       dataIndex: '',
       key: 'x',
-      render: () => <a>Hide</a>
+      height: 500,
+      render: (props: {}) => (
+        <a
+          onClick={() => {
+            console.log(props);
+          }}
+        >
+          Hide
+        </a>
+      )
     }
-  ];
+  ].filter((item: any) => options.reduce((acc: any, item) => acc.concat(item.value), []).includes(item.title));
 
   if (loading && data.length === 0) return <Spin />;
 
+  function tagRender(props: any) {
+    const { label, value, closable, onClose } = props;
+
+    return (
+      <Tag closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
+        {label}
+      </Tag>
+    );
+  }
+
   return (
     <div className="schedule-table-container" css={container}>
+      <Select
+        mode="multiple"
+        showArrow
+        tagRender={tagRender}
+        defaultValue={columns.reduce((acc: any, item: any) => {
+          acc.push(item.title);
+          return acc;
+        }, [])}
+        style={{ width: '100%' }}
+        options={optionsForSelect}
+        onSelect={option => {
+          const newOptions = [...options];
+          newOptions.push({ value: option });
+          setOptions(newOptions);
+        }}
+        onDeselect={option => {
+          const newOptions = [...options];
+          const index = newOptions.findIndex(item => item.value === option);
+          console.log(newOptions, index);
+          newOptions.splice(index, 1);
+          setOptions(newOptions);
+        }}
+      >
+        <Option value="lucy">Lucy</Option>
+      </Select>
+
       <Table
         rowSelection={rowSelection}
         columns={columns}
         dataSource={data}
+        bordered
         onRow={(record: any, rowIndex: any) => {
           return {
             onClick: () => onClickRow(record)
@@ -213,7 +281,7 @@ const ScheduleTable = (props: any) => {
         }}
         scroll={{ x: 1500, y: 900 }}
       ></Table>
-      <TestBackend />
+      {/* <TestBackend /> */}
     </div>
   );
 };
@@ -221,5 +289,12 @@ const ScheduleTable = (props: any) => {
 export default ScheduleTable;
 
 const container = css`
+  // display: flex;
   margin: 20px;
 `;
+
+const hide = css`
+  width: 0px;
+`;
+
+const filter = ['description', 'type', 'place'];
