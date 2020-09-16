@@ -18,6 +18,7 @@ const Main: React.FC = () => {
       <div css={linkStyle}>
         <Link to="/calendar">to Calendar</Link>
         <Link to="/list">to List</Link>
+        <Link to="/modal">to Modal</Link>
       </div>
     </div>
   );

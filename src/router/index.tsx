@@ -3,7 +3,7 @@ import { createBrowserHistory } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
-import { Main, Calendar, List } from 'pages';
+import { Main, Calendar, List, Modal } from 'pages';
 import store from 'store';
 
 const history = createBrowserHistory();
@@ -17,6 +17,7 @@ const Routers = () => {
           <Route component={Main} path={Routes.Main} />
           <Route component={Calendar} path={Routes.Calendar} />
           <Route component={List} path={Routes.List} />
+          <Route component={Modal} path={Routes.Modal} />
         </Switch>
       </Router>
     </Provider>
