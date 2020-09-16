@@ -92,6 +92,7 @@ const ScheduleTable = (props: any) => {
     const hideRowKeys = newHideRows.map((item: any) => item.key);
 
     if (!selectedRowKeys.includes(row.key)) {
+      console.log('non');
       if (hideRowKeys.includes(row.key)) {
         const showRow = newHideRows.find((item: any) => item.key === row.key);
         const idx = newHideRows.findIndex((item: any) => item.key === row.key);
@@ -111,30 +112,36 @@ const ScheduleTable = (props: any) => {
       setSelectedRowKeys([]);
     }
 
-    if (selectedRowKeys.includes(row.id)) {
+    if (selectedRowKeys.includes(row.key)) {
       if (hideRowKeys.includes(row.key)) {
-        // const filteredData =
-        newData.forEach((item: any) => {
-          if (selectedRowKeys.includes(item.key) && hideRowKeys.includes(item.key)) {
-            const showRow = newHideRows.find((item: any) => item.key === row.key);
-            const idx = newHideRows.findIndex((item: any) => item.key === row.key);
+        newData.forEach((dataItem: any, index: number) => {
+          if (selectedRowKeys.includes(dataItem.key) && hideRowKeys.includes(dataItem.key)) {
+            const showRow = newHideRows.find((item: any) => item.key === dataItem.key);
+            const idx = newHideRows.findIndex((item: any) => item.key === dataItem.key);
             newData[index] = showRow;
             newHideRows.splice(idx, 1);
-            // setHideRows(newHideRows);
-            // setData(newData);
-            // setSelectedRowKeys([]);
           }
-          newHideRows.push(item);
-          const newDataItem: any = transformRow(item);
-          return newDataItem;
-          return item;
         });
+        setHideRows(newHideRows);
+        setData(newData);
+        setSelectedRowKeys([]);
+        return;
       }
 
+      newData.forEach((dataItem: any, index: number) => {
+        if (selectedRowKeys.includes(dataItem.key) && !hideRowKeys.includes(dataItem.key)) {
+          const hideItem: any = transformRow(dataItem);
+          newHideRows.push(dataItem);
+          newData[index] = hideItem;
+          // const showRow = newHideRows.find((item: any) => item.key === dataItem.key);
+          // const idx = newHideRows.findIndex((item: any) => item.key === dataItem.key);
+          // newData[index] = showRow;
+          // newHideRows.splice(idx, 1);
+        }
+      });
       setHideRows(newHideRows);
-      setData(filteredData);
+      setData(newData);
       setSelectedRowKeys([]);
-      return;
     }
   };
 
@@ -255,6 +262,11 @@ const ScheduleTable = (props: any) => {
   };
 
   const columns: any = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id'
+    },
     {
       title: 'Date/time',
       dataIndex: 'dateTime',
@@ -391,7 +403,7 @@ const ScheduleTable = (props: any) => {
         }}
         scroll={{ x: 1500, y: 900 }}
       ></Table>
-      {/* <TestBackend /> */}
+      <TestBackend />
     </div>
   );
 };
