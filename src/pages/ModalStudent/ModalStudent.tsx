@@ -24,7 +24,7 @@ const ModalStudent: React.FC = () => {
               <div className="wrapper-time-to-finish">
                 <div className="time-to-finish-title">Needed time to finish</div>
                 <div className="time-to-finish">
-                  <img src="img/clock-circle.svg" alt="clock" />
+                  <img src="./assets/img/clock-circle.svg" alt="clock" />
                   &nbsp;&nbsp; <span>40 hours</span>
                 </div>
               </div>

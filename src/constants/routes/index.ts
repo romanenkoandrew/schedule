@@ -2,7 +2,8 @@ enum Routes {
   Main = '/main',
   Calendar = '/calendar',
   List = '/list',
-  Modal = '/modal'
+  ModalStudent = '/modalStudent',
+  ModalMentor = '/modalMentor'
 }
 
 export default Routes;

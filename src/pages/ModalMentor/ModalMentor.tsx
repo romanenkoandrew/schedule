@@ -1,13 +1,38 @@
 import React from 'react';
-import styled from 'styled-components';
-import { WrapperModal } from './WrapperModal';
+import { WrapperModalMentor } from './WrapperModalMentor';
 
-const Modal: React.FC = () => {
+const ModalMentor: React.FC = () => {
   return (
-    <WrapperModal>
+    <WrapperModalMentor>
       <div className="modal">
+        <button type="button" className="close">
+          <img src="./assets/img/close.svg" alt="close" />
+        </button>
+        <div className="panel-mentor-wrapper">
+          <button>
+            <a href="">
+              <img src="./assets/img/edit.svg" alt="edit" />
+            </a>
+          </button>
+          <button>
+            <a href="">
+              <img src="./assets/img/check.svg" alt="right" />
+            </a>
+          </button>
+          <button>
+            <a href="">
+              <img src="./assets/img/stop.svg" alt="decline" />
+            </a>
+          </button>
+        </div>
         <div className="wrapper-title">
           <h1>Task name</h1>
+          <span className="task">
+            <img src="./assets/img/task.svg" alt="" />
+          </span>
+          <span className="self-ed">
+            <img src="./assets/img/self-ed.svg" alt="" />
+          </span>
         </div>
         <div className="wrapper-content">
           <aside>
@@ -25,7 +50,7 @@ const Modal: React.FC = () => {
               <div className="wrapper-time-to-finish">
                 <div className="time-to-finish-title">Needed time to finish</div>
                 <div className="time-to-finish">
-                  <img src="img/clock-circle.svg" alt="clock" />
+                  <img src="./assets/img/clock-circle.svg" alt="clock" />
                   &nbsp;&nbsp; <span>40 hours</span>
                 </div>
               </div>
@@ -78,20 +103,14 @@ const Modal: React.FC = () => {
             </div>
           </section>
         </div>
-        <section className="feedback">
-          <form action="">
-            <p>Leave feedback</p>
-            <label htmlFor="">
-              <textarea name="" id="" placeholder="Textarea placeholder"></textarea>
-            </label>
-            <div className="wrapper-btn">
-              <button type="submit">Send</button>
-            </div>
-          </form>
-        </section>
+        <div className="map-wrapper">
+          <h4>Place to meet</h4>
+          <p>address</p>
+          <div className="map"></div>
+        </div>
       </div>
-    </WrapperModal>
+    </WrapperModalMentor>
   );
 };
 
-export default Modal;
+export default ModalMentor;
