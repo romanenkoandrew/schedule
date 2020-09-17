@@ -49,12 +49,12 @@ const reducer = (state = initState, action: IAction) => {
       return { ...state, isStudent };
     }
     case ActionTypes.SWITCH_LAYOUT: {
-      let currentLayout = get(action.payload, 'switchLayout');
-      return { ...state, currentLayout };
+      let layout = get(action.payload, 'switchLayout');
+      return { ...state, layout };
     }
     case ActionTypes.CHANGE_TIMEZONE: {
-      let currentTimezone = get(action.payload, 'changeTimezone');
-      return { ...state, currentTimezone };
+      let timezone = get(action.payload, 'changeTimezone');
+      return { ...state, timezone };
     }
     case ActionTypes.CHANGE_COURSE: {
       let courses = get(action.payload, 'changeCourse');
