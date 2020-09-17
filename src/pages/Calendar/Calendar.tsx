@@ -1,13 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Calendar from 'components/Calendar';
+import CalendarApp from 'components/Calendar';
 
 const CalendarPage: React.FC = () => {
   return (
-    <div>
-      {<Calendar />}
-      <div>
-        <Link to="/main">to Main</Link>
+    <div className="evnt-body-wrapper">
+      <div className="evnt-main-container">
+        {<CalendarApp />}
+        <div>
+          <Link to="/main">to Main</Link>
+        </div>
       </div>
     </div>
   );
