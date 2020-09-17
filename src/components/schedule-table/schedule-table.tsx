@@ -287,14 +287,25 @@ const ScheduleTable = (props: any) => {
       key: 'type',
       filters: FILTERS,
       width: 150,
-      onFilter: (value: any, record: any) => record.type.toLowerCase() === value,
-      render: (type: any) => {
+      onFilter: (value: any, record: any) => record.type.toLowerCase() === value.toLowerCase(),
+      render: (tags: any) => {
         return (
-          <span>
-            <Tag color={TYPES_WITH_COLORS[type]} key={type}>
-              {type.replace(/([A-Z])/g, ' $1').toUpperCase()}
-            </Tag>
-          </span>
+          <>
+            {typeof tags === 'object' ? (
+              tags.map((tag: string) => {
+                let color = TYPES_WITH_COLORS[tag];
+                return (
+                  <Tag color={color} key={tag} style={{ border: '0px' }}>
+                    {tag.replace(/([A-Z])/g, ' $1').toUpperCase()}
+                  </Tag>
+                );
+              })
+            ) : (
+              <Tag color={TYPES_WITH_COLORS[tags]} key={tags} style={{ border: '0px' }}>
+                {tags.replace(/([A-Z])/g, ' $1').toUpperCase()}
+              </Tag>
+            )}
+          </>
         );
       }
     },
@@ -370,6 +381,7 @@ const ScheduleTable = (props: any) => {
         mode="multiple"
         showArrow
         tagRender={tagRender}
+        size="large"
         defaultValue={columns.reduce((acc: any, item: any) => {
           acc.push(item.title);
           return acc;
@@ -387,9 +399,7 @@ const ScheduleTable = (props: any) => {
           newOptions.splice(index, 1);
           setOptions(newOptions);
         }}
-      >
-        <Option value="lucy">Lucy</Option>
-      </Select>
+      ></Select>
 
       <Table
         rowSelection={rowSelection}
