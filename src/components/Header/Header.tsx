@@ -8,8 +8,10 @@ import { css } from '@emotion/core';
 import Timezones from 'constants/timezone/timezone';
 import {Courses, Layouts} from 'constants/header/header';
 
-const logoSrc = require('../../assets/img/rsschool-logo.jpg');
-const avatarSrc = require('../../assets/img/user.jpg');
+//const logoSrc = require('../../assets/img/rsschool-logo.jpg');
+const logoSrc = 'assets/img/rsschool-logo.jpg';
+//const avatarSrc = require('../../assets/img/user.jpg');
+const avatarSrc = 'assets/img/user.jpg';
 
 const header = css`
   width: 100%;  
