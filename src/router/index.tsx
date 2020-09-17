@@ -4,6 +4,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
 import { Main, Calendar, List } from 'pages';
+import Header from 'components/Header';
 import store from 'store';
 
 const history = createBrowserHistory();
@@ -12,6 +13,7 @@ const Routers = () => {
   return (
     <Provider store={store}>
       <Router history={history}>
+        <Header />
         <Switch>
           <Redirect exact={true} from="/" to={Routes.Main} />
           <Route component={Main} path={Routes.Main} />
