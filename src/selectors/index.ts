@@ -16,6 +16,3 @@ export const organizersDataSelector = createSelector(DataSelector, data => data.
 export const organizerDataSelector = createSelector(DataSelector, data => data.organizerData);
 export const loadingDataSelector = createSelector(DataSelector, data => data.loading);
 export const errorDataSelector = createSelector(DataSelector, data => data.error);
-
-
-

@@ -8,15 +8,15 @@ interface IState {
   isStudent: boolean;
   timezone: number;
   courses: string[];
-  layout: number;  
+  layout: number;
 }
 
 export const initState: IState = {
   score: 0,
   isStudent: true,
   timezone: 3,
-  courses: ["JS/Frontend 2020-Q3"],
-  layout: Layouts.Table 
+  courses: ['JS/Frontend 2020-Q3'],
+  layout: Layouts.Table
 };
 
 interface IAction {
