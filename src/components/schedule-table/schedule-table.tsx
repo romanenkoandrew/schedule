@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Tag, Button, Space, Input, Spin, Select } from 'antd';
+import { Table, Tag, Button, Space, Input, Spin, Select, Calendar } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
 import { TYPES_WITH_COLORS, FILTERS } from 'constants/dataForTable';
+import { IEvent } from '../../services/events-service';
 import { css } from '@emotion/core';
 import TestBackend from '../test-backend';
 import Item from 'antd/lib/list/Item';
+import TextArea from 'antd/lib/input/TextArea';
 
 const { Option } = Select;
 
 const ScheduleTable = (props: any) => {
-  const { getEvents, eventsData, loading } = props;
-
+  const { getEvents, eventsData, loading, isStudent, timeZone, course, addNewEvent, deleteEvent } = props;
+  console.log(isStudent, timeZone, course);
   const initialSelect: any[] = [];
   const optionsForSelect = [
     { value: 'Date/time' },
+    { value: 'Course' },
     { value: 'Blocks' },
     { value: 'Type' },
     { value: 'Task' },
@@ -22,19 +25,40 @@ const ScheduleTable = (props: any) => {
     { value: 'Place' },
     { value: 'Time Theory & practice' },
     { value: 'Trainee' },
+    { value: 'Materials' },
     { value: 'Result' },
     { value: 'Comment' },
     { value: 'Action' }
   ];
+
+  const optionsForTagsSelect = [
+    { value: 'deadLine' },
+    { value: 'Course' },
+    { value: 'Blocks' },
+    { value: 'Type' },
+    { value: 'Task' },
+    { value: 'Description' },
+    { value: 'Place' },
+    { value: 'Time Theory & practice' },
+    { value: 'Trainee' },
+    { value: 'Materials' },
+    { value: 'Result' },
+    { value: 'Comment' },
+    { value: 'Action' }
+  ];
+
+  const initialObj: any = {};
 
   const [selectedRowKeys, setSelectedRowKeys] = useState(initialSelect);
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const [data, setData] = useState([]);
   const [options, setOptions] = useState(optionsForSelect);
+  const [tagOptions, setTagOptions] = useState(optionsForTagsSelect);
   const [hideRows, setHideRows] = useState(initialSelect);
 
-  const showColumn = false;
+  const [editableEvent, setEditableEvent] = useState(initialObj);
+  const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
     getEvents();
@@ -42,14 +66,27 @@ const ScheduleTable = (props: any) => {
 
   useEffect(() => {
     let newData: any = eventsData.map((item: any) => {
+      const options = {
+        year: 'numeric',
+        day: 'numeric',
+        month: 'numeric'
+      };
       item.key = item.id;
+      item.dateTime = new Date(item.dateTime + timeZone * 3600000).toLocaleString('en-GB', options);
       return item;
     });
     setData(newData);
   }, [eventsData]);
 
+  const handleChange = (row: string, block: any, event: any) => {
+    setEditableEvent({
+      ...editableEvent,
+      [block]: event.target.value
+    });
+  };
+
   const onClickRow = (record: { key: string }, event: any) => {
-    if (event.target.classList.contains('button-hide')) {
+    if (event.target.classList.contains('button-hide') || event.target.classList.contains('button-delete')) {
       return;
     }
     const { key } = record;
@@ -83,6 +120,10 @@ const ScheduleTable = (props: any) => {
     }
     return newDataItem;
   };
+
+  function onPanelChange(value: any, mode: any) {
+    console.log(value, mode);
+  }
 
   const hideHandle = (row: { [propName: string]: any }) => {
     const newData: any = [...data];
@@ -133,10 +174,6 @@ const ScheduleTable = (props: any) => {
           const hideItem: any = transformRow(dataItem);
           newHideRows.push(dataItem);
           newData[index] = hideItem;
-          // const showRow = newHideRows.find((item: any) => item.key === dataItem.key);
-          // const idx = newHideRows.findIndex((item: any) => item.key === dataItem.key);
-          // newData[index] = showRow;
-          // newHideRows.splice(idx, 1);
         }
       });
       setHideRows(newHideRows);
@@ -147,40 +184,6 @@ const ScheduleTable = (props: any) => {
 
   const onSelectChange = (selectedRowKeys: any) => {
     setSelectedRowKeys(selectedRowKeys);
-  };
-
-  const showHandle = (row: { [propName: string]: any }) => {
-    const newData: any = [...data];
-    const newHideRows: any = [...hideRows];
-    const index = newData.findIndex((item: { [propName: string]: any }) => item.id === row.id);
-
-    // if (selectedRowKeys.includes(row.id)) {
-    //   const filteredData = newData.map((item: any) => {
-    //     if (selectedRowKeys.includes(item.id)) {
-    //       newHideRows.push(item);
-    //       const newDataItem: any = transformRow(item);
-    //       return newDataItem;
-    //     }
-    //     return item;
-    //   });
-    //   setHideRows(newHideRows);
-    //   setData(filteredData);
-    //   setSelectedRowKeys([]);
-    //   return;
-    // }
-
-    newHideRows.forEach((item: any) => {
-      if (item.key === row.key && selectedRowKeys.includes(row.id)) {
-        newData[index] = item;
-        newHideRows.splice(index, 1);
-        setSelectedRowKeys([]);
-      } else if (item.key === row.key) {
-        newData[index] = item;
-        newHideRows.splice(index, 1);
-      }
-    });
-    setHideRows(newHideRows);
-    setData(newData);
   };
 
   const rowSelection = {
@@ -263,23 +266,41 @@ const ScheduleTable = (props: any) => {
 
   const columns: any = [
     {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id'
-    },
-    {
       title: 'Date/time',
       dataIndex: 'dateTime',
       width: 120,
       key: 'dateTime',
-      sorter: (a: any, b: any) => Date.parse(a.dateTime) - Date.parse(b.dateTime)
-      // fixed: 'left',
+      sorter: (a: any, b: any) => Date.parse(a.dateTime) - Date.parse(b.dateTime),
+      render: (block: any, row: any) => {
+        console.log();
+        return (
+          <>
+            {block}
+            {/* {editableEvent && editableEvent.id === row.id && <div className="site-calendar-demo-card" style={{ position: 'absolute', top: '100%', left: '0' }}>
+            <Calendar fullscreen={false} onPanelChange={onPanelChange} />
+          </div>} */}
+          </>
+        );
+      }
+    },
+    {
+      title: 'Course',
+      dataIndex: 'courseName',
+      key: 'courseName',
+      width: 120
     },
     {
       title: 'Blocks',
       dataIndex: 'block',
       key: 'block',
-      width: 180
+      width: 180,
+      render: (block: any, row: any) => {
+        console.log();
+        if (editableEvent && editableEvent.id === row.id) {
+          return <TextArea value={editableEvent.block} onChange={(event: any) => handleChange(row, 'block', event)} />;
+        }
+        return <span>{block}</span>;
+      }
     },
     {
       title: 'Type',
@@ -288,23 +309,39 @@ const ScheduleTable = (props: any) => {
       filters: FILTERS,
       width: 150,
       onFilter: (value: any, record: any) => record.type.toLowerCase() === value.toLowerCase(),
-      render: (tags: any) => {
+      render: (tags: any, row: any) => {
+        if (editableEvent && editableEvent.id === row.id) {
+          // return <TextArea value={editableEvent.place} onChange={(event: any) => handleChange(row, 'place', event)} />
+          const tagsOptions = tags.reduce((acc: any, tag: any) => {
+            acc.push(tag);
+            return acc;
+          }, []);
+
+          return (
+            <Select
+              mode="multiple"
+              showArrow
+              tagRender={tagRender}
+              options={tagOptions}
+              defaultValue={tagsOptions}
+              onSelect={option => {
+                const newTagOptions = [...tagOptions];
+                newTagOptions.push({ value: option });
+                setTagOptions(newTagOptions);
+              }}
+            />
+          );
+        }
         return (
           <>
-            {typeof tags === 'object' ? (
-              tags.map((tag: string) => {
-                let color = TYPES_WITH_COLORS[tag];
-                return (
-                  <Tag color={color} key={tag} style={{ border: '0px' }}>
-                    {tag.replace(/([A-Z])/g, ' $1').toUpperCase()}
-                  </Tag>
-                );
-              })
-            ) : (
-              <Tag color={TYPES_WITH_COLORS[tags]} key={tags} style={{ border: '0px' }}>
-                {tags.replace(/([A-Z])/g, ' $1').toUpperCase()}
-              </Tag>
-            )}
+            {tags.map((tag: string) => {
+              let color = TYPES_WITH_COLORS[tag];
+              return (
+                <Tag color={color} key={tag} style={{ border: '0px' }}>
+                  {tag.replace(/([A-Z])/g, ' $1').toUpperCase()}
+                </Tag>
+              );
+            })}
           </>
         );
       }
@@ -319,20 +356,46 @@ const ScheduleTable = (props: any) => {
     {
       title: 'Description',
       dataIndex: 'description',
-      key: 'description'
+      key: 'description',
+      render: (block: any, row: any) => {
+        console.log();
+        if (editableEvent && editableEvent.id === row.id) {
+          return (
+            <TextArea
+              value={editableEvent.description}
+              onChange={(event: any) => handleChange(row, 'description', event)}
+            />
+          );
+        }
+        return <span>{block}</span>;
+      }
     },
     {
       title: 'Place',
       dataIndex: 'place',
       key: 'place',
-      render: (...args: any) => {
-        return <p></p>;
+      render: (block: any, row: any) => {
+        console.log();
+        if (editableEvent && editableEvent.id === row.id) {
+          return <TextArea value={editableEvent.place} onChange={(event: any) => handleChange(row, 'place', event)} />;
+        }
+        return <span>{block}</span>;
       }
     },
     {
       title: 'Time Theory & practice',
-      dataIndex: 'timeToComplete',
-      key: 'timeToComplete'
+      dataIndex: 'timeToImplementation',
+      key: 'timeToImplementation'
+    },
+    {
+      title: 'Materials',
+      dataIndex: 'materialsLinks',
+      key: 'materialsLinks',
+      render: (links: any) => {
+        if (typeof links === 'object') {
+          return links.map((link: string) => <span>{link}</span>);
+        }
+      }
     },
     {
       title: 'Trainee',
@@ -343,12 +406,30 @@ const ScheduleTable = (props: any) => {
     {
       title: 'Result',
       dataIndex: 'result',
-      key: 'result'
+      key: 'result',
+      render: (block: any, row: any) => {
+        console.log();
+        if (editableEvent && editableEvent.id === row.id) {
+          return (
+            <TextArea value={editableEvent.result} onChange={(event: any) => handleChange(row, 'result', event)} />
+          );
+        }
+        return <span>{block}</span>;
+      }
     },
     {
       title: 'Comment',
       dataIndex: 'comment',
-      key: 'comment'
+      key: 'comment',
+      render: (block: any, row: any) => {
+        console.log();
+        if (editableEvent && editableEvent.id === row.id) {
+          return (
+            <TextArea value={editableEvent.comment} onChange={(event: any) => handleChange(row, 'comment', event)} />
+          );
+        }
+        return <span>{block}</span>;
+      }
     },
     {
       title: 'Action',
@@ -356,17 +437,34 @@ const ScheduleTable = (props: any) => {
       key: 'x',
       height: 500,
       render: (props: any) => (
-        <a className="button-hide" onClick={() => hideHandle(props)}>
-          {hideRows.some(item => item.key === props.key) ? 'Show' : 'Hide'}
-        </a>
+        <Space size="middle">
+          <a className="button-hide" onClick={() => hideHandle(props)}>
+            {hideRows.some(item => item.key === props.key) ? 'Show' : 'Hide'}
+          </a>
+          {!isStudent && (
+            <a className="button-delete" onClick={() => deleteEvent(props.id)}>
+              Delete
+            </a>
+          )}
+          {!isStudent && (
+            <a
+              className="button-edit"
+              onClick={() => {
+                setEditableEvent(props);
+              }}
+            >
+              Edit
+            </a>
+          )}
+        </Space>
       )
     }
   ].filter((item: any) => options.reduce((acc: any, item) => acc.concat(item.value), []).includes(item.title));
 
-  if (loading && data.length === 0) return <Spin />;
-
   function tagRender(props: any) {
     const { label, value, closable, onClose } = props;
+
+    if (loading && data.length === 0) return <Spin />;
 
     return (
       <Tag closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
@@ -413,12 +511,36 @@ const ScheduleTable = (props: any) => {
         }}
         scroll={{ x: 1500, y: 900 }}
       ></Table>
-      <TestBackend />
+      {/* <TestBackend /> */}
+      <Button onClick={() => addNewEvent(event)}>Create Event</Button>
     </div>
   );
 };
 
 export default ScheduleTable;
+
+const event = {
+  id: 'KyvcYfdhjMuXQeK4eoYc',
+  name: 'HTML',
+  description: 'Студент знакомится с HTML',
+  descriptionUrl: 'https://guides.hexlet.io/markdown/',
+  type: ['htmlTask', 'info'],
+  timeZone: 3,
+  dateTime: 1600291763391,
+  place: 'class',
+  comment: 'Создан и размещён на gh-pages файл HTML',
+  trainee: 'Сергей Шаляпин',
+  courseName: 'jsFrontEnd',
+  timeToImplementation: 4,
+  broadcastUrl: 'Link on Video',
+  materialsLinks: ['link1', 'link2'],
+  block: 'HTML',
+  result: 'Студент знает HTML',
+  stack: ['HTML', 'CSS', 'Markdown'],
+  feedBack: 'Cool',
+  taskBreakpoints: [1600291763391, 1600291764391],
+  videoLink: 'string'
+};
 
 const container = css`
   // display: flex;
