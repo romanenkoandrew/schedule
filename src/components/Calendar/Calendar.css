@@ -1,3 +1,15 @@
+.evnt-panel {
+  padding: 40px 30px 0;
+}
+
+.evnt-panel.evnt-card-panel.evnt-calendar-card {
+  margin-top: 60px;
+}
+
+.evnt-panel-wrapper {
+  margin: 0 auto; max-width: 1416px;  position: relative;
+}
+
 .events {
   margin: 0;
   padding: 0;
@@ -32,30 +44,41 @@ li {
   text-overflow: ellipsis;
 }
 
-.ant-tag.task {
-  color: #1890ff;
-  background: #e6f7ff;
-  border-color: #91d5ff;
+.ant-tag.deadline {
+  background: red;
+}
+
+.ant-tag.htmlTask, .ant-tag.selfEducation, .ant-tag.jsTask, .ant-tag.externalTask, .ant-tag.codeWars, .ant-tag.codeJam, .ant-tag.newTask{
+  background: green;
+}
+
+.ant-tag.lecture, .ant-tag.lectureOnline, .ant-tag.lectureOffline, .ant-tag.lectureMixed, .ant-tag.lectureSelfStudy{
+  background: blue;
 }
 
 .ant-tag.test {
-  color: #fa541c;
-  background: #fff2e8;
-  border-color: #ffbb96;
+  background: #ff7b00;
 }
 
-.ant-tag.education {
-  color: #52c41a;
-  background: #f6ffed;
-  border-color: #b7eb8f;
+.ant-tag.info {
+  background: #ff7b00;
 }
 
-.ant-tag.live {
-  color: #722ed1;
-  background: #f9f0ff;
-  border-color: #d3adf7;
+.ant-tag.warmup {
+  background: #63ab91;
 }
 
+.ant-tag.meetup {
+  background: #bde04a;
+}
+
+.ant-tag.workshop {
+  background: #bde04a;
+}
+
+.ant-tag.interview {
+  background: #63ab91;
+}
 
 
 
