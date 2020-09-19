@@ -6,7 +6,7 @@ import { ScheduleOutlined, DatabaseOutlined, ProfileOutlined, PlusCircleOutlined
 import { css } from '@emotion/core';
 
 import Timezones from 'constants/timezone/timezone';
-import {Courses, Layouts} from 'constants/header/header';
+import { Courses, Layouts } from 'constants/header/header';
 
 //const logoSrc = require('../../assets/img/rsschool-logo.jpg');
 const logoSrc = 'assets/img/rsschool-logo.jpg';
@@ -14,12 +14,12 @@ const logoSrc = 'assets/img/rsschool-logo.jpg';
 const avatarSrc = 'assets/img/user.jpg';
 
 const header = css`
-  width: 100%;  
+  width: 100%;
   padding: 10px 40px 0 40px;
   padding-top: 10px;
   @media only screen and (max-width: 600px) {
     padding: 10px 10px 0 10px;
-  }  
+  }
 `;
 
 const topLine = css`
@@ -31,7 +31,7 @@ const logo = css`
   margin-bottom: 20px;
   @media only screen and (max-width: 600px) {
     width: 100px;
-    height: 40px
+    height: 40px;
   }
 `;
 
@@ -45,21 +45,21 @@ const btnicon = css`
   color: #000;
   margin-right: 10px;
   &last-child {
-      margin-right: 0;
-  }  
+    margin-right: 0;
+  }
 `;
 
 const btniconactive = css`
   font-size: 24px;
-  color: #1890FF;
+  color: #1890ff;
   margin-right: 10px;
   &last-child {
-      margin-right: 0;
-  }  
+    margin-right: 0;
+  }
 `;
 
 const H1 = css`
-  color: #1890FF;
+  color: #1890ff;
   text-align: center;
 `;
 
@@ -78,7 +78,7 @@ const switchMentor = css`
   margin: 0 15px;
   @media only screen and (max-width: 600px) {
     margin-bottom: 20px;
-  }  
+  }
 `;
 
 const profile = css`
@@ -91,7 +91,7 @@ const profile = css`
   width: 150px;
   height: 50px;
   @media only screen and (max-width: 600px) {
-    margin-bottom: 10px
+    margin-bottom: 10px;
   }
 `;
 
@@ -106,11 +106,11 @@ const middleline = css`
   align-items: center;
 `;
 
-const courseswitch =  css`
+const courseswitch = css`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 auto;  
+  margin: 0 auto;
 `;
 
 const coursesSelect = css`
@@ -118,7 +118,7 @@ const coursesSelect = css`
   margin-bottom: 10px;
 `;
 
-const timezoneswitch =  css`
+const timezoneswitch = css`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -137,14 +137,20 @@ const btn = css`
 
 const btniconbig = css`
   font-size: 40px;
-  color: #1890FF;
+  color: #1890ff;
 `;
 
-const timezoneOptions = Timezones.map((i, idx) => 
-  <Select.Option key={idx.toString()} value={i.value}>{i.name}</Select.Option>);
-const coursesOptions = Courses.map((i, idx) => 
-  <Select.Option key={i} value={i}>{i}</Select.Option>);
-const color ='#1890FF';
+const timezoneOptions = Timezones.map((i, idx) => (
+  <Select.Option key={idx.toString()} value={i.value}>
+    {i.name}
+  </Select.Option>
+));
+const coursesOptions = Courses.map((i, idx) => (
+  <Select.Option key={i} value={i}>
+    {i}
+  </Select.Option>
+));
+const color = '#1890FF';
 
 interface IHeader {
   isStudent: boolean;
@@ -158,42 +164,45 @@ interface IHeader {
 }
 
 const Header: React.FC<IHeader> = props => {
-  const { 
-  isStudent,
-  layout,
-  timezone,
-  courses,  
-  switchMentorStudent,
-  switchLayout,
-  changeTimezone,
-  changeCourse
+  const {
+    isStudent,
+    layout,
+    timezone,
+    courses,
+    switchMentorStudent,
+    switchLayout,
+    changeTimezone,
+    changeCourse
   } = props;
 
   const handleSwitch = () => {
     switchMentorStudent({ switchMentorStudent: isStudent });
   };
-  
+
   const handleSwitchlayout = (evt: any) => {
     let value;
     const elem = evt.currentTarget;
     const data = elem.dataset.layout;
-    switch(data) {
-      case "calendar":
-        value = Layouts.Calendar; break;
-      case "table":
-        value = Layouts.Table; break;
-      case "list":
-        value = Layouts.List; break;
+    switch (data) {
+      case 'calendar':
+        value = Layouts.Calendar;
+        break;
+      case 'table':
+        value = Layouts.Table;
+        break;
+      case 'list':
+        value = Layouts.List;
+        break;
       default:
         value = Layouts.Table;
     }
     switchLayout({ switchLayout: value });
-  };  
-  
+  };
+
   const handleChangeTimezone = (evt: any) => {
     changeTimezone({ changeTimezone: evt });
-  };  
- 
+  };
+
   const handleChangeCourse = (evt: any) => {
     changeCourse({ changeCourse: evt });
   };
@@ -214,50 +223,49 @@ const Header: React.FC<IHeader> = props => {
           </div>
         </div>
       </div>
-      
+
       <h1 css={H1}>Schedule</h1>
-      
+
       <div css={middleline}>
         <nav css={scheduleLayout}>
           <Tooltip title="Calendar" placement="bottom" color={color}>
-            <Link to="/calendar" onClick={handleSwitchlayout} data-layout="calendar" >
-              <ScheduleOutlined css={(layout === Layouts.Calendar) ? btniconactive : btnicon} />
+            <Link to="/calendar" onClick={handleSwitchlayout} data-layout="calendar">
+              <ScheduleOutlined css={layout === Layouts.Calendar ? btniconactive : btnicon} />
             </Link>
           </Tooltip>
           <Tooltip title="Table" placement="bottom" color={color}>
-            <Link to="/main" onClick={handleSwitchlayout} data-layout="table" >
-              <DatabaseOutlined css={(layout === Layouts.Table) ? btniconactive : btnicon} />
+            <Link to="/main" onClick={handleSwitchlayout} data-layout="table">
+              <DatabaseOutlined css={layout === Layouts.Table ? btniconactive : btnicon} />
             </Link>
           </Tooltip>
           <Tooltip title="List" placement="bottom" color={color}>
-            <Link to="/list" onClick={handleSwitchlayout} data-layout="list" >
-              <ProfileOutlined css={(layout === Layouts.List) ? btniconactive : btnicon} />
+            <Link to="/list" onClick={handleSwitchlayout} data-layout="list">
+              <ProfileOutlined css={layout === Layouts.List ? btniconactive : btnicon} />
             </Link>
           </Tooltip>
         </nav>
         <Tooltip title="Add event" placement="bottom" color={color}>
-          <Button css={btn} shape="circle" icon={<PlusCircleOutlined css={btniconbig} />} ></Button>
+          <Button css={btn} shape="circle" icon={<PlusCircleOutlined css={btniconbig} />}></Button>
         </Tooltip>
       </div>
-      
+
       <div css={courseswitch}>
         <label>Course</label>
-        <Select mode="multiple"
-        defaultValue={courses} css={coursesSelect} 
-        onChange={handleChangeCourse}>
+        <Select mode="multiple" defaultValue={courses} css={coursesSelect} onChange={handleChangeCourse}>
           {coursesOptions}
-        </Select>      
+        </Select>
       </div>
-    
+
       <div css={timezoneswitch}>
         <label>Timezone</label>
-        <Select css={timezoneSelect}
+        <Select
+          css={timezoneSelect}
           placeholder="Please select a timezone"
           defaultValue={timezone}
           onChange={handleChangeTimezone}
         >
           {timezoneOptions}
-        </Select>      
+        </Select>
       </div>
     </header>
   );
