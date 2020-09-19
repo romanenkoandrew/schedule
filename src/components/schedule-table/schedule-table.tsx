@@ -31,21 +31,23 @@ const ScheduleTable = (props: any) => {
     { value: 'Action' }
   ];
 
-  const optionsForTagsSelect = [
-    { value: 'deadLine' },
-    { value: 'Course' },
-    { value: 'Blocks' },
-    { value: 'Type' },
-    { value: 'Task' },
-    { value: 'Description' },
-    { value: 'Place' },
-    { value: 'Time Theory & practice' },
-    { value: 'Trainee' },
-    { value: 'Materials' },
-    { value: 'Result' },
-    { value: 'Comment' },
-    { value: 'Action' }
-  ];
+  // const optionsForTagsSelect = [
+  //   { value: 'Deadline' },
+  //   { value: 'JS Task' },
+  //   { value: 'HTML Task' },
+  //   { value: 'Self Education' },
+  //   { value: 'External Task' },
+  //   { value: 'Code Wars' },
+  //   { value: 'Code Jam' },
+  //   { value: 'Lecture' },
+  //   { value: 'Lecture Online' },
+  //   { value: 'Lecture Offline' },
+  //   { value: 'Lecture Mixed' },
+  //   { value: 'Lecture Self Study' },
+  //   { value: 'Action' }
+  // ];
+
+  const optionsForTagsSelect = FILTERS.map((type: any) => ({ value: type.text }));
 
   const initialObj: any = {};
 
@@ -308,12 +310,13 @@ const ScheduleTable = (props: any) => {
       key: 'type',
       filters: FILTERS,
       width: 150,
-      onFilter: (value: any, record: any) => record.type.toLowerCase() === value.toLowerCase(),
+      onFilter: (value: any, record: any) => record.type.includes(value),
       render: (tags: any, row: any) => {
         if (editableEvent && editableEvent.id === row.id) {
           // return <TextArea value={editableEvent.place} onChange={(event: any) => handleChange(row, 'place', event)} />
           const tagsOptions = tags.reduce((acc: any, tag: any) => {
-            acc.push(tag);
+            const findTag: any = FILTERS.find((type: any) => type.value === tag);
+            acc.push(findTag.text);
             return acc;
           }, []);
 
@@ -321,6 +324,7 @@ const ScheduleTable = (props: any) => {
             <Select
               mode="multiple"
               showArrow
+              style={{ width: '100%' }}
               tagRender={tagRender}
               options={tagOptions}
               defaultValue={tagsOptions}
@@ -393,7 +397,7 @@ const ScheduleTable = (props: any) => {
       key: 'materialsLinks',
       render: (links: any) => {
         if (typeof links === 'object') {
-          return links.map((link: string) => <span>{link}</span>);
+          return links.map((link: string) => <span key={link}>{link}</span>);
         }
       }
     },
@@ -463,15 +467,16 @@ const ScheduleTable = (props: any) => {
 
   function tagRender(props: any) {
     const { label, value, closable, onClose } = props;
-
-    if (loading && data.length === 0) return <Spin />;
-
+    let color =
+      TYPES_WITH_COLORS[label.toLowerCase().replace(/\b\s([a-z])/g, (_: any, char: any) => char.toUpperCase())];
     return (
-      <Tag closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
+      <Tag color={color} closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
         {label}
       </Tag>
     );
   }
+
+  if (loading && data.length === 0) return <Spin />;
 
   return (
     <div className="schedule-table-container" css={container}>
