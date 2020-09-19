@@ -3,6 +3,8 @@ import TestComponent from 'components/TestComponent';
 import ScheduleTable from 'components/schedule-table';
 import { Link } from 'react-router-dom';
 import { css } from '@emotion/core';
+import ModalContainer from 'components/ModalContainer';
+import { testData, emptyData } from 'constants/testData';
 
 const linkStyle = () => css`
   width: 800px;
@@ -21,7 +23,8 @@ const Main: React.FC = () => {
         <Link to="/modalStudent">to Student Modal</Link>
         <Link to="/modalMentor">to Mentor Modal</Link>
       </div>
-      <ScheduleTable />
+      {/* <ScheduleTable /> */}
+      <ModalContainer testData={testData} />
     </div>
   );
 };

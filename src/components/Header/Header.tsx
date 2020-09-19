@@ -244,9 +244,11 @@ const Header: React.FC<IHeader> = props => {
             </Link>
           </Tooltip>
         </nav>
-        <Tooltip title="Add event" placement="bottom" color={color}>
-          <Button css={btn} shape="circle" icon={<PlusCircleOutlined css={btniconbig} />}></Button>
-        </Tooltip>
+        {!isStudent ? (
+          <Tooltip title="Add event" placement="bottom" color={color}>
+            <Button css={btn} shape="circle" icon={<PlusCircleOutlined css={btniconbig} />}></Button>
+          </Tooltip>
+        ) : null}
       </div>
 
       <div css={courseswitch}>

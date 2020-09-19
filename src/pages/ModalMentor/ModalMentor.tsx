@@ -5,9 +5,9 @@ const ModalMentor: React.FC = () => {
   return (
     <WrapperModalMentor>
       <div className="modal">
-        <button type="button" className="close">
+        {/* <button type="button" className="close">
           <img src="./assets/img/close.svg" alt="close" />
-        </button>
+        </button> */}
         <div className="panel-mentor-wrapper">
           <button>
             <a href="">
