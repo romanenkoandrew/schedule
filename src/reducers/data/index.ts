@@ -131,7 +131,7 @@ const reducer = (state = initState, action: IAction) => {
     case ActionTypes.PUT_EVENT_DATA_REQUEST:
       return {
         ...state,
-        loading: false,
+        loading: true,
         error: false
       };
     case ActionTypes.PUT_EVENT_DATA_SUCCESS:

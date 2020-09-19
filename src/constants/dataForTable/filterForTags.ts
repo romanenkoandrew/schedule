@@ -1,7 +1,7 @@
 export const FILTERS = [
   {
     text: 'Deadline',
-    value: 'deadLine'
+    value: 'deadline'
   },
   {
     text: 'JS Task',
