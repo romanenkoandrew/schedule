@@ -11,6 +11,7 @@
     "coverage:full": "jest --coverage --coverage-reporters=lcov"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.2.2",
     "@babel/core": "7.4.3",
     "@emotion/babel-preset-css-prop": "^10.0.27",
     "@emotion/core": "^10.0.35",

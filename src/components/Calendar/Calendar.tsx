@@ -1,4 +1,5 @@
-import { Calendar, Tag, Select, Radio, Col, Row, Typography, Button } from 'antd';
+import { Calendar, PageHeader, Tag, Select, Radio, Col, Row, Typography, Button, Space } from 'antd';
+import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import React, { useEffect, useState } from 'react';
 
 import 'antd/dist/antd.css';
@@ -103,13 +104,115 @@ function onPanelChange(value: any, mode: any) {
 }
 
 const CalendarApp: React.FC<any> = () => {
+  const [isToday, setDisableBtn] = useState(true);
   return (
     <main>
       <section className="evnt-panel evnt-card-panel evnt-calendar-card">
         <div className="evnt-panel-wrapper">
           <div className="evnt-calendar-table">
             <div className="evnt-calendar-container">
-              {<Calendar dateCellRender={dateCellRender} monthCellRender={monthCellRender} />}
+              {
+                <Calendar
+                  headerRender={({ value, type, onChange, onTypeChange }) => {
+                    const monthOptions = [];
+                    const current = value.clone();
+                    const localeData = value.localeData();
+                    const months = [];
+                    const month = value.month();
+                    const currentDate = value.format('MMM YYYY');
+
+                    for (let i = 0; i < 12; i++) {
+                      current.month(i);
+                      months.push(localeData.monthsShort(current));
+                    }
+
+                    for (let index = 0; index < 12; index++) {
+                      monthOptions.push(
+                        <Select.Option className="month-item" key={index} value={months[index]}>
+                          {months[index]}
+                        </Select.Option>
+                      );
+                    }
+
+                    return (
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignContent: 'centre'
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignContent: 'centre'
+                          }}
+                        >
+                          <Button
+                            type="link"
+                            icon={<LeftOutlined />}
+                            onClick={() => {
+                              const newValue = value.clone();
+                              setDisableBtn(false);
+                              onChange(newValue.subtract(1, 'month'));
+                            }}
+                          ></Button>
+                          <Button
+                            type="link"
+                            icon={<RightOutlined />}
+                            onClick={() => {
+                              const newValue = value.clone();
+                              setDisableBtn(false);
+                              onChange(newValue.add(1, 'month'));
+                            }}
+                          ></Button>
+                          <Typography.Title level={3}>{currentDate}</Typography.Title>
+                        </div>
+
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignContent: 'centre'
+                          }}
+                        >
+                          <Button
+                            type="text"
+                            disabled={isToday}
+                            onClick={() => {
+                              setDisableBtn(true);
+                              let currentMonth = new Date().getMonth();
+                              const newValue = value.clone();
+                              onChange(newValue.month(currentMonth));
+                            }}
+                          >
+                            Today
+                          </Button>
+                          <Row gutter={7}>
+                            <Col>
+                              <Select
+                                size="small"
+                                dropdownMatchSelectWidth={false}
+                                value={String(months[month])}
+                                onChange={key => {
+                                  const newValue = value.clone();
+                                  newValue.month(key);
+                                  onChange(newValue);
+                                }}
+                              >
+                                {monthOptions}
+                              </Select>
+                            </Col>
+                          </Row>
+                        </div>
+                      </div>
+                    );
+                  }}
+                  dateCellRender={dateCellRender}
+                  monthCellRender={monthCellRender}
+                />
+              }
             </div>
           </div>
         </div>
