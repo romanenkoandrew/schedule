@@ -1,4 +1,4 @@
-import { Calendar, Tag, Select, Col, Row, Typography, Button, Drawer, Card, Space } from 'antd';
+import { Calendar, Tag, Select, Col, Row, Typography, Button, Drawer, Card, Space, AutoComplete } from 'antd';
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
 
@@ -339,7 +339,8 @@ const CalendarApp: React.FC<any> = () => {
                           style={{
                             display: 'flex',
                             justifyContent: 'space-between',
-                            alignItems: 'center'
+                            alignItems: 'center',
+                            marginLeft: 'auto'
                           }}
                         >
                           <Typography.Text strong style={{ margin: '0 1rem' }}>
