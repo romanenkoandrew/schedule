@@ -1,19 +1,107 @@
-import { Calendar, PageHeader, Tag, Select, Radio, Col, Row, Typography, Button, Space } from 'antd';
+import { Calendar, Tag, Select, Col, Row, Typography, Button, Space } from 'antd';
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import 'antd/dist/antd.css';
 import './Calendar.css';
 
 const listData = [
   {
-    id: 'KyvcYfdhjMuXQeK4eoYc',
+    id: 'KyvcYasdasdsadoYc',
     name: 'HTML',
     description: 'Студент знакомится с HTML',
     descriptionUrl: 'https://guides.hexlet.io/markdown/',
     type: ['htmlTask', 'info'],
     timeZone: 3,
     dateTime: 1600291763391,
+    place: 'class',
+    comment: 'Создан и размещён на gh - pages файл HTML',
+    trainee: 'Сергей Шаляпин',
+    courseName: 'jsFrontEnd',
+    timeToImplementation: 4,
+    broadcastUrl: 'Link on Video',
+    materialsLinks: ['https: // github.com/rolling-scopes-school/tasks/blob/master/tasks/codewars-stage-1.md', 'link2'],
+    block: 'HTML',
+    result: 'Студент знает HTML',
+    stack: ['HTML', 'CSS', 'Markdown'],
+    feedBack: 'Cool',
+    taskBreakpoints: [1600291763391, 1600291764391],
+    videoLink: 'string'
+  },
+  {
+    id: 'KyvcYfdhjasdasK4eoYc',
+    name: 'HTML',
+    description: 'Студент знакомится с HTML',
+    descriptionUrl: 'https://guides.hexlet.io/markdown/',
+    type: ['link', 'info'],
+    timeZone: 3,
+    dateTime: 1600391764391,
+    place: 'class',
+    comment: 'Создан и размещён на gh - pages файл HTML',
+    trainee: 'Сергей Шаляпин',
+    courseName: 'jsFrontEnd',
+    timeToImplementation: 4,
+    broadcastUrl: 'Link on Video',
+    materialsLinks: ['https: // github.com/rolling-scopes-school/tasks/blob/master/tasks/codewars-stage-1.md', 'link2'],
+    block: 'HTML',
+    result: 'Студент знает HTML',
+    stack: ['HTML', 'CSS', 'Markdown'],
+    feedBack: 'Cool',
+    taskBreakpoints: [1600291763391, 1600291764391],
+    videoLink: 'string'
+  },
+  {
+    id: 'KyasdasdhjMuXQeK4eoYc',
+    name: 'HTML',
+    description: 'Студент знакомится с HTML',
+    descriptionUrl: 'https://guides.hexlet.io/markdown/',
+    type: ['test', 'info'],
+    timeZone: 3,
+    dateTime: 1600391764391,
+    place: 'class',
+    comment: 'Создан и размещён на gh - pages файл HTML',
+    trainee: 'Сергей Шаляпин',
+    courseName: 'jsFrontEnd',
+    timeToImplementation: 4,
+    broadcastUrl: 'Link on Video',
+    materialsLinks: ['https: // github.com/rolling-scopes-school/tasks/blob/master/tasks/codewars-stage-1.md', 'link2'],
+    block: 'HTML',
+    result: 'Студент знает HTML',
+    stack: ['HTML', 'CSS', 'Markdown'],
+    feedBack: 'Cool',
+    taskBreakpoints: [1600291763391, 1600291764391],
+    videoLink: 'string'
+  },
+  {
+    id: 'KyvcYfdhjMuXQasdsadc',
+    name: 'HTML',
+    description: 'Студент знакомится с HTML',
+    descriptionUrl: 'https://guides.hexlet.io/markdown/',
+    type: ['warmup', 'info'],
+    timeZone: 3,
+    dateTime: 1600391764391,
+    place: 'class',
+    comment: 'Создан и размещён на gh - pages файл HTML',
+    trainee: 'Сергей Шаляпин',
+    courseName: 'jsFrontEnd',
+    timeToImplementation: 4,
+    broadcastUrl: 'Link on Video',
+    materialsLinks: ['https: // github.com/rolling-scopes-school/tasks/blob/master/tasks/codewars-stage-1.md', 'link2'],
+    block: 'HTML',
+    result: 'Студент знает HTML',
+    stack: ['HTML', 'CSS', 'Markdown'],
+    feedBack: 'Cool',
+    taskBreakpoints: [1600291763391, 1600291764391],
+    videoLink: 'string'
+  },
+  {
+    id: 'KyvcYfasdffas4eoYc',
+    name: 'HTML',
+    description: 'Студент знакомится с HTML',
+    descriptionUrl: 'https://guides.hexlet.io/markdown/',
+    type: ['interview', 'info'],
+    timeZone: 3,
+    dateTime: 1600391764391,
     place: 'class',
     comment: 'Создан и размещён на gh - pages файл HTML',
     trainee: 'Сергей Шаляпин',
@@ -66,13 +154,30 @@ function getListData(value: { date: () => number; month: () => number }) {
   return data;
 }
 
+function getItemData(value: { date: () => number; month: () => number }) {
+  const data: any = [];
+  const listData = getListData(value);
+  listData.filter((item: { dateTime: string | number | Date }) => {
+    let eventStart = new Date(item.dateTime);
+    if (eventStart.getUTCDay() === value.date()) {
+      data.push(item);
+    }
+  });
+  return data;
+}
+
 function dateCellRender(value: { date: () => number; month: () => number }) {
   const listData = getListData(value);
   return (
     <ul className="events">
       {listData.map(
-        (item: { type: (string | undefined)[]; descriptionUrl: string | undefined; description: React.ReactNode }) => (
-          <li key={item.type[0]}>
+        (item: {
+          id: string;
+          type: (string | undefined)[];
+          descriptionUrl: string | undefined;
+          description: React.ReactNode;
+        }) => (
+          <li key={item.id}>
             <Tag className={item.type[0]}>
               <a href={item.descriptionUrl}>{item.description}</a>
             </Tag>
@@ -99,10 +204,6 @@ function monthCellRender(value: any) {
   ) : null;
 }
 
-function onPanelChange(value: any, mode: any) {
-  console.log(value, mode);
-}
-
 const CalendarApp: React.FC<any> = () => {
   const [isToday, setDisableBtn] = useState(true);
   return (
@@ -113,7 +214,7 @@ const CalendarApp: React.FC<any> = () => {
             <div className="evnt-calendar-container">
               {
                 <Calendar
-                  headerRender={({ value, type, onChange, onTypeChange }) => {
+                  headerRender={({ value, onChange }) => {
                     const monthOptions = [];
                     const current = value.clone();
                     const localeData = value.localeData();
@@ -128,7 +229,7 @@ const CalendarApp: React.FC<any> = () => {
 
                     for (let index = 0; index < 12; index++) {
                       monthOptions.push(
-                        <Select.Option className="month-item" key={index} value={months[index]}>
+                        <Select.Option className="month-item" key={months[index]} value={months[index]}>
                           {months[index]}
                         </Select.Option>
                       );
@@ -138,17 +239,10 @@ const CalendarApp: React.FC<any> = () => {
                       <div
                         style={{
                           display: 'flex',
-                          justifyContent: 'space-between',
-                          alignContent: 'centre'
+                          justifyContent: 'space-between'
                         }}
                       >
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignContent: 'centre'
-                          }}
-                        >
+                        <div>
                           <Button
                             type="link"
                             icon={<LeftOutlined />}
@@ -167,16 +261,6 @@ const CalendarApp: React.FC<any> = () => {
                               onChange(newValue.add(1, 'month'));
                             }}
                           ></Button>
-                          <Typography.Title level={3}>{currentDate}</Typography.Title>
-                        </div>
-
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignContent: 'centre'
-                          }}
-                        >
                           <Button
                             type="text"
                             disabled={isToday}
@@ -189,6 +273,18 @@ const CalendarApp: React.FC<any> = () => {
                           >
                             Today
                           </Button>
+                        </div>
+
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                          }}
+                        >
+                          <Typography.Text strong style={{ margin: '0 1rem' }}>
+                            {currentDate}
+                          </Typography.Text>
                           <Row gutter={7}>
                             <Col>
                               <Select
@@ -197,6 +293,7 @@ const CalendarApp: React.FC<any> = () => {
                                 value={String(months[month])}
                                 onChange={key => {
                                   const newValue = value.clone();
+                                  setDisableBtn(false);
                                   newValue.month(key);
                                   onChange(newValue);
                                 }}
@@ -208,6 +305,10 @@ const CalendarApp: React.FC<any> = () => {
                         </div>
                       </div>
                     );
+                  }}
+                  onSelect={value => {
+                    const listData = getItemData(value);
+                    console.log(listData);
                   }}
                   dateCellRender={dateCellRender}
                   monthCellRender={monthCellRender}

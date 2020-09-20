@@ -2,10 +2,6 @@
   padding: 40px 30px 0;
 }
 
-.evnt-panel.evnt-card-panel.evnt-calendar-card {
-  margin-top: 60px;
-}
-
 .evnt-panel-wrapper {
   margin: 0 auto; max-width: 1416px;  position: relative;
 }
@@ -19,6 +15,12 @@
 
 div.ant-picker-calendar-date-content {
   overflow: hidden !important;
+}
+
+.ant-picker-calendar-full .ant-picker-panel .ant-picker-calendar-date {
+  height: 106px;
+  overflow: hidden;
+  padding: 4px 4px 0px;
 }
 
 li {
@@ -80,5 +82,12 @@ li {
   background: #63ab91;
 }
 
+.ant-btn-link {
+  color: #494e5c !important;
+}
+
+.ant-btn-link:hover {
+  color: #40a9ff  !important;
+}
 
 
