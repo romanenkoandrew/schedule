@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Table, Tag, Button, Space, Input, Spin, Select, DatePicker, Popconfirm, InputNumber } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
+// import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 import { TYPES_WITH_COLORS, FILTERS } from 'constants/dataForTable';
+import { SketchPicker } from 'react-color';
 import moment from 'moment';
 import { IEvent } from '../../services/events-service';
 import { css } from '@emotion/core';
@@ -10,8 +12,22 @@ import TextArea from 'antd/lib/input/TextArea';
 
 const { Option } = Select;
 
+const TYPE_COLORS = 'TYPE_COLORS';
+
 const ScheduleTable = (props: any) => {
-  const { getEvents, eventsData, loading, isStudent, timeZone, course, addNewEvent, deleteEvent, updateEvent } = props;
+  const {
+    getEvents,
+    eventsData,
+    loading,
+    isStudent,
+    timeZone,
+    course,
+    addNewEvent,
+    deleteEvent,
+    updateEvent,
+    typeColors,
+    changeTypeColors
+  } = props;
   const initialSelect: any[] = [];
   const optionsForSelect = [
     { value: 'Date/time' },
@@ -41,15 +57,22 @@ const ScheduleTable = (props: any) => {
   const [tagOptions, setTagOptions] = useState(initialSelect);
   const [hideRows, setHideRows] = useState(initialSelect);
 
+  const [displayColorPicker, setDisplayColorPicker] = useState(false);
+  const [changingType, setChangingType] = useState('');
+
   const [editableEvent, setEditableEvent] = useState(initialObj);
-  const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
     setEditableEvent(initialObj);
+    setDisplayColorPicker(false);
   }, [isStudent]);
 
   useEffect(() => {
     getEvents();
+    if (localStorage.getItem(TYPE_COLORS)) {
+      const colors = JSON.parse(localStorage.getItem(TYPE_COLORS) || '{}');
+      changeTypeColors(colors);
+    }
   }, []);
 
   useEffect(() => {
@@ -74,7 +97,7 @@ const ScheduleTable = (props: any) => {
     setData(newData);
   }, [eventsData]);
 
-  const handleChangeEvent = (row: string, block: any, event: any) => {
+  const handleChangeEvent = (row: string, block: any, event: any): void => {
     setEditableEvent({
       ...editableEvent,
       [block]: event.target.value
@@ -273,6 +296,7 @@ const ScheduleTable = (props: any) => {
       key: 'dateTime',
       sorter: (a: any, b: any) => a.dateTime - b.dateTime,
       render: (block: any, row: any) => {
+        console.log('rendeeeeeer');
         const options = {
           year: 'numeric',
           day: 'numeric',
@@ -318,7 +342,7 @@ const ScheduleTable = (props: any) => {
       dataIndex: 'type',
       key: 'type',
       filters: FILTERS,
-      width: 150,
+      width: 190,
       align: 'center',
       onFilter: (value: any, record: any) => record.type.includes(value),
       render: (tags: any, row: any) => {
@@ -334,7 +358,7 @@ const ScheduleTable = (props: any) => {
               mode="multiple"
               showArrow
               style={{ width: '100%' }}
-              tagRender={tagRender}
+              tagRender={props => tagRender(props, row)}
               options={optionsForTagsSelect}
               defaultValue={tagsOptions}
               onSelect={(option, ...args) => {
@@ -343,13 +367,11 @@ const ScheduleTable = (props: any) => {
                 newTagOptions.push({
                   value: option.toLowerCase().replace(/\b\s([a-z])/g, (_: any, char: any) => char.toUpperCase())
                 });
-                console.log(newTagOptions);
                 setEditableEvent({
                   ...editableEvent,
                   type: newTagOptions.map(tag => tag.value)
                 });
                 setTagOptions(newTagOptions);
-                console.log(editableEvent);
               }}
               onDeselect={option => {
                 const newTagOptions = [...tagOptions];
@@ -371,9 +393,11 @@ const ScheduleTable = (props: any) => {
         return (
           <>
             {tags.map((tag: string) => {
-              let color = TYPES_WITH_COLORS[tag];
+              // let color = TYPES_WITH_COLORS[tag];
+              // const colorKey = label.toLowerCase().replace(/\b\s([a-z])/g, (_: any, char: any) => char.toUpperCase());
+              let colorType = typeColors[tag];
               return (
-                <Tag color={color} key={tag} style={{ border: '0px', marginBottom: '3px' }}>
+                <Tag color={colorType} key={tag} style={{ border: '0px', marginBottom: '3px' }}>
                   {tag.replace(/([A-Z])/g, ' $1').toUpperCase()}
                 </Tag>
               );
@@ -437,7 +461,6 @@ const ScheduleTable = (props: any) => {
               min={1}
               max={100}
               defaultValue={parseFloat(editableEvent.timeToImplementation)}
-              // onChange={(...args: any) => {console.log(args)}}
               onChange={(value: string | number | undefined) => hoursChange(value, 'timeToImplementation')}
             />
           );
@@ -552,12 +575,19 @@ const ScheduleTable = (props: any) => {
                     delete updatedEvent.key;
                     updateEvent(updatedEvent);
                     setEditableEvent(initialObj);
+                    localStorage.setItem(TYPE_COLORS, JSON.stringify(typeColors));
                   }}
                   style={{ marginRight: 8 }}
                 >
                   Save
                 </a>
-                <Popconfirm title="Sure to cancel?" onConfirm={() => setEditableEvent(initialObj)}>
+                <Popconfirm
+                  title="Sure to cancel?"
+                  onConfirm={() => {
+                    setEditableEvent(initialObj);
+                    setDisplayColorPicker(false);
+                  }}
+                >
                   <a>Cancel</a>
                 </Popconfirm>
               </span>
@@ -567,14 +597,34 @@ const ScheduleTable = (props: any) => {
     }
   ].filter((item: any) => options.reduce((acc: any, item) => acc.concat(item.value), []).includes(item.title));
 
-  function tagRender(props: any) {
+  function tagRender(props: any, row?: any) {
     const { label, value, closable, onClose } = props;
-    let color =
-      TYPES_WITH_COLORS[label.toLowerCase().replace(/\b\s([a-z])/g, (_: any, char: any) => char.toUpperCase())];
+    const colorKey = label.toLowerCase().replace(/\b\s([a-z])/g, (_: any, char: any) => char.toUpperCase());
+    let colorType = typeColors[colorKey];
     return (
-      <Tag color={color} closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
-        {label}
-      </Tag>
+      <>
+        <Tag
+          color={colorType}
+          closable={closable}
+          onClose={onClose}
+          style={{ marginRight: 3 }}
+          onClick={() => {
+            setDisplayColorPicker(prev => !prev);
+            setChangingType(colorKey);
+          }}
+        >
+          {label.toUpperCase()}
+        </Tag>
+        {displayColorPicker && editableEvent && row && editableEvent.id === row.id && changingType === colorKey ? (
+          <div css={popover}>
+            <div css={cover} />
+            <SketchPicker
+              color={typeColors[colorKey]}
+              onChange={color => changeTypeColors({ ...typeColors, [colorKey]: color.hex })}
+            />
+          </div>
+        ) : null}
+      </>
     );
   }
 
@@ -582,6 +632,13 @@ const ScheduleTable = (props: any) => {
 
   return (
     <div className="schedule-table-container" css={container}>
+      {/* <ReactHTMLTableToExcel
+        id="test-table-xls-button"
+        className="download-table-xls-button"
+        table="table-to-xls"
+        filename="tablexls"
+        sheet="tablexls"
+        buttonText="Download as XLS" /> */}
       <Select
         mode="multiple"
         showArrow
@@ -607,6 +664,7 @@ const ScheduleTable = (props: any) => {
       ></Select>
 
       <Table
+        id="table-to-xls"
         rowSelection={rowSelection}
         columns={columns}
         dataSource={data}
@@ -649,6 +707,19 @@ const event = {
   taskBreakpoints: [1600291763391, 1600291764391],
   videoLink: 'string'
 };
+
+const popover = css`
+  position: absolute;
+  z-index: 10;
+`;
+
+const cover = css`
+  position: 'fixed';
+  top: '0px';
+  right: '0px';
+  bottom: '0px';
+  left: '0px';
+`;
 
 const container = css`
   // display: flex;

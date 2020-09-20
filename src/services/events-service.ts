@@ -26,7 +26,7 @@ export interface IEvent {
   result: string;
   stack: string[];
   feedBack: string;
-  taskBreakpoints: number[];
+  deadline: number;
   videoLink: string;
   [propName: string]: any;
 }
@@ -96,14 +96,14 @@ export default class EventsService {
   "comment": "Создан и размещён на gh-pages файл HTML",
   "trainee": "Сергей Шаляпин",
   "courseName": "jsFrontEnd",
-  "timeToImplementation": 4",
+  "timeToImplementation": 4,
   "broadcastUrl": "Link on Video",
   "materialsLinks": ["\"link1\", \"link2\""],
   "block": "HTML",
   "result": "Студент знает HTML",
   "stack": ["HTML", "CSS", "Markdown"];
   "feedBack": "Cool";
-  "taskBreakpoints": [1600291763391, 1600291764391];
+  "deadline": 1600291764391;
   "videoLink": "string";
 }
 */
