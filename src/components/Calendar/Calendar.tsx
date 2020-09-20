@@ -1,4 +1,4 @@
-import { Calendar, Tag, Select, Col, Row, Typography, Button, Space } from 'antd';
+import { Calendar, Tag, Select, Col, Row, Typography, Button, Drawer } from 'antd';
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 
@@ -175,9 +175,9 @@ function dateCellRender(value: { date: () => number; month: () => number }) {
           id: string;
           type: (string | undefined)[];
           descriptionUrl: string | undefined;
-          description: React.ReactNode;
+          description: string | undefined;
         }) => (
-          <li key={item.id}>
+          <li key={item.id} title={item.description}>
             <Tag className={item.type[0]}>
               <a href={item.descriptionUrl}>{item.description}</a>
             </Tag>
@@ -188,24 +188,10 @@ function dateCellRender(value: { date: () => number; month: () => number }) {
   );
 }
 
-function getMonthData(value: { month: () => number }) {
-  if (value.month() === 8) {
-    return 1394;
-  }
-}
-
-function monthCellRender(value: any) {
-  const num = getMonthData(value);
-  return num ? (
-    <div className="notes-month">
-      <section>{num}</section>
-      <span>Backlog number</span>
-    </div>
-  ) : null;
-}
-
 const CalendarApp: React.FC<any> = () => {
   const [isToday, setDisableBtn] = useState(true);
+  const [visible, setVisibleView] = useState(false);
+
   return (
     <main>
       <section className="evnt-panel evnt-card-panel evnt-calendar-card">
@@ -303,15 +289,22 @@ const CalendarApp: React.FC<any> = () => {
                             </Col>
                           </Row>
                         </div>
+                        <RenderModalView
+                          title={value.format('MM-DD-YYYY')}
+                          visible={visible}
+                          onClose={() => {
+                            setVisibleView(false);
+                          }}
+                        />
                       </div>
                     );
                   }}
                   onSelect={value => {
                     const listData = getItemData(value);
+                    setVisibleView(true);
                     console.log(listData);
                   }}
                   dateCellRender={dateCellRender}
-                  monthCellRender={monthCellRender}
                 />
               }
             </div>
@@ -321,5 +314,24 @@ const CalendarApp: React.FC<any> = () => {
     </main>
   );
 };
+
+function RenderModalView(props: { onClose: any; visible: any; title: string }) {
+  const { onClose, visible, title } = props;
+  return (
+    <div className="site-drawer-render-in-current-wrapper">
+      <Drawer
+        title={title}
+        placement="right"
+        closable={false}
+        onClose={onClose}
+        visible={visible}
+        getContainer={false}
+        style={{ position: 'absolute', overflow: 'hidden' }}
+      >
+        <p>Some contents...</p>
+      </Drawer>
+    </div>
+  );
+}
 
 export default CalendarApp;
