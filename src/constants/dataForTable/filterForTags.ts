@@ -1,7 +1,7 @@
 export const FILTERS = [
   {
     text: 'Deadline',
-    value: 'deadLine'
+    value: 'deadline'
   },
   {
     text: 'JS Task',
@@ -48,27 +48,27 @@ export const FILTERS = [
     value: 'lectureSelfStudy'
   },
   {
-    text: 'test',
+    text: 'Test',
     value: 'test'
   },
   {
-    text: 'info',
+    text: 'Info',
     value: 'info'
   },
   {
-    text: 'warmup',
+    text: 'Warmup',
     value: 'warmup'
   },
   {
-    text: 'meetup',
+    text: 'Meetup',
     value: 'meetup'
   },
   {
-    text: 'workshop',
+    text: 'Workshop',
     value: 'workshop'
   },
   {
-    text: 'interview',
+    text: 'Interview',
     value: 'interview'
   }
 ];

@@ -9,6 +9,12 @@ interface IState {
   timezone: number;
   courses: string[];
   layout: number;
+  typeColors: {};
+}
+
+interface IAction {
+  type: string;
+  payload: {};
 }
 
 export const initState: IState = {
@@ -16,13 +22,29 @@ export const initState: IState = {
   isStudent: true,
   timezone: 3,
   courses: ['JS/Frontend 2020-Q3'],
-  layout: Layouts.Table
+  layout: Layouts.Table,
+  typeColors: {
+    deadline: 'red',
+    jsTask: 'green',
+    htmlTask: 'green',
+    selfEducation: 'green',
+    externalTask: 'green',
+    codeWars: 'green',
+    codeJam: 'green',
+    newTask: 'green',
+    lecture: 'blue',
+    lectureOnline: 'blue',
+    lectureOffline: 'blue',
+    lectureMixed: 'blue',
+    lectureSelfStudy: 'blue',
+    test: '#63ab91',
+    info: '#ff7b00',
+    warmup: '#63ab91',
+    meetup: '#bde04a',
+    workshop: '#bde04a',
+    interview: '#63ab91'
+  }
 };
-
-interface IAction {
-  type: string;
-  payload: {};
-}
 
 const reducer = (state = initState, action: IAction) => {
   switch (action.type) {
@@ -59,6 +81,10 @@ const reducer = (state = initState, action: IAction) => {
     case ActionTypes.CHANGE_COURSE: {
       let courses = get(action.payload, 'changeCourse');
       return { ...state, courses };
+    }
+    case ActionTypes.CHANGE_TYPE_COLORS: {
+      let typeColors = action.payload;
+      return { ...state, typeColors };
     }
 
     default: {
