@@ -1,9 +1,9 @@
-.evnt-panel {
-  padding: 40px 30px 0;
-}
 
 .evnt-panel-wrapper {
-  margin: 0 auto; max-width: 1416px;  position: relative;
+  margin: 0 auto;
+  padding: 40px 30px 0;
+  max-width: 1416px;
+  position: relative;
 }
 
 .events {
@@ -88,4 +88,12 @@ li {
 
 .ant-btn-link:hover {
   color: #40a9ff  !important;
+}
+
+.ant-drawer-header {
+  padding: 10px 10px;
+}
+
+.ant-drawer-body {
+  padding: 10px 10px;
 }

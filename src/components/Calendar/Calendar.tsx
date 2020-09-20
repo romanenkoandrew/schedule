@@ -1,9 +1,11 @@
-import { Calendar, Tag, Select, Col, Row, Typography, Button, Drawer } from 'antd';
+import { Calendar, Tag, Select, Col, Row, Typography, Button, Drawer, Card, Space } from 'antd';
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import 'antd/dist/antd.css';
 import './Calendar.css';
+
+const { Title, Paragraph } = Typography;
 
 const listData = [
   {
@@ -166,6 +168,77 @@ function getItemData(value: { date: () => number; month: () => number }) {
   return data;
 }
 
+function itemDataRender(value: { date: () => number; month: () => number }) {
+  const listData = getItemData(value);
+  const styleA = {
+    padding: '0px 5px',
+    fontSize: '12px'
+  };
+  const styleLi = {
+    display: 'flex',
+    justifyContent: 'space-around',
+    borderBottom: '1px solid #494e5c10',
+    color: '#5b5a59',
+    padding: '5px 0',
+    lineHeight: '18px'
+  };
+
+  return (
+    <ul className="events">
+      {listData.map(
+        (item: {
+          id: string;
+          name: string;
+          type: (string | undefined)[];
+          descriptionUrl: string | undefined;
+          description: string | undefined;
+          materialsLinks: (string | undefined)[];
+        }) => (
+          <li key={item.id} style={styleLi}>
+            <div style={{ paddingRight: '10px', fontSize: '14px', fontWeight: 'bold' }}>{item.name}</div>
+            <div style={{ display: 'column', justifyContent: 'space-around' }}>
+              {item.description}
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <a href={item.descriptionUrl} style={styleA}>
+                  More
+                </a>
+                <a href={item.materialsLinks[0]} style={styleA}>
+                  link 1
+                </a>
+                <a href={item.materialsLinks[1]} style={styleA}>
+                  link 2
+                </a>
+              </div>
+            </div>
+          </li>
+        )
+      )}
+    </ul>
+  );
+}
+
+function RenderModalView(props: { onClose: any; visible: any; title: string; value: any }) {
+  const { onClose, visible, title, value } = props;
+  return (
+    <div className="site-drawer-render-in-current-wrapper">
+      <Drawer
+        title={title}
+        placement="right"
+        closable={false}
+        onClose={onClose}
+        visible={visible}
+        getContainer={false}
+        style={{
+          position: 'absolute',
+          overflow: 'hidden'
+        }}
+      >
+        {itemDataRender(value)}
+      </Drawer>
+    </div>
+  );
+}
+
 function dateCellRender(value: { date: () => number; month: () => number }) {
   const listData = getListData(value);
   return (
@@ -173,13 +246,14 @@ function dateCellRender(value: { date: () => number; month: () => number }) {
       {listData.map(
         (item: {
           id: string;
+          name: string;
           type: (string | undefined)[];
           descriptionUrl: string | undefined;
           description: string | undefined;
         }) => (
           <li key={item.id} title={item.description}>
             <Tag className={item.type[0]}>
-              <a href={item.descriptionUrl}>{item.description}</a>
+              <a href={item.descriptionUrl}>{`${item.name}, ${item.type[0]}`}</a>
             </Tag>
           </li>
         )
@@ -290,7 +364,8 @@ const CalendarApp: React.FC<any> = () => {
                           </Row>
                         </div>
                         <RenderModalView
-                          title={value.format('MM-DD-YYYY')}
+                          title={value.format('dddd DD MMMM')}
+                          value={value}
                           visible={visible}
                           onClose={() => {
                             setVisibleView(false);
@@ -314,24 +389,5 @@ const CalendarApp: React.FC<any> = () => {
     </main>
   );
 };
-
-function RenderModalView(props: { onClose: any; visible: any; title: string }) {
-  const { onClose, visible, title } = props;
-  return (
-    <div className="site-drawer-render-in-current-wrapper">
-      <Drawer
-        title={title}
-        placement="right"
-        closable={false}
-        onClose={onClose}
-        visible={visible}
-        getContainer={false}
-        style={{ position: 'absolute', overflow: 'hidden' }}
-      >
-        <p>Some contents...</p>
-      </Drawer>
-    </div>
-  );
-}
 
 export default CalendarApp;
