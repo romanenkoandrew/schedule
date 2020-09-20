@@ -67,7 +67,7 @@ export const switchLayout = createAction(ActionTypes.SWITCH_LAYOUT);
 export const changeTimezone = createAction(ActionTypes.CHANGE_TIMEZONE);
 export const changeCourse = createAction(ActionTypes.CHANGE_COURSE);
 
-export const changeTypeColors = createAction(ActionTypes.CHANGE_TYPE_COLOR);
+export const changeTypeColors = createAction(ActionTypes.CHANGE_TYPE_COLORS);
 
 export const increment = createAction(ActionTypes.INCREMENT);
 export const decrement = createAction(ActionTypes.DECREMENT);

@@ -25,9 +25,9 @@ export interface IEvent {
   block: string;
   result: string;
   stack: string[];
-  feedBack: string;
   deadline: number;
   videoLink: string;
+  feedback: string[];
   [propName: string]: any;
 }
 export default class EventsService {

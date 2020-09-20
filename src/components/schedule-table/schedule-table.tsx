@@ -3,16 +3,13 @@ import { Table, Tag, Button, Space, Input, Spin, Select, DatePicker, Popconfirm,
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
 // import ReactHTMLTableToExcel from 'react-html-table-to-excel';
-import { TYPES_WITH_COLORS, FILTERS } from 'constants/dataForTable';
+import { FILTERS } from 'constants/dataForTable';
+import { TYPE_COLORS } from 'constants/globalConstants';
 import { SketchPicker } from 'react-color';
 import moment from 'moment';
 import { IEvent } from '../../services/events-service';
 import { css } from '@emotion/core';
 import TextArea from 'antd/lib/input/TextArea';
-
-const { Option } = Select;
-
-const TYPE_COLORS = 'TYPE_COLORS';
 
 const ScheduleTable = (props: any) => {
   const {
@@ -85,6 +82,7 @@ const ScheduleTable = (props: any) => {
   }, [timeZone]);
 
   useEffect(() => {
+    console.log(eventsData);
     let newData: any = eventsData.map((item: any) => {
       item.key = item.id;
       return {
@@ -677,7 +675,6 @@ const ScheduleTable = (props: any) => {
         }}
         scroll={{ x: 1500, y: 900 }}
       ></Table>
-      {/* <TestBackend /> */}
       <Button onClick={() => addNewEvent(event)}>Create Event</Button>
     </div>
   );
@@ -693,6 +690,7 @@ const event = {
   type: ['htmlTask', 'info'],
   timeZone: 3,
   dateTime: 1600291763391,
+  deadline: 1600291983391,
   place: 'class',
   comment: 'Создан и размещён на gh-pages файл HTML',
   trainee: 'Сергей Шаляпин',
@@ -703,8 +701,7 @@ const event = {
   block: 'HTML',
   result: 'Студент знает HTML',
   stack: ['HTML', 'CSS', 'Markdown'],
-  feedBack: 'Cool',
-  taskBreakpoints: [1600291763391, 1600291764391],
+  feedBack: ['Cool', 'Bad'],
   videoLink: 'string'
 };
 

@@ -12,6 +12,11 @@ interface IState {
   typeColors: {};
 }
 
+interface IAction {
+  type: string;
+  payload: {};
+}
+
 export const initState: IState = {
   score: 0,
   isStudent: true,
@@ -40,11 +45,6 @@ export const initState: IState = {
     interview: '#63ab91'
   }
 };
-
-interface IAction {
-  type: string;
-  payload: {};
-}
 
 const reducer = (state = initState, action: IAction) => {
   switch (action.type) {
@@ -82,10 +82,7 @@ const reducer = (state = initState, action: IAction) => {
       let courses = get(action.payload, 'changeCourse');
       return { ...state, courses };
     }
-    case ActionTypes.CHANGE_TYPE_COLOR: {
-      console.log(action.payload);
-      // let typeColors = get(action.payload, 'changeTypeColors');
-      // console.log(typeColors)
+    case ActionTypes.CHANGE_TYPE_COLORS: {
       let typeColors = action.payload;
       return { ...state, typeColors };
     }
