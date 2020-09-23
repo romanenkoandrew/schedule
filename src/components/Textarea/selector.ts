@@ -1,6 +1,16 @@
-import { dataSelector } from 'selectors';
+import {
+  eventsDataSelector,
+  loadingDataSelector,
+  eventDataSelector,
+  organizersDataSelector,
+  organizerDataSelector
+} from 'selectors';
 import { createStructuredSelector } from 'reselect';
 
 export default createStructuredSelector({
-  data: dataSelector
+  eventsData: eventsDataSelector,
+  eventData: eventDataSelector,
+  organizersData: organizersDataSelector,
+  organizerData: organizerDataSelector,
+  loading: loadingDataSelector
 });

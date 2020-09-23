@@ -1,0 +1,21 @@
+export const TYPES_WITH_COLORS: any = {
+  deadline: 'red',
+  jsTask: 'green',
+  htmlTask: 'green',
+  selfEducation: 'green',
+  externalTask: 'green',
+  codeWars: 'green',
+  codeJam: 'green',
+  newTask: 'green',
+  lecture: 'blue',
+  lectureOnline: 'blue',
+  lectureOffline: 'blue',
+  lectureMixed: 'blue',
+  lectureSelfStudy: 'blue',
+  test: '#63ab91',
+  info: '#ff7b00',
+  warmup: '#63ab91',
+  meetup: '#bde04a',
+  workshop: '#bde04a',
+  interview: '#63ab91'
+};
