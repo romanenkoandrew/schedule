@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
-import {} from 'action-creators';
+import { getEventById, updateEvent } from 'action-creators';
 import ModalContainer from './ModalContainer';
 import selector from './selector';
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = { getEventById, updateEvent };
 
 export default connect(selector, mapDispatchToProps)(ModalContainer);

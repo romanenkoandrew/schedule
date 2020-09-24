@@ -6,6 +6,7 @@ const testData = {
   type: ['htmlTask', 'info'],
   timeZone: 3,
   dateTime: 1600291763391,
+  deadline: 1600516923391,
   place: 'class',
   comment: 'Создан и размещён на gh-pages файл HTML',
   trainee: 'Сергей Шаляпин',
@@ -16,8 +17,7 @@ const testData = {
   block: 'HTML',
   result: 'Студент знает HTML',
   stack: ['HTML', 'CSS', 'Markdown'],
-  feedBack: 'Cool',
-  taskBreakpoints: [1600291763391, 1600516923391],
+  feedback: ['Cool'],
   videoLink: 'string'
 };
 const emptyData = {
@@ -28,6 +28,7 @@ const emptyData = {
   type: [],
   timeZone: 3,
   dateTime: 1600291763391,
+  deadline: 1600516923391,
   place: '',
   comment: '',
   trainee: '',
@@ -39,7 +40,6 @@ const emptyData = {
   result: '',
   stack: [],
   feedBack: '',
-  taskBreakpoints: [1600291763391, 1600291764391],
   videoLink: ''
 };
 export { testData, emptyData };

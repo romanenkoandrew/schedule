@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { css } from '@emotion/core';
 import ModalContainer from 'components/ModalContainer';
 import { testData, emptyData } from 'constants/testData';
+import { Button } from 'antd';
 
 const linkStyle = () => css`
   width: 800px;
@@ -15,6 +16,14 @@ const linkStyle = () => css`
 `;
 
 const Main: React.FC = () => {
+  const [isOpenModal, setIsOpenModal] = React.useState(false);
+  const closeModal = () => {
+    setIsOpenModal(false);
+  };
+  const openModalHandler = () => {
+    setIsOpenModal(true);
+  };
+  const eventId = 'wE2GgY0grSQziMBhacLw';
   return (
     <div>
       <div css={linkStyle}>
@@ -24,7 +33,10 @@ const Main: React.FC = () => {
         <Link to="/modalMentor">to Mentor Modal</Link>
       </div>
       {/* <ScheduleTable /> */}
-      <ModalContainer testData={testData} />
+      {isOpenModal && <ModalContainer eventId={eventId} isOpenModal={isOpenModal} closeModal={closeModal} />}
+      <Button type="primary" onClick={openModalHandler}>
+        MODAL
+      </Button>
     </div>
   );
 };
