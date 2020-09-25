@@ -11,7 +11,8 @@ import {
   TimePicker,
   DatePicker,
   Checkbox,
-  Tooltip
+  Tooltip,
+  Radio
 } from 'antd';
 import { css } from '@emotion/core';
 import { WrapperModalMentor } from './WrapperModalMentor';
@@ -48,6 +49,7 @@ export interface IModal {
     deadline: number;
     videoLink: string;
     feedback: string[];
+    isEventOnline: boolean;
     [propName: string]: any;
   };
 }
@@ -89,6 +91,7 @@ const ModalContainer: React.FC<IModal> = props => {
     result,
     stack,
     feedback,
+    isEventOnline,
     videoLink
   } = eventData;
 
@@ -113,6 +116,7 @@ const ModalContainer: React.FC<IModal> = props => {
     result: result,
     stack: stack,
     feedback: feedback,
+    isEventOnline: isEventOnline,
     videoLink: videoLink
   });
   const defaultState = () => {
@@ -136,6 +140,7 @@ const ModalContainer: React.FC<IModal> = props => {
       result: result || '',
       stack: stack || [],
       feedback: feedback || [],
+      isEventOnline: isEventOnline || true,
       videoLink: videoLink || ''
     });
   };
@@ -181,6 +186,13 @@ const ModalContainer: React.FC<IModal> = props => {
   const materialsLinksHandler = (e: any) => {
     setNewEvent({ ...newEvent, materialsLinks: e.target.value.split('\n') });
   };
+  const isEventOnlineHandler = (e: any) => {
+    if (e.target.value === 'Online') {
+      setNewEvent({ ...newEvent, isEventOnline: true });
+    } else {
+      setNewEvent({ ...newEvent, isEventOnline: false });
+    }
+  };
   const resetEvent = () => {
     setNewEvent({
       ...newEvent,
@@ -193,6 +205,8 @@ const ModalContainer: React.FC<IModal> = props => {
       closeModalHandler();
     } else {
       updateEvent(newEvent);
+      getEventById(eventId);
+      setEditMode(false);
     }
   };
   React.useEffect(() => {
@@ -201,6 +215,7 @@ const ModalContainer: React.FC<IModal> = props => {
       setEditMode(true);
     } else {
       getEventById(eventId);
+      defaultState();
     }
   }, []);
 
@@ -357,17 +372,26 @@ const ModalContainer: React.FC<IModal> = props => {
                 </div>
                 <Divider />
                 <div className="map-wrapper">
-                  <h4>Location</h4>
-                  <TextArea
-                    id="place"
-                    placeholder="City"
-                    rows={1}
-                    style={{ width: '50%', margin: '10px auto' }}
-                    defaultValue={place}
-                    onChange={newEventHandler}
-                    required
-                  />
-                  <div className="map"></div>
+                  <Radio.Group onChange={isEventOnlineHandler} defaultValue={isEventOnline ? 'Online' : 'Offline'}>
+                    <Radio value={'Online'}>Online</Radio>
+                    <Radio value={'Offline'}>Offline</Radio>
+                  </Radio.Group>
+                  {!newEvent.isEventOnline && (
+                    <>
+                      <h4>Location:</h4>
+                      <TextArea
+                        id="place"
+                        placeholder="City"
+                        rows={1}
+                        style={{ width: '50%', margin: '10px auto' }}
+                        defaultValue={place}
+                        onChange={newEventHandler}
+                        autoFocus
+                        required
+                      />
+                      <div className="map"></div>
+                    </>
+                  )}
                 </div>
               </>
             ) : (
@@ -447,9 +471,16 @@ const ModalContainer: React.FC<IModal> = props => {
                 </div>
                 <Divider />
                 <div className="map-wrapper">
-                  <h4>Location</h4>
-                  <p>{place}</p>
-                  <div className="map"></div>
+                  <p>
+                    This event will be <b>{isEventOnline ? 'Online' : 'Offline'}</b>
+                  </p>
+                  {!isEventOnline && (
+                    <>
+                      <h4>Location:</h4>
+                      <p>{place}</p>
+                      <div className="map"></div>
+                    </>
+                  )}
                 </div>
               </>
             )}

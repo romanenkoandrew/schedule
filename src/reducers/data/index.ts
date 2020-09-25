@@ -39,6 +39,7 @@ export interface IEvent {
   feedBack: string;
   taskBreakpoints: number[];
   videoLink: string;
+  isEventOnline: boolean;
   [propName: string]: any;
 }
 

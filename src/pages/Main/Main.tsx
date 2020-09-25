@@ -15,13 +15,13 @@ const Main: React.FC = () => {
   const eventId = 'oP556RVfQFCNCF6LpgGq';
   return (
     <div>
+      <Button type="primary" onClick={openModalHandler}>
+        MODAL
+      </Button>
       <ScheduleTable />
       {isOpenModal && (
         <ModalContainer eventId={eventId} isOpenModal={isOpenModal} closeModalHandler={closeModalHandler} />
       )}
-      <Button type="primary" onClick={openModalHandler}>
-        MODAL
-      </Button>
     </div>
   );
 };

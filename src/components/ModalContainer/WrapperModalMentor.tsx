@@ -274,19 +274,9 @@ export const WrapperModalMentor = styled.div`
 
   .wrapper-title {
     position: relative;
-
-    /* & .task {
-      position: absolute;
-      top: 20px;
-      left: 70%;
+    > p {
+      text-align: center;
     }
-
-    & .self-ed {
-      position: absolute;
-      top: 46px;
-      left: 70%;
-    } */
-
     & h1 {
       font-family: 'Roboto';
       font-style: normal;
@@ -294,7 +284,6 @@ export const WrapperModalMentor = styled.div`
       font-size: 38px;
       line-height: 46px;
       color: #262626;
-      /* width: 673px; */
       text-align: center;
       margin: 0 auto;
     }
