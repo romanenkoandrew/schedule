@@ -249,7 +249,7 @@ const ModalContainer: React.FC<IModal> = props => {
                       showArrow
                       dropdownMatchSelectWidth={150}
                       defaultValue={type}
-                      onChange={newEventTypeHandler}
+                      // onChange={newEventTypeHandler}
                     >
                       {tagRender}
                     </Select>
