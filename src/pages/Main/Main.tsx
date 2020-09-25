@@ -1,10 +1,8 @@
 import React from 'react';
-import TestComponent from 'components/TestComponent';
 import ScheduleTable from 'components/schedule-table';
 import { Link } from 'react-router-dom';
 import { css } from '@emotion/core';
 import ModalContainer from 'components/ModalContainer';
-import { testData, emptyData } from 'constants/testData';
 import { Button } from 'antd';
 
 const linkStyle = () => css`
@@ -23,7 +21,7 @@ const Main: React.FC = () => {
   const openModalHandler = () => {
     setIsOpenModal(true);
   };
-  const eventId = 'wE2GgY0grSQziMBhacLw';
+  const eventId = 'oP556RVfQFCNCF6LpgGq';
   return (
     <div>
       <div css={linkStyle}>

@@ -66,7 +66,3 @@ export const switchMentorStudent = createAction(ActionTypes.SWITCH_MENTOR_STUDEN
 export const switchLayout = createAction(ActionTypes.SWITCH_LAYOUT);
 export const changeTimezone = createAction(ActionTypes.CHANGE_TIMEZONE);
 export const changeCourse = createAction(ActionTypes.CHANGE_COURSE);
-
-export const increment = createAction(ActionTypes.INCREMENT);
-export const decrement = createAction(ActionTypes.DECREMENT);
-export const reset = createAction(ActionTypes.RESET);
