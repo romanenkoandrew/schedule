@@ -17,7 +17,7 @@ const linkStyle = () => css`
 
 const Main: React.FC = () => {
   const [isOpenModal, setIsOpenModal] = React.useState(false);
-  const closeModal = () => {
+  const closeModalHandler = () => {
     setIsOpenModal(false);
   };
   const openModalHandler = () => {
@@ -33,7 +33,9 @@ const Main: React.FC = () => {
         <Link to="/modalMentor">to Mentor Modal</Link>
       </div>
       {/* <ScheduleTable /> */}
-      {isOpenModal && <ModalContainer eventId={eventId} isOpenModal={isOpenModal} closeModal={closeModal} />}
+      {isOpenModal && (
+        <ModalContainer eventId={eventId} isOpenModal={isOpenModal} closeModalHandler={closeModalHandler} />
+      )}
       <Button type="primary" onClick={openModalHandler}>
         MODAL
       </Button>

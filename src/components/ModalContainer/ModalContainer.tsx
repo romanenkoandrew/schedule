@@ -22,9 +22,10 @@ export interface IModal {
   isStudent: boolean;
   isOpenModal: boolean;
   loading: boolean;
-  closeModal: () => void;
+  closeModalHandler: () => void;
   getEventById: any;
   updateEvent: any;
+  addNewEvent: any;
   eventId: string;
   eventData: {
     id: string;
@@ -56,7 +57,17 @@ const dateFormat = 'DD.MM.YYYY';
 const { TextArea } = Input;
 
 const ModalContainer: React.FC<IModal> = props => {
-  const { isStudent, eventId, isOpenModal, eventData, loading, closeModal, getEventById, updateEvent } = props;
+  const {
+    isStudent,
+    eventId,
+    isOpenModal,
+    eventData,
+    loading,
+    closeModalHandler,
+    getEventById,
+    updateEvent,
+    addNewEvent
+  } = props;
 
   const {
     id,
@@ -106,26 +117,26 @@ const ModalContainer: React.FC<IModal> = props => {
   });
   const defaultState = () => {
     setNewEvent({
-      id: id,
-      name: name,
-      description: description,
-      descriptionUrl: descriptionUrl,
-      type: type,
-      timeZone: timeZone,
-      dateTime: dateTime,
-      deadline: deadline,
-      place: place,
-      comment: comment,
-      trainee: trainee,
-      courseName: courseName,
-      timeToImplementation: timeToImplementation,
-      broadcastUrl: broadcastUrl,
-      materialsLinks: materialsLinks,
-      block: block,
-      result: result,
-      stack: stack,
-      feedback: feedback,
-      videoLink: videoLink
+      id: id || '',
+      name: name || '',
+      description: description || '',
+      descriptionUrl: descriptionUrl || '',
+      type: type || [],
+      timeZone: timeZone || 0,
+      dateTime: dateTime || 0,
+      deadline: deadline || 0,
+      place: place || '',
+      comment: comment || '',
+      trainee: trainee || '',
+      courseName: courseName || '',
+      timeToImplementation: timeToImplementation || 0,
+      broadcastUrl: broadcastUrl || '',
+      materialsLinks: materialsLinks || [],
+      block: block || '',
+      result: result || '',
+      stack: stack || [],
+      feedback: feedback || [],
+      videoLink: videoLink || ''
     });
   };
   const editModeOn = () => {
@@ -142,7 +153,7 @@ const ModalContainer: React.FC<IModal> = props => {
 
   const onCloseModal = () => {
     setEditMode(false);
-    closeModal();
+    closeModalHandler();
     defaultState();
   };
   const newEventHandler = (e: any) => {
@@ -162,8 +173,10 @@ const ModalContainer: React.FC<IModal> = props => {
     console.log(moment(value).hour());
   };
   const defaultMaterialLinks = () => {
-    const newArr = materialsLinks.toString().replace(/,/g, '\n');
-    return newArr;
+    if (materialsLinks) {
+      const newArr = materialsLinks.toString().replace(/,/g, '\n');
+      return newArr;
+    }
   };
   const materialsLinksHandler = (e: any) => {
     setNewEvent({ ...newEvent, materialsLinks: e.target.value.split('\n') });
@@ -175,10 +188,20 @@ const ModalContainer: React.FC<IModal> = props => {
     });
   };
   const createOrUpdateEvent = () => {
-    updateEvent(newEvent);
+    if (eventId === '') {
+      addNewEvent(newEvent);
+      closeModalHandler();
+    } else {
+      updateEvent(newEvent);
+    }
   };
   React.useEffect(() => {
-    getEventById(eventId);
+    if (eventId === '') {
+      defaultState();
+      setEditMode(true);
+    } else {
+      getEventById(eventId);
+    }
   }, []);
 
   if (loading) return <Loading />;
@@ -282,9 +305,10 @@ const ModalContainer: React.FC<IModal> = props => {
                       <div className="stack">
                         <div className="stack-title">Stack</div>
                         <ul>
-                          {stack.map(el => {
-                            return <li key={el}>{el}</li>;
-                          })}
+                          {stack &&
+                            stack.map(el => {
+                              return <li key={el}>{el}</li>;
+                            })}
                         </ul>
                       </div>
                     </div>
