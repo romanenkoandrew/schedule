@@ -18,16 +18,27 @@ export const initState: IState = {
   error: false
 };
 
-interface IEvent {
+export interface IEvent {
   id: string;
   name: string;
   description: string;
   descriptionUrl: string;
-  type: string;
+  type: string[];
   timeZone: string;
-  dateTime: string;
+  dateTime: number;
   place: string;
   comment: string;
+  trainee: string;
+  courseName: string;
+  timeToImplementation: number;
+  broadcastUrl: string;
+  materialsLinks: string[];
+  block: string;
+  result: string;
+  stack: string[];
+  feedBack: string;
+  taskBreakpoints: number[];
+  videoLink: string;
   [propName: string]: any;
 }
 
@@ -120,7 +131,7 @@ const reducer = (state = initState, action: IAction) => {
     case ActionTypes.PUT_EVENT_DATA_REQUEST:
       return {
         ...state,
-        loading: false,
+        loading: true,
         error: false
       };
     case ActionTypes.PUT_EVENT_DATA_SUCCESS:

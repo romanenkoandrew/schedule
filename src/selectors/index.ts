@@ -7,6 +7,7 @@ export const switchMentorStudentSelector = createSelector(MainSelector, main => 
 export const switchLayoutSelector = createSelector(MainSelector, main => main.layout);
 export const changeTimezoneSelector = createSelector(MainSelector, main => main.timezone);
 export const changeCourseSelector = createSelector(MainSelector, main => main.courses);
+export const changeTypeColorSelector = createSelector(MainSelector, main => main.typeColors);
 
 export const DataSelector = (state: any) => get(state, 'data');
 

@@ -7,16 +7,27 @@ import {
 } from '../action-creators';
 import ActionTypes from 'action-types';
 
-export interface Event {
+export interface IEvent {
   id: string;
   name: string;
   description: string;
   descriptionUrl: string;
-  type: string;
-  timeZone: string;
-  dateTime: string;
+  type: string[];
+  timeZone: number;
+  dateTime: number;
   place: string;
   comment: string;
+  trainee: string;
+  courseName: string;
+  timeToImplementation: number;
+  broadcastUrl: string;
+  materialsLinks: string[];
+  block: string;
+  result: string;
+  stack: string[];
+  deadline: number;
+  videoLink: string;
+  feedback: string[];
   [propName: string]: any;
 }
 export default class EventsService {
@@ -30,7 +41,7 @@ export default class EventsService {
     return getDataRequest(url, types);
   };
 
-  addNewEvent = (eventData: Event) => {
+  addNewEvent = (eventData: IEvent) => {
     const url = `/event`;
     const types = [
       ActionTypes.POST_EVENT_DATA_REQUEST,
@@ -50,7 +61,7 @@ export default class EventsService {
     return getDataByIdRequest(url, types);
   };
 
-  updateEvent = (eventData: any) => {
+  updateEvent = (eventData: IEvent) => {
     const id = eventData.id;
     const url = `/event/${id}`;
     const types = [
@@ -74,21 +85,25 @@ export default class EventsService {
 
 /*
 {
-  "id": "uHFF2obtR8iw3xcELOpI",
-  "name": "Что такое Markdown",
-  "description": "Студент знаком с синтаксисом Markdown и может его применить",
+  "id": "KyvcYfdhjMuXQeK4eoYc",
+  "name": "HTML",
+  "description": "Студент знакомится с HTML",
   "descriptionUrl": "https://guides.hexlet.io/markdown/",
-  "type": "selfEducation",
-  "timeZone": "Asia/Shanghai",
-  "dateTime": "12432432423",
+  "type": ["htmlTask", "info"],
+  "timeZone": 3,
+  "dateTime": 1600291763391,
   "place": "class",
-  "comment": "Создан и размещён на gh-pages файл cv md с cv студента",
-  "trainee": "Антон Белый",
+  "comment": "Создан и размещён на gh-pages файл HTML",
+  "trainee": "Сергей Шаляпин",
   "courseName": "jsFrontEnd",
-  "timeToComplete": "3h",
+  "timeToImplementation": 4,
   "broadcastUrl": "Link on Video",
-  "materialsLinks": ["link1", "link2"],
-  "block": "Markdown",
-  "result": "Студент знаком с синтаксисом Markdown и может его применить",
+  "materialsLinks": ["\"link1\", \"link2\""],
+  "block": "HTML",
+  "result": "Студент знает HTML",
+  "stack": ["HTML", "CSS", "Markdown"];
+  "feedBack": "Cool";
+  "deadline": 1600291764391;
+  "videoLink": "string";
 }
 */
