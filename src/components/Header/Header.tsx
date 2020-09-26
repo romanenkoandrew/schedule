@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { ScheduleOutlined, DatabaseOutlined, ProfileOutlined, PlusCircleOutlined } from '@ant-design/icons';
 
 import { css } from '@emotion/core';
-
+import ModalContainer from 'components/ModalContainer';
 import Timezones from 'constants/timezone/timezone';
 import { Courses, Layouts } from 'constants/header/header';
 
@@ -175,6 +175,14 @@ const Header: React.FC<IHeader> = props => {
     changeCourse
   } = props;
 
+  const [isOpenModal, setIsOpenModal] = React.useState(false);
+  const closeModalHandler = () => {
+    setIsOpenModal(false);
+  };
+  const openModalHandler = () => {
+    setIsOpenModal(true);
+  };
+
   const handleSwitch = () => {
     switchMentorStudent({ switchMentorStudent: isStudent });
   };
@@ -244,9 +252,16 @@ const Header: React.FC<IHeader> = props => {
             </Link>
           </Tooltip>
         </nav>
-        <Tooltip title="Add event" placement="bottom" color={color}>
-          <Button css={btn} shape="circle" icon={<PlusCircleOutlined css={btniconbig} />}></Button>
-        </Tooltip>
+        {!isStudent ? (
+          <Tooltip title="Add event" placement="bottom" color={color}>
+            <Button
+              css={btn}
+              shape="circle"
+              icon={<PlusCircleOutlined css={btniconbig} />}
+              onClick={openModalHandler}
+            ></Button>
+          </Tooltip>
+        ) : null}
       </div>
 
       <div css={courseswitch}>
@@ -267,6 +282,7 @@ const Header: React.FC<IHeader> = props => {
           {timezoneOptions}
         </Select>
       </div>
+      {isOpenModal && <ModalContainer eventId={''} isOpenModal={isOpenModal} closeModalHandler={closeModalHandler} />}
     </header>
   );
 };
