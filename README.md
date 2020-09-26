@@ -1,5 +1,26 @@
 # Schedule
 
+### Содержание документа:
+- Цель разработки
+    - Концепт приложения
+    - Преимущества и недостатки
+    - Идеальное расписание
+    - Определение потребностей пользователей
+    - Идеи по улучшению расписания
+- Макет приложения 
+- Документация для разработчиков
+    - Требования
+    - Технологии проекта
+    - Особенности приложения
+    - Функционал
+    - Библиотеки
+
+
+## Цель разработки
+Это приложение разработано для Rolling Scopes School.
+Цель - улучшить существующее расписание для студентов и менторов.
+<br><br>
+
 # Концепт приложения
 
 ### Преимущества и недостатки 
@@ -81,3 +102,95 @@ http://joxi.ru/eAOP0z5iknq8xr"
 
 ## Макет приложения 
 [По клику вы перейдете на макет приложения в Figma](https://www.figma.com/file/hvdGAAK23ynBOW10pw0aWY/main-concept?node-id=0%3A1 "макет в фигме")
+<br><br>
+## Документация для разработчиков
+
+#### Требования
+1. Mac OS X, Windows, или Linux
+2. Yarn package + Node.js v6.5 или выше
+
+#### Технологии проекта
+- React
+- Typescript
+- Ant Design
+- Redux и Redux Saga
+
+<br><br>
+#### Особенности приложения
+- выбор курса
+
+#####**Возможности студента:**
+
+- просмотр расписания в виде таблицы (основная форма расписания), календаря либо списка
+- просмотр детальной информации об отдельных заданиях расписания. Структуру страницы задания для разных типов заданий вам необходимо продумать самостоятельно
+- сохранение расписания в виде таблицы, списка или календаря. Оптимальные форматы файлов (.txt, .pdf, .csv etc) для сохранения расписания определите исходя из потребностей пользователей
+
+#####**Дополнительные возможности ментора:**
+
+- редактирование расписания - добавление, удаление и изменение данных
+- редактирование страницы задания - добавление, удаление и изменение данных
+<br><br>
+#### Установка приложения
+
+- установка приложения через ```yarn```
+<br>
+[как установить yarn, официальная документация на русском](https://classic.yarnpkg.com/ru/docs/install#windows-stable)
+ - ```yarn install```
+ - ```yarn start```
+<br><br>
+#### Функционал
+- 
+
+<br><br>
+#### Библиотеки и модули
+
+#### emotion
+Emotion is a library designed for writing css styles with JavaScript. It provides powerful and predictable style composition in addition to a great developer experience with features such as source maps, labels, and testing utilities. Both string and object styles are supported.
+
+#### SVGR
+Transform SVGs into React components.
+
+#### lodash
+Lodash makes JavaScript easier by taking the hassle out of working with arrays, numbers, objects, strings, etc.
+Lodash’s modular methods are great for:
+
+- Iterating arrays, objects, & strings
+- Manipulating & testing values
+- Creating composite functions
+
+#### ramda
+The primary distinguishing features of Ramda are:
+
+- Ramda emphasizes a purer functional style. Immutability and side-effect free functions are at the heart of its design philosophy. This can help you get the job done with simple, elegant code.
+- Ramda functions are automatically curried. This allows you to easily build up new functions from old ones simply by not supplying the final parameters.
+- The parameters to Ramda functions are arranged to make it convenient for currying. The data to be operated on is generally supplied last.
+The last two points together make it very easy to build functions as sequences of simpler functions, each of which transforms the data and passes it along to the next. Ramda is designed to support this style of coding.
+
+#### styled-components
+Utilising tagged template literals (a recent addition to JavaScript) and the power of CSS, styled-components allows you to write actual CSS code to style your components. It also removes the mapping between components and styles – using components as a low-level styling construct could not be easier!
+
+#### superagent
+Small progressive client-side HTTP request library, and Node.js module with the same API, supporting many high-level HTTP client features
+
+#### dotenv
+Dotenv is a zero-dependency module that loads environment variables from a .env file into process.env. Storing configuration in the environment separate from code is based on The Twelve-Factor App methodology.
+
+#### fs-extra
+fs-extra adds file system methods that aren't included in the native fs module and adds promise support to the fs methods. It also uses graceful-fs to prevent EMFILE errors. It should be a drop in replacement for fs.
+
+#### downloadjs
+Client-side file downloading using JS and HTML5.
+The download() function is used to trigger a file download from JavaScript. It specifies the contents and name of a new file placed in the browser's download directory. The input can be a String, Blob, or Typed Array of data, or via a dataURL representing the file's data as base64 or url-encoded string. No matter the input format, download() saves a file using the specified file name and mime information in the same manner as a server using a Content-Disposition HTTP header.
+
+#### rc-tooltip
+React Tooltip
+
+#### lint-staged
+Run linters against staged git files and don't let 💩 slip into your code base!
+
+#### moment
+Parse, validate, manipulate,
+and display dates and times in JavaScript.
+
+#### ts-pnp
+This package exports a function that can be used to implement the resolveModuleName hook from CompilerHost. It mimics the interface from the one you'd typically use and, as all other PnP plugins, works just fine whether your application is actually running under PnP or not.
