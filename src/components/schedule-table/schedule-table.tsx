@@ -11,6 +11,7 @@ import { IEvent } from '../../services/events-service';
 import { css } from '@emotion/core';
 import TextArea from 'antd/lib/input/TextArea';
 import { getDateFromTimeStamp, getTimeFromString } from 'utils/utils';
+import ModalContainer from 'components/ModalContainer';
 
 const ScheduleTable = (props: any) => {
   const {
@@ -24,7 +25,10 @@ const ScheduleTable = (props: any) => {
     deleteEvent,
     updateEvent,
     typeColors,
-    changeTypeColors
+    changeTypeColors,
+    openModal,
+    isOpenModal,
+    addId
   } = props;
   const initialSelect: any[] = [];
   const optionsForSelect = [
@@ -111,7 +115,6 @@ const ScheduleTable = (props: any) => {
         ...item,
         key,
         id: key,
-        timeToImplementation: `${item.timeToImplementation} h`,
         dateTime: item.deadline,
         type: [...item.type, 'deadline']
       };
@@ -158,7 +161,7 @@ const ScheduleTable = (props: any) => {
     });
   };
 
-  const onClickRow = (record: { key: string }, event: any) => {
+  const onClickRow = (record: IEvent, event: any) => {
     if (
       event.target.classList.contains('button-hide') ||
       event.target.classList.contains('button-delete') ||
@@ -797,10 +800,17 @@ const ScheduleTable = (props: any) => {
         columns={columns}
         dataSource={data}
         bordered
-        loading={loading}
-        onRow={(record: any, rowIndex: any) => {
+        loading={loading && !isOpenModal}
+        onRow={(record: IEvent, rowIndex: any) => {
           return {
-            onClick: event => onClickRow(record, event)
+            onClick: event => onClickRow(record, event),
+            onDoubleClick: () => {
+              if (record.type.includes('deadline')) {
+                return;
+              }
+              addId(record.id);
+              openModal();
+            }
           };
         }}
         scroll={{ x: 1500, y: 900 }}
