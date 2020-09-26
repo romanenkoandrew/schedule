@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Table, Tag, Button, Space, Input, Spin, Select, DatePicker, Popconfirm, InputNumber } from 'antd';
+import { Table, Tag, Button, Space, Input, Spin, Select, DatePicker, Popconfirm, InputNumber, TimePicker } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
 // import ReactHTMLTableToExcel from 'react-html-table-to-excel';
@@ -10,6 +10,7 @@ import moment from 'moment';
 import { IEvent } from '../../services/events-service';
 import { css } from '@emotion/core';
 import TextArea from 'antd/lib/input/TextArea';
+import { getDateFromTimeStamp, getTimeFromString } from 'utils/utils';
 
 const ScheduleTable = (props: any) => {
   const {
@@ -28,6 +29,7 @@ const ScheduleTable = (props: any) => {
   const initialSelect: any[] = [];
   const optionsForSelect = [
     { value: 'Date/time' },
+    { value: 'Time' },
     { value: 'Course' },
     { value: 'Blocks' },
     { value: 'Type' },
@@ -56,6 +58,7 @@ const ScheduleTable = (props: any) => {
 
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
   const [changingType, setChangingType] = useState('');
+  const [changingRowType, setChangingRowType] = useState(initialObj);
 
   const [editableEvent, setEditableEvent] = useState(initialObj);
 
@@ -72,27 +75,50 @@ const ScheduleTable = (props: any) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (editableEvent.id) {
-      setEditableEvent({
-        ...editableEvent,
-        dateTime: editableEvent.dateTime - editableEvent.timeZone * 3600000 + timeZone * 3600000
-      });
-    }
-  }, [timeZone]);
+  // useEffect(() => {
+  //   const newData: any = data.map((item: IEvent) => {
+  //     return ({
+  //       ...item,
+  //       dateTime: item.dateTime - item.timeZone * 3600000 + timeZone * 3600000,
+  //       timeZone,
+  //     })
+  //   });
+  //   setData(newData);
+
+  //   if (editableEvent.id) {
+  //     // console.log(editableEvent.dateTime, editableEvent.timeZone, timeZone)
+  //     setEditableEvent({
+  //       ...editableEvent,
+  //       dateTime: editableEvent.dateTime - editableEvent.timeZone * 3600000 + timeZone * 3600000,
+  //       timeZone,
+  //     });
+  //   }
+  // }, [timeZone]);
 
   useEffect(() => {
-    console.log(eventsData);
-    let newData: any = eventsData.map((item: any) => {
-      item.key = item.id;
+    let newData: any = eventsData.map((item: any, idx: number) => {
+      const key = item.id;
       return {
         ...item,
-        timeToImplementation: `${item.timeToImplementation} h`,
-        dateTime: item.dateTime - item.timeZone * 3600000 + timeZone * 3600000
+        key,
+        timeToImplementation: `${item.timeToImplementation} h`
       };
     });
-    newData.sort((a: IEvent, b: IEvent) => a.dateTime - b.dateTime);
-    setData(newData);
+
+    const copy = newData.map((item: any, idx: number) => {
+      const key = `${item.id}${idx}`;
+      return {
+        ...item,
+        key,
+        id: key,
+        timeToImplementation: `${item.timeToImplementation} h`,
+        dateTime: item.deadline,
+        type: [...item.type, 'deadline']
+      };
+    });
+
+    const result: any = [...newData, ...copy].sort((a: IEvent, b: IEvent) => a.dateTime[0] - b.dateTime[0]);
+    setData(result);
   }, [eventsData]);
 
   const handleChangeEvent = (row: string, block: any, event: any): void => {
@@ -109,10 +135,26 @@ const ScheduleTable = (props: any) => {
     });
   };
 
+  const handleChangeTypeColors = (typeColors: any) => {
+    console.log(typeColors);
+    changeTypeColors(typeColors);
+    localStorage.setItem(TYPE_COLORS, JSON.stringify(typeColors));
+  };
+
   const dateChange = (moment: any, dateString: string, field: string) => {
+    const date = new Date(moment);
     setEditableEvent({
       ...editableEvent,
-      [field]: new Date(moment).getTime()
+      timeZone,
+      [field]: [date.getTime(), editableEvent[field][1]]
+    });
+  };
+
+  const changeTime = (moment: any, timeString: string, field: string) => {
+    setEditableEvent({
+      ...editableEvent,
+      timeZone,
+      [field]: [editableEvent[field][0], timeString]
     });
   };
 
@@ -121,6 +163,8 @@ const ScheduleTable = (props: any) => {
       event.target.classList.contains('button-hide') ||
       event.target.classList.contains('button-delete') ||
       event.target.classList.contains('button-edit') ||
+      event.target.classList.contains('ant-tag-has-color') ||
+      displayColorPicker ||
       editableEvent.id
     ) {
       return;
@@ -292,27 +336,47 @@ const ScheduleTable = (props: any) => {
       dataIndex: 'dateTime',
       width: 120,
       key: 'dateTime',
-      sorter: (a: any, b: any) => a.dateTime - b.dateTime,
-      render: (block: any, row: any) => {
-        console.log('rendeeeeeer');
-        const options = {
-          year: 'numeric',
-          day: 'numeric',
-          month: 'numeric'
-        };
-        const date =
-          typeof block === 'number' ? new Date(block + timeZone * 3600000).toLocaleString('en-GB', options) : '';
+      sorter: (a: any, b: any) => a.dateTime[0] - b.dateTime[0],
+      render: (dateData: [number, string], row: IEvent) => {
+        const date = dateData.length ? getDateFromTimeStamp(dateData, timeZone) : null;
         if (editableEvent && editableEvent.id === row.id) {
+          const date = getDateFromTimeStamp(editableEvent.dateTime, timeZone);
           return (
             <DatePicker
               format={'DD/MM/YYYY'}
               defaultValue={moment(date, 'DD/MM/YYYY')}
+              value={moment(date, 'DD/MM/YYYY')}
+              placeholder={date}
               style={{ width: '100%' }}
-              onChange={(moment, dateString) => dateChange(moment, dateString, 'dateTime')}
+              onChange={(moment, dateString) => {
+                dateChange(moment, dateString, 'dateTime');
+              }}
             />
           );
         }
         return <>{date}</>;
+      }
+    },
+    {
+      title: 'Time',
+      dataIndex: 'dateTime',
+      width: 120,
+      key: 'Time',
+      // sorter: (a: any, b: any) => a.dateTime - b.dateTime,
+      render: (dateData: [number, string], row: any) => {
+        const timeWithTimeZone = dateData.length ? getTimeFromString(dateData, timeZone, row.timeZone) : null;
+        if (editableEvent && editableEvent.id === row.id) {
+          // const timeWithTimeZone = getTimeFromString(editableEvent.dateTime, timeZone, row.timeZone);
+          const timeWithTimeZone = editableEvent.dateTime[1];
+          return (
+            <TimePicker
+              value={moment(timeWithTimeZone, 'HH:mm')}
+              format={'HH:mm'}
+              onChange={(moment, dateString) => changeTime(moment, dateString, 'dateTime')}
+            />
+          );
+        }
+        return <>{timeWithTimeZone}</>;
       }
     },
     {
@@ -344,6 +408,7 @@ const ScheduleTable = (props: any) => {
       align: 'center',
       onFilter: (value: any, record: any) => record.type.includes(value),
       render: (tags: any, row: any) => {
+        // console.log(tags)
         if (editableEvent && editableEvent.id === row.id) {
           const tagsOptions = tags.reduce((acc: any, tag: any) => {
             const findTag: any = FILTERS.find((type: any) => type.value === tag);
@@ -365,6 +430,7 @@ const ScheduleTable = (props: any) => {
                 newTagOptions.push({
                   value: option.toLowerCase().replace(/\b\s([a-z])/g, (_: any, char: any) => char.toUpperCase())
                 });
+                // console.log(newTagOptions)
                 setEditableEvent({
                   ...editableEvent,
                   type: newTagOptions.map(tag => tag.value)
@@ -390,14 +456,46 @@ const ScheduleTable = (props: any) => {
         }
         return (
           <>
-            {tags.map((tag: string) => {
-              // let color = TYPES_WITH_COLORS[tag];
-              // const colorKey = label.toLowerCase().replace(/\b\s([a-z])/g, (_: any, char: any) => char.toUpperCase());
+            {tags.map((tag: string, idx: number) => {
               let colorType = typeColors[tag];
               return (
-                <Tag color={colorType} key={tag} style={{ border: '0px', marginBottom: '3px' }}>
-                  {tag.replace(/([A-Z])/g, ' $1').toUpperCase()}
-                </Tag>
+                <div key={tag}>
+                  <Tag
+                    color={colorType.background}
+                    style={{ border: '0px', marginBottom: '3px', color: typeColors[tag].textColor }}
+                    onClick={() => {
+                      if (tag === 'deadline') return;
+                      setDisplayColorPicker(prev => !prev);
+                      setChangingType(tag);
+                      setChangingRowType(row);
+                    }}
+                  >
+                    {tag.replace(/([A-Z])/g, ' $1').toUpperCase()}
+                  </Tag>
+                  {displayColorPicker && changingRowType.id === row.id && changingType === tag ? (
+                    <div css={popover} style={{ display: 'flex', flexDirection: 'row' }}>
+                      <div css={cover} />
+                      <SketchPicker
+                        color={typeColors[tag].background}
+                        onChange={color => {
+                          handleChangeTypeColors({
+                            ...typeColors,
+                            [tag]: { ...typeColors[tag], background: color.hex }
+                          });
+                        }}
+                      />
+                      <SketchPicker
+                        color={typeColors[tag].textColor}
+                        onChange={color => {
+                          handleChangeTypeColors({
+                            ...typeColors,
+                            [tag]: { ...typeColors[tag], textColor: color.hex }
+                          });
+                        }}
+                      />
+                    </div>
+                  ) : null}
+                </div>
               );
             })}
           </>
@@ -521,7 +619,7 @@ const ScheduleTable = (props: any) => {
             />
           );
         }
-        return <span>{block}</span>;
+        return <span style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{block}</span>;
       }
     },
     {
@@ -529,96 +627,128 @@ const ScheduleTable = (props: any) => {
       dataIndex: '',
       key: 'x',
       height: 500,
-      render: (props: any) => (
-        <Space size="middle">
-          {!editableEvent.id && (
-            <a className="button-hide" onClick={() => hideHandle(props)}>
-              {hideRows.some(item => item.key === props.key) ? 'Show' : 'Hide'}
-            </a>
-          )}
-          {!isStudent && !editableEvent.id && (
-            <a className="button-delete" onClick={() => deleteEvent(props.id)}>
-              Delete
-            </a>
-          )}
-          {!isStudent &&
-            (!editableEvent.id ? (
-              <a
-                className="button-edit"
-                onClick={() => {
-                  const tagsOptions = props.type.reduce((acc: any, tag: any) => {
-                    const findTag: any = FILTERS.find((type: any) => type.value === tag);
-                    acc.push({
-                      value: findTag.text
-                        .toLowerCase()
-                        .replace(/\b\s([a-z])/g, (_: any, char: any) => char.toUpperCase())
-                    });
-                    return acc;
-                  }, []);
-                  console.log(tagsOptions);
-                  setEditableEvent(props);
-                  setTagOptions(tagsOptions);
-                }}
-              >
-                Edit
+      render: (props: any) => {
+        const isDeadline = props.type.includes('deadline');
+        const isHidden = hideRows.some(item => item.key === props.key);
+        return (
+          <Space size="middle">
+            {!editableEvent.id && (
+              <a className="button-hide" onClick={() => hideHandle(props)}>
+                {hideRows.some(item => item.key === props.key) ? 'Show' : 'Hide'}
               </a>
-            ) : (
-              <span>
+            )}
+            {!isStudent && !editableEvent.id && !isDeadline && !isHidden && (
+              <a className="button-delete" onClick={() => deleteEvent(props.id)}>
+                Delete
+              </a>
+            )}
+            {!isStudent &&
+              !isDeadline &&
+              !isHidden &&
+              (!editableEvent.id ? (
                 <a
+                  className="button-edit"
                   onClick={() => {
-                    const updatedEvent = {
-                      ...editableEvent,
-                      timeToImplementation: parseFloat(editableEvent.timeToImplementation)
-                    };
-                    delete updatedEvent.key;
-                    updateEvent(updatedEvent);
-                    setEditableEvent(initialObj);
-                    localStorage.setItem(TYPE_COLORS, JSON.stringify(typeColors));
+                    const tagsOptions = props.type.reduce((acc: any, tag: any) => {
+                      const findTag: any = FILTERS.find((type: any) => type.value === tag);
+                      acc.push({
+                        value: findTag.text
+                          .toLowerCase()
+                          .replace(/\b\s([a-z])/g, (_: any, char: any) => char.toUpperCase())
+                      });
+                      return acc;
+                    }, []);
+                    // console.log(tagsOptions);
+                    setEditableEvent(props);
+                    setTagOptions(tagsOptions);
                   }}
-                  style={{ marginRight: 8 }}
                 >
-                  Save
+                  Edit
                 </a>
-                <Popconfirm
-                  title="Sure to cancel?"
-                  onConfirm={() => {
-                    setEditableEvent(initialObj);
-                    setDisplayColorPicker(false);
-                  }}
-                >
-                  <a>Cancel</a>
-                </Popconfirm>
-              </span>
-            ))}
-        </Space>
-      )
+              ) : (
+                <span>
+                  <a
+                    onClick={() => {
+                      const updatedEvent = {
+                        ...editableEvent,
+                        timeToImplementation: parseFloat(editableEvent.timeToImplementation)
+                      };
+                      delete updatedEvent.key;
+                      updateEvent(updatedEvent);
+                      setEditableEvent(initialObj);
+                      localStorage.setItem(TYPE_COLORS, JSON.stringify(typeColors));
+                    }}
+                    style={{ marginRight: 8 }}
+                  >
+                    Save
+                  </a>
+                  <Popconfirm
+                    title="Sure to cancel?"
+                    onConfirm={() => {
+                      setEditableEvent(initialObj);
+                      setDisplayColorPicker(false);
+                    }}
+                  >
+                    <a>Cancel</a>
+                  </Popconfirm>
+                </span>
+              ))}
+          </Space>
+        );
+      }
     }
   ].filter((item: any) => options.reduce((acc: any, item) => acc.concat(item.value), []).includes(item.title));
 
   function tagRender(props: any, row?: any) {
     const { label, value, closable, onClose } = props;
     const colorKey = label.toLowerCase().replace(/\b\s([a-z])/g, (_: any, char: any) => char.toUpperCase());
-    let colorType = typeColors[colorKey];
+    // console.log(!!typeColors[colorKey])
+    let colorType = !!typeColors[colorKey] ? typeColors[colorKey].background : null;
+    const textColor = !!typeColors[colorKey] ? typeColors[colorKey].textColor : null;
+    // if (colorType) {
+    // console.log(typeColors, colorKey)
+    // }
+    // console.log(colorKey, row)
     return (
       <>
         <Tag
           color={colorType}
           closable={closable}
           onClose={onClose}
-          style={{ marginRight: 3 }}
+          style={{ marginRight: 3, color: textColor }}
           onClick={() => {
             setDisplayColorPicker(prev => !prev);
             setChangingType(colorKey);
+            setChangingRowType(row);
           }}
         >
           {label.toUpperCase()}
         </Tag>
-        {displayColorPicker && editableEvent && row && editableEvent.id === row.id && changingType === colorKey ? (
-          <div css={popover}>
+        {displayColorPicker &&
+        changingRowType &&
+        row &&
+        changingType &&
+        changingRowType.id === row.id &&
+        changingType === colorKey ? (
+          <div css={popover} style={{ display: 'flex', flexDirection: 'row' }}>
             <div css={cover} />
             <SketchPicker
-              color={typeColors[colorKey]}
-              onChange={color => changeTypeColors({ ...typeColors, [colorKey]: color.hex })}
+              color={typeColors[colorKey].background}
+              onChange={color => {
+                handleChangeTypeColors({
+                  ...typeColors,
+                  [colorKey]: { ...typeColors[colorKey], background: color.hex }
+                });
+              }}
+            />
+            <SketchPicker
+              color={typeColors[colorKey].textColor}
+              onChange={color => {
+                handleChangeTypeColors({
+                  ...typeColors,
+                  [colorKey]: { ...typeColors[colorKey], textColor: color.hex }
+                });
+              }}
             />
           </div>
         ) : null}
@@ -648,7 +778,7 @@ const ScheduleTable = (props: any) => {
         }, [])}
         style={{ width: '100%' }}
         options={optionsForSelect}
-        onSelect={option => {
+        onSelect={(option: any): void => {
           const newOptions = [...options];
           newOptions.push({ value: option });
           setOptions(newOptions);
@@ -689,8 +819,8 @@ const event = {
   descriptionUrl: 'https://guides.hexlet.io/markdown/',
   type: ['htmlTask', 'info'],
   timeZone: 3,
-  dateTime: 1600291763391,
-  deadline: 1600291983391,
+  dateTime: [new Date().getTime(), `${new Date().getHours()}:${new Date().getMinutes()}`],
+  deadline: [new Date().getTime() + 9000000, `${new Date().getHours()}:${new Date().getMinutes()}`],
   place: 'class',
   comment: 'Создан и размещён на gh-pages файл HTML',
   trainee: 'Сергей Шаляпин',
@@ -707,7 +837,7 @@ const event = {
 
 const popover = css`
   position: absolute;
-  z-index: 10;
+  z-index: 20;
 `;
 
 const cover = css`

@@ -14,7 +14,7 @@ export interface IEvent {
   descriptionUrl: string;
   type: string[];
   timeZone: number;
-  dateTime: number;
+  dateTime: [number, string];
   place: string;
   comment: string;
   trainee: string;
