@@ -14,6 +14,6 @@ export default createStructuredSelector({
   loading: loadingDataSelector,
   isStudent: switchMentorStudentSelector,
   timeZone: changeTimezoneSelector,
-  course: changeCourseSelector,
+  courses: changeCourseSelector,
   typeColors: changeTypeColorSelector
 });

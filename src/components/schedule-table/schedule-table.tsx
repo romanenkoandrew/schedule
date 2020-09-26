@@ -12,6 +12,7 @@ import { css } from '@emotion/core';
 import TextArea from 'antd/lib/input/TextArea';
 import { getDateFromTimeStamp, getTimeFromString } from 'utils/utils';
 import ModalContainer from 'components/ModalContainer';
+import { isArray } from 'lodash';
 
 const ScheduleTable = (props: any) => {
   const {
@@ -20,7 +21,7 @@ const ScheduleTable = (props: any) => {
     loading,
     isStudent,
     timeZone,
-    course,
+    courses,
     addNewEvent,
     deleteEvent,
     updateEvent,
@@ -32,7 +33,7 @@ const ScheduleTable = (props: any) => {
   } = props;
   const initialSelect: any[] = [];
   const optionsForSelect = [
-    { value: 'Date/time' },
+    { value: 'Date' },
     { value: 'Time' },
     { value: 'Course' },
     { value: 'Blocks' },
@@ -100,7 +101,7 @@ const ScheduleTable = (props: any) => {
   // }, [timeZone]);
 
   useEffect(() => {
-    let newData: any = eventsData.map((item: any, idx: number) => {
+    let newData: IEvent[] = eventsData.map((item: any, idx: number) => {
       const key = item.id;
       return {
         ...item,
@@ -116,15 +117,28 @@ const ScheduleTable = (props: any) => {
         key,
         id: key,
         dateTime: item.deadline,
-        type: [...item.type, 'deadline']
+        type: ['deadline']
       };
     });
-
-    const result: any = [...newData, ...copy].sort((a: IEvent, b: IEvent) => a.dateTime[0] - b.dateTime[0]);
+    const result: any = [...newData, ...copy]
+      .filter((event: IEvent) => courses.includes(event.courseName))
+      .sort((a: IEvent, b: IEvent) => a.dateTime[0] - b.dateTime[0]);
     setData(result);
-  }, [eventsData]);
+  }, [eventsData, courses]);
 
-  const handleChangeEvent = (row: string, block: any, event: any): void => {
+  // useEffect(() => {
+  //   const newData: IEvent[] = [...eventsData];
+  //   const filterData: any = newData.filter((event: IEvent) => courses.includes(event.courseName));
+  //   setData(filterData);
+  // }, [courses])
+
+  const handleChangeEvent = (row: IEvent, block: any, event: any): void => {
+    if (block === 'materialsLinks') {
+      setEditableEvent({
+        ...editableEvent,
+        [block]: event.target.value
+      });
+    }
     setEditableEvent({
       ...editableEvent,
       [block]: event.target.value
@@ -335,7 +349,7 @@ const ScheduleTable = (props: any) => {
 
   const columns: any = [
     {
-      title: 'Date/time',
+      title: 'Date',
       dataIndex: 'dateTime',
       width: 120,
       key: 'dateTime',
@@ -576,10 +590,17 @@ const ScheduleTable = (props: any) => {
         // if (typeof links === 'object') {
         if (editableEvent && editableEvent.id === row.id) {
           return (
-            // <TextArea value={editableEvent.result} onChange={(event: any) => handleChangeEvent(row, 'result', event)} />
-            links.map((link: string) => (
-              <TextArea key={link} style={{ display: 'block', margin: '2px auto' }} value={link} />
-            ))
+            <TextArea
+              value={
+                isArray(editableEvent.materialsLinks)
+                  ? editableEvent.materialsLinks.join('\n')
+                  : editableEvent.materialsLinks
+              }
+              onChange={(event: any) => handleChangeEvent(row, 'materialsLinks', event)}
+            />
+            // links.map((link: string) => (
+            //   <TextArea key={link} style={{ display: 'block', margin: '2px auto' }} value={link} />
+            // ))
           );
         }
         return links.map((link: string) => (
@@ -674,7 +695,8 @@ const ScheduleTable = (props: any) => {
                     onClick={() => {
                       const updatedEvent = {
                         ...editableEvent,
-                        timeToImplementation: parseFloat(editableEvent.timeToImplementation)
+                        timeToImplementation: parseFloat(editableEvent.timeToImplementation),
+                        materialsLinks: editableEvent.materialsLinks.split('\n')
                       };
                       delete updatedEvent.key;
                       updateEvent(updatedEvent);
@@ -720,6 +742,9 @@ const ScheduleTable = (props: any) => {
           onClose={onClose}
           style={{ marginRight: 3, color: textColor }}
           onClick={() => {
+            if (!colorType) {
+              return;
+            }
             setDisplayColorPicker(prev => !prev);
             setChangingType(colorKey);
             setChangingRowType(row);
@@ -834,7 +859,7 @@ const event = {
   place: 'class',
   comment: 'Создан и размещён на gh-pages файл HTML',
   trainee: 'Сергей Шаляпин',
-  courseName: 'jsFrontEnd',
+  courseName: 'Node 2020-Q3',
   timeToImplementation: 4,
   broadcastUrl: 'Link on Video',
   materialsLinks: ['link1', 'link2'],
