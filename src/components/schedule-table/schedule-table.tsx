@@ -604,9 +604,9 @@ const ScheduleTable = (props: any) => {
           );
         }
         return links.map((link: string) => (
-          <span key={link} style={{ display: 'block', margin: '2px auto' }}>
+          <a href="link" key={link} style={{ display: 'block', margin: '2px auto' }}>
             {link}
-          </span>
+          </a>
         ));
         // }
       }
@@ -696,7 +696,9 @@ const ScheduleTable = (props: any) => {
                       const updatedEvent = {
                         ...editableEvent,
                         timeToImplementation: parseFloat(editableEvent.timeToImplementation),
-                        materialsLinks: editableEvent.materialsLinks.split('\n')
+                        materialsLinks: isArray(editableEvent.materialsLinks)
+                          ? editableEvent.materialsLinks
+                          : editableEvent.materialsLinks.split('\n')
                       };
                       delete updatedEvent.key;
                       updateEvent(updatedEvent);
