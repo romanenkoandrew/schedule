@@ -123,25 +123,9 @@ export const WrapperModalMentor = styled.div`
     }
   }
 
-  .close {
-    position: absolute;
-    top: 20px;
-    right: 26px;
-    border: transparent;
-    outline: none;
-    background: transparent;
-    cursor: pointer;
-
-    &:hover,
-    &:focus,
-    &:active {
-      border: transparent;
-      background: transparent;
-    }
-  }
-
   .description {
     padding: 0 10px 0 70px;
+    width: 80%;
 
     & .links-wrapper ul li,
     & .description-link {
@@ -155,7 +139,6 @@ export const WrapperModalMentor = styled.div`
       text-decoration-line: underline;
       color: #1890ff;
       outline: none;
-      padding: 20px 0 0 0;
 
       &:hover,
       &:focus,
@@ -174,7 +157,7 @@ export const WrapperModalMentor = styled.div`
       line-height: 22px;
       color: #000000;
       padding: 0;
-      margin: 0;
+      margin-bottom: 10px;
     }
 
     & p {
@@ -195,7 +178,6 @@ export const WrapperModalMentor = styled.div`
         padding-inline-start: 0;
 
         li {
-          padding: 7px 0 7px 0;
           margin: 0;
         }
       }
@@ -204,8 +186,7 @@ export const WrapperModalMentor = styled.div`
 
   @media (max-width: 674px) {
     .description {
-      width: 90%;
-      padding: 20px 0 0 0;
+      width: 100%;
     }
   }
 
@@ -221,12 +202,6 @@ export const WrapperModalMentor = styled.div`
       color: #000000;
       padding: 0;
       margin: 0;
-    }
-
-    & .map {
-      width: 100%;
-      height: 400px;
-      background: #00b172; //убрать после добавления карты
     }
 
     & p {
@@ -274,19 +249,9 @@ export const WrapperModalMentor = styled.div`
 
   .wrapper-title {
     position: relative;
-
-    /* & .task {
-      position: absolute;
-      top: 20px;
-      left: 70%;
+    > p {
+      text-align: center;
     }
-
-    & .self-ed {
-      position: absolute;
-      top: 46px;
-      left: 70%;
-    } */
-
     & h1 {
       font-family: 'Roboto';
       font-style: normal;
@@ -294,7 +259,6 @@ export const WrapperModalMentor = styled.div`
       font-size: 38px;
       line-height: 46px;
       color: #262626;
-      /* width: 673px; */
       text-align: center;
       margin: 0 auto;
     }
