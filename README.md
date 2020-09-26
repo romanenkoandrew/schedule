@@ -13,6 +13,7 @@
     - Технологии проекта
     - Особенности приложения
     - Библиотеки и модули
+- Обратная связь    
 <br><br>
 ## Цель разработки
 Это приложение разработано для Rolling Scopes School.
@@ -180,3 +181,6 @@ and display dates and times in JavaScript.
 
 #### ts-pnp
 This package exports a function that can be used to implement the resolveModuleName hook from CompilerHost. It mimics the interface from the one you'd typically use and, as all other PnP plugins, works just fine whether your application is actually running under PnP or not.
+<br><br>
+## Обратная связь  
+Для обратной связи пишите в канал дискорда - https://discord.com/channels/720532874629087253/720532874629087256
