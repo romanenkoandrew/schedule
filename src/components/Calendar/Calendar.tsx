@@ -1,11 +1,10 @@
 import { Calendar, Tag, Select, Col, Row, Typography, Button, Drawer, Card, Space, AutoComplete } from 'antd';
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
+import moment from 'moment';
 
 import 'antd/dist/antd.css';
 import './Calendar.css';
-
-const { Title, Paragraph } = Typography;
 
 const listData = [
   {
@@ -242,7 +241,7 @@ function RenderModalView(props: { onClose: any; visible: any; title: string; val
 function dateCellRender(value: { date: () => number; month: () => number }) {
   const listData = getListData(value);
   return (
-    <ul className="events">
+    <ul className="events" onClick={() => console.log('hi')}>
       {listData.map(
         (item: {
           id: string;
@@ -265,6 +264,7 @@ function dateCellRender(value: { date: () => number; month: () => number }) {
 const CalendarApp: React.FC<any> = () => {
   const [isToday, setDisableBtn] = useState(true);
   const [visible, setVisibleView] = useState(false);
+  const [currentValue, setValue] = useState(moment());
 
   return (
     <main>
@@ -274,6 +274,18 @@ const CalendarApp: React.FC<any> = () => {
             <div className="evnt-calendar-container">
               {
                 <Calendar
+                  value={currentValue}
+                  onSelect={value => {
+                    if (value.month() === currentValue.month()) {
+                      const newValue = value.clone();
+                      setValue(newValue);
+                      setVisibleView(true);
+                      return;
+                    }
+                    const newValue = value.clone();
+                    setValue(newValue);
+                    setDisableBtn(false);
+                  }}
                   headerRender={({ value, onChange }) => {
                     const monthOptions = [];
                     const current = value.clone();
@@ -308,6 +320,7 @@ const CalendarApp: React.FC<any> = () => {
                             icon={<LeftOutlined />}
                             onClick={() => {
                               const newValue = value.clone();
+                              setValue(newValue);
                               setDisableBtn(false);
                               onChange(newValue.subtract(1, 'month'));
                             }}
@@ -317,6 +330,7 @@ const CalendarApp: React.FC<any> = () => {
                             icon={<RightOutlined />}
                             onClick={() => {
                               const newValue = value.clone();
+                              setValue(newValue);
                               setDisableBtn(false);
                               onChange(newValue.add(1, 'month'));
                             }}
@@ -327,8 +341,10 @@ const CalendarApp: React.FC<any> = () => {
                             onClick={() => {
                               setDisableBtn(true);
                               let currentMonth = new Date().getMonth();
+                              let currentYear = new Date().getFullYear();
                               const newValue = value.clone();
-                              onChange(newValue.month(currentMonth));
+                              setValue(newValue);
+                              onChange(newValue.month(currentMonth).year(currentYear));
                             }}
                           >
                             Today
@@ -344,7 +360,7 @@ const CalendarApp: React.FC<any> = () => {
                           }}
                         >
                           <Typography.Text strong style={{ margin: '0 1rem' }}>
-                            {currentDate}
+                            {currentValue.format('MMM YYYY')}
                           </Typography.Text>
                           <Row gutter={7}>
                             <Col>
@@ -354,6 +370,7 @@ const CalendarApp: React.FC<any> = () => {
                                 value={String(months[month])}
                                 onChange={key => {
                                   const newValue = value.clone();
+                                  setValue(newValue);
                                   setDisableBtn(false);
                                   newValue.month(key);
                                   onChange(newValue);
@@ -365,8 +382,8 @@ const CalendarApp: React.FC<any> = () => {
                           </Row>
                         </div>
                         <RenderModalView
-                          title={value.format('dddd DD MMMM')}
-                          value={value}
+                          title={currentValue.format('dddd DD MMMM')}
+                          value={currentValue}
                           visible={visible}
                           onClose={() => {
                             setVisibleView(false);
@@ -374,11 +391,6 @@ const CalendarApp: React.FC<any> = () => {
                         />
                       </div>
                     );
-                  }}
-                  onSelect={value => {
-                    const listData = getItemData(value);
-                    setVisibleView(true);
-                    console.log(listData);
                   }}
                   dateCellRender={dateCellRender}
                 />
