@@ -12,7 +12,7 @@ const Main: React.FC = () => {
   const openModalHandler = () => {
     setIsOpenModal(true);
   };
-  const eventId = 'oP556RVfQFCNCF6LpgGq';
+  const eventId = '1GIPCkceqy7BWZL0E2FO';
   return (
     <div>
       <Button type="primary" onClick={openModalHandler}>

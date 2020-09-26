@@ -139,7 +139,6 @@ export const WrapperModalMentor = styled.div`
       text-decoration-line: underline;
       color: #1890ff;
       outline: none;
-      padding: 20px 0 0 0;
 
       &:hover,
       &:focus,
@@ -158,7 +157,7 @@ export const WrapperModalMentor = styled.div`
       line-height: 22px;
       color: #000000;
       padding: 0;
-      margin: 0;
+      margin-bottom: 10px;
     }
 
     & p {
@@ -179,7 +178,6 @@ export const WrapperModalMentor = styled.div`
         padding-inline-start: 0;
 
         li {
-          padding: 7px 0 7px 0;
           margin: 0;
         }
       }
@@ -189,7 +187,6 @@ export const WrapperModalMentor = styled.div`
   @media (max-width: 674px) {
     .description {
       width: 100%;
-      padding: 20px 0 0 0;
     }
   }
 
@@ -205,12 +202,6 @@ export const WrapperModalMentor = styled.div`
       color: #000000;
       padding: 0;
       margin: 0;
-    }
-
-    & .map {
-      width: 100%;
-      height: 400px;
-      background: #00b172; //убрать после добавления карты
     }
 
     & p {

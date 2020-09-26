@@ -12,13 +12,15 @@ import {
   DatePicker,
   Checkbox,
   Tooltip,
-  Radio
+  Radio,
+  Result
 } from 'antd';
 import { css } from '@emotion/core';
 import { WrapperModalMentor } from './WrapperModalMentor';
 import { TYPES_WITH_COLORS, FILTERS } from 'constants/dataForTable';
 import Loading from 'helpers/Loading';
 import { Courses } from 'constants/header/header';
+import StudentModal from './StudentModal';
 
 export interface IModal {
   isStudent: boolean;
@@ -49,7 +51,8 @@ export interface IModal {
     stack: string[];
     deadline: number;
     videoLink: string;
-    feedback: string[];
+    feedBack: string[];
+    isFeedback: boolean;
     isEventOnline: boolean;
     [propName: string]: any;
   };
@@ -97,7 +100,8 @@ const ModalContainer: React.FC<IModal> = props => {
     block,
     result,
     stack,
-    feedback,
+    feedBack,
+    isFeedback,
     isEventOnline,
     videoLink
   } = eventData;
@@ -122,7 +126,8 @@ const ModalContainer: React.FC<IModal> = props => {
     block: block,
     result: result,
     stack: stack,
-    feedback: feedback,
+    feedBack: feedBack,
+    isFeedback: isFeedback,
     isEventOnline: isEventOnline,
     videoLink: videoLink
   });
@@ -146,7 +151,8 @@ const ModalContainer: React.FC<IModal> = props => {
       block: block || '',
       result: result || '',
       stack: stack || [],
-      feedback: feedback || [],
+      feedBack: feedBack || [],
+      isFeedback: isFeedback || false,
       isEventOnline: isEventOnline || true,
       videoLink: videoLink || ''
     });
@@ -168,6 +174,7 @@ const ModalContainer: React.FC<IModal> = props => {
     closeModalHandler();
     defaultState();
   };
+
   const newEventHandler = (e: any) => {
     setNewEvent({
       ...newEvent,
@@ -187,12 +194,21 @@ const ModalContainer: React.FC<IModal> = props => {
     // setNewEvent({...newEvent, type: value})
     console.log(moment(value).hour());
   };
+  const newEventFeedbackHandler = (e: any) => {
+    setNewEvent({ ...newEvent, isFeedback: e.target.checked });
+  };
+
   const defaultMaterialLinks = () => {
     if (materialsLinks) {
       const newArr = materialsLinks.toString().replace(/,/g, '\n');
       return newArr;
     }
   };
+  const defaultCourse: any = () => {
+    const defCourse = Courses.findIndex(el => el === courseName);
+    return defCourse === -1 ? 0 : defCourse;
+  };
+
   const materialsLinksHandler = (e: any) => {
     setNewEvent({ ...newEvent, materialsLinks: e.target.value.split('\n') });
   };
@@ -204,10 +220,7 @@ const ModalContainer: React.FC<IModal> = props => {
     }
   };
   const resetEvent = () => {
-    setNewEvent({
-      ...newEvent,
-      name: name
-    });
+    console.log(newEvent.isFeedback);
   };
   const createOrUpdateEvent = () => {
     if (eventId === '') {
@@ -215,8 +228,18 @@ const ModalContainer: React.FC<IModal> = props => {
       closeModalHandler();
     } else {
       updateEvent(newEvent);
-      getEventById(eventId);
       setEditMode(false);
+      // getEventById(eventId);
+
+      // return (<Result
+      //   status="success"
+      //   title="Successfully"
+      //   extra={[
+      //     <Button type="primary" onClick={() => getEventById(eventId)}>
+      //       Ok
+      //     </Button>
+      //   ]}
+      // />);
     }
   };
   React.useEffect(() => {
@@ -238,14 +261,14 @@ const ModalContainer: React.FC<IModal> = props => {
             {isStudent ? null : (
               <div className="panel-mentor-wrapper">
                 <Tooltip placement="left" title="Edit" color={'cyan'}>
-                  <button onClick={editModeOn} disabled={editMode}>
+                  <Button onClick={editModeOn} disabled={editMode}>
                     <img src={editMode ? './assets/img/edit-disabled.svg' : './assets/img/edit.svg'} alt="edit" />
-                  </button>
+                  </Button>
                 </Tooltip>
                 <Tooltip placement="left" title="Save" color={'green'}>
-                  <button onClick={createOrUpdateEvent} disabled={!editMode}>
+                  <Button disabled={!editMode} onClick={createOrUpdateEvent}>
                     <img src={editMode ? './assets/img/check.svg' : './assets/img/check-disabled.svg'} alt="right" />
-                  </button>
+                  </Button>
                 </Tooltip>
                 <Tooltip placement="left" title="Reset" color={'red'}>
                   <button onClick={resetEvent} disabled={!editMode}>
@@ -265,7 +288,6 @@ const ModalContainer: React.FC<IModal> = props => {
                     style={{ width: '80%', margin: '10px auto' }}
                     defaultValue={name}
                     onChange={newEventHandler}
-                    required
                   />
                   <div>
                     <label style={{ marginRight: '3px' }}>Event type:</label>
@@ -336,16 +358,35 @@ const ModalContainer: React.FC<IModal> = props => {
                             })}
                         </ul>
                       </div>
+                      <Radio.Group
+                        style={{ margin: '5px 0' }}
+                        onChange={isEventOnlineHandler}
+                        defaultValue={isEventOnline ? 'Online' : 'Offline'}
+                      >
+                        <Radio value={'Online'}>Online</Radio>
+                        <Radio value={'Offline'}>Offline</Radio>
+                      </Radio.Group>
+                      {!newEvent.isEventOnline && (
+                        <>
+                          <h4>Location:</h4>
+                          <TextArea
+                            id="place"
+                            placeholder="City"
+                            rows={1}
+                            css={textAreaStyle}
+                            defaultValue={place}
+                            onChange={newEventHandler}
+                            autoFocus
+                            required
+                          />
+                        </>
+                      )}
                     </div>
                   </aside>
                   <section className="description">
                     <div css={courseswitch}>
                       <label>Course</label>
-                      <Select
-                        defaultValue={Courses.findIndex(el => el === courseName)}
-                        css={coursesSelect}
-                        onChange={newEventCourseNameHandler}
-                      >
+                      <Select defaultValue={defaultCourse} css={coursesSelect} onChange={newEventCourseNameHandler}>
                         {coursesOptions}
                       </Select>
                     </div>
@@ -354,7 +395,7 @@ const ModalContainer: React.FC<IModal> = props => {
                       id="descriptionUrl"
                       placeholder="Link to task"
                       rows={1}
-                      style={{ width: '90%', margin: '10px auto' }}
+                      css={textAreaStyle}
                       defaultValue={descriptionUrl}
                       onChange={newEventHandler}
                       required
@@ -363,7 +404,7 @@ const ModalContainer: React.FC<IModal> = props => {
                       id="description"
                       placeholder="Task description"
                       rows={3}
-                      style={{ width: '90%', margin: '10px auto' }}
+                      css={textAreaStyle}
                       defaultValue={description}
                       onChange={newEventHandler}
                       required
@@ -373,7 +414,7 @@ const ModalContainer: React.FC<IModal> = props => {
                       <TextArea
                         placeholder={`Each link on a new line: \nFirst link \nSecond link`}
                         rows={3}
-                        style={{ width: '90%', margin: '10px auto' }}
+                        css={textAreaStyle}
                         defaultValue={defaultMaterialLinks()}
                         onChange={materialsLinksHandler}
                         required
@@ -383,127 +424,20 @@ const ModalContainer: React.FC<IModal> = props => {
                       id="trainee"
                       placeholder="Autor name"
                       rows={1}
-                      style={{ width: '90%', margin: '10px auto' }}
+                      css={textAreaStyle}
                       defaultValue={trainee}
                       onChange={newEventHandler}
                       required
                     />
+                    <Checkbox onChange={newEventFeedbackHandler} defaultChecked={isFeedback}>
+                      Can a student leave a feedback?
+                    </Checkbox>
                   </section>
                 </div>
                 <Divider />
-                <div className="map-wrapper">
-                  <Radio.Group onChange={isEventOnlineHandler} defaultValue={isEventOnline ? 'Online' : 'Offline'}>
-                    <Radio value={'Online'}>Online</Radio>
-                    <Radio value={'Offline'}>Offline</Radio>
-                  </Radio.Group>
-                  {!newEvent.isEventOnline && (
-                    <>
-                      <h4>Location:</h4>
-                      <TextArea
-                        id="place"
-                        placeholder="City"
-                        rows={1}
-                        style={{ width: '50%', margin: '10px auto' }}
-                        defaultValue={place}
-                        onChange={newEventHandler}
-                        autoFocus
-                        required
-                      />
-                      <div className="map"></div>
-                    </>
-                  )}
-                </div>
               </>
             ) : (
-              <>
-                <div className="wrapper-title">
-                  <Divider />
-                  <h1>{name}</h1>
-                  <div>
-                    {type &&
-                      type.map(el => {
-                        return (
-                          <Tag key={el} color={TYPES_WITH_COLORS[el]}>
-                            {el}
-                          </Tag>
-                        );
-                      })}
-                  </div>
-                </div>
-                <Divider />
-                <div className="wrapper-content">
-                  <aside>
-                    <div className="wrapper-aside">
-                      <div className="dates">
-                        <div className="date-title">Task start</div>
-                        <div className="date-description">
-                          <span className="start-date">{moment(dateTime).format(`${timeFormat} ${dateFormat}`)}</span>
-                        </div>
-                      </div>
-                      <div className="deadline">
-                        <div className="deadline-title">Deadline</div>
-                        <div className="deadline-date">{moment(deadline).format(`${timeFormat} ${dateFormat}`)}</div>
-                      </div>
-                      <div className="wrapper-time-to-finish">
-                        <div className="time-to-finish-title">Needed time to finish</div>
-                        <div className="time-to-finish">
-                          <img src="./assets/img/clock-circle.svg" alt="clock" />
-                          &nbsp;&nbsp;{' '}
-                          <span>
-                            {timeToImplementation <= 1
-                              ? `${timeToImplementation} hour`
-                              : `${timeToImplementation} hours`}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="stack">
-                        <div className="stack-title">Stack</div>
-                        <ul>
-                          {stack &&
-                            stack.map(el => {
-                              return <li key={el}>{el}</li>;
-                            })}
-                        </ul>
-                      </div>
-                    </div>
-                  </aside>
-                  <section className="description">
-                    <h2>Course: {courseName}</h2>
-                    <h2>Description</h2>
-                    <a className="description-link" href={descriptionUrl}>
-                      {descriptionUrl}
-                    </a>
-                    <p>{description}</p>
-                    <div className="links-wrapper">
-                      <h2>Materials:</h2>
-                      <ul>
-                        {materialsLinks &&
-                          materialsLinks.map(el => {
-                            return (
-                              <li key={el}>
-                                <a href={el}>{el}</a>
-                              </li>
-                            );
-                          })}
-                      </ul>
-                    </div>
-                    This event was prepared by <b>{trainee}</b>
-                  </section>
-                </div>
-                <Divider />
-                <div className="map-wrapper">
-                  <p>
-                    This event will be <b>{isEventOnline ? 'Online' : 'Offline'}</b>
-                  </p>
-                  {!isEventOnline && (
-                    <>
-                      <h4>Location:</h4>
-                      <p>{place}</p>
-                      <div className="map"></div>
-                    </>
-                  )}
-                </div>
-              </>
+              <StudentModal eventData={eventData} updateEvent={updateEvent} isStudent={isStudent} />
             )}
           </div>
         </WrapperModalMentor>
@@ -522,6 +456,11 @@ const courseswitch = css`
 const coursesSelect = css`
   width: 200px;
   margin-bottom: 10px;
+`;
+
+const textAreaStyle = css`
+  width: 90%;
+  margin: 10px auto;
 `;
 
 export default ModalContainer;
