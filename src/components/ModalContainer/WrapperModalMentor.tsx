@@ -123,25 +123,9 @@ export const WrapperModalMentor = styled.div`
     }
   }
 
-  .close {
-    position: absolute;
-    top: 20px;
-    right: 26px;
-    border: transparent;
-    outline: none;
-    background: transparent;
-    cursor: pointer;
-
-    &:hover,
-    &:focus,
-    &:active {
-      border: transparent;
-      background: transparent;
-    }
-  }
-
   .description {
     padding: 0 10px 0 70px;
+    width: 80%;
 
     & .links-wrapper ul li,
     & .description-link {
@@ -204,7 +188,7 @@ export const WrapperModalMentor = styled.div`
 
   @media (max-width: 674px) {
     .description {
-      width: 90%;
+      width: 100%;
       padding: 20px 0 0 0;
     }
   }

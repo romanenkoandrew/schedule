@@ -18,6 +18,7 @@ import { css } from '@emotion/core';
 import { WrapperModalMentor } from './WrapperModalMentor';
 import { TYPES_WITH_COLORS, FILTERS } from 'constants/dataForTable';
 import Loading from 'helpers/Loading';
+import { Courses } from 'constants/header/header';
 
 export interface IModal {
   isStudent: boolean;
@@ -57,6 +58,12 @@ export interface IModal {
 const timeFormat = 'HH:mm';
 const dateFormat = 'DD.MM.YYYY';
 const { TextArea } = Input;
+
+const coursesOptions = Courses.map((i, idx) => (
+  <Select.Option key={i} value={idx}>
+    {i}
+  </Select.Option>
+));
 
 const ModalContainer: React.FC<IModal> = props => {
   const {
@@ -169,6 +176,9 @@ const ModalContainer: React.FC<IModal> = props => {
   };
   const newEventTimeHandler = (value: any) => {
     setNewEvent({ ...newEvent, timeToImplementation: value });
+  };
+  const newEventCourseNameHandler = (value: any) => {
+    setNewEvent({ ...newEvent, courseName: Courses[value] });
   };
   const newEventTypeHandler = (value: any) => {
     setNewEvent({ ...newEvent, type: value });
@@ -329,12 +339,22 @@ const ModalContainer: React.FC<IModal> = props => {
                     </div>
                   </aside>
                   <section className="description">
+                    <div css={courseswitch}>
+                      <label>Course</label>
+                      <Select
+                        defaultValue={Courses.findIndex(el => el === courseName)}
+                        css={coursesSelect}
+                        onChange={newEventCourseNameHandler}
+                      >
+                        {coursesOptions}
+                      </Select>
+                    </div>
                     <h2>Description</h2>
                     <TextArea
                       id="descriptionUrl"
                       placeholder="Link to task"
                       rows={1}
-                      style={{ width: '80%', margin: '10px auto' }}
+                      style={{ width: '90%', margin: '10px auto' }}
                       defaultValue={descriptionUrl}
                       onChange={newEventHandler}
                       required
@@ -343,7 +363,7 @@ const ModalContainer: React.FC<IModal> = props => {
                       id="description"
                       placeholder="Task description"
                       rows={3}
-                      style={{ width: '80%', margin: '10px auto' }}
+                      style={{ width: '90%', margin: '10px auto' }}
                       defaultValue={description}
                       onChange={newEventHandler}
                       required
@@ -353,7 +373,7 @@ const ModalContainer: React.FC<IModal> = props => {
                       <TextArea
                         placeholder={`Each link on a new line: \nFirst link \nSecond link`}
                         rows={3}
-                        style={{ width: '80%', margin: '10px auto' }}
+                        style={{ width: '90%', margin: '10px auto' }}
                         defaultValue={defaultMaterialLinks()}
                         onChange={materialsLinksHandler}
                         required
@@ -363,7 +383,7 @@ const ModalContainer: React.FC<IModal> = props => {
                       id="trainee"
                       placeholder="Autor name"
                       rows={1}
-                      style={{ width: '80%', margin: '10px auto' }}
+                      style={{ width: '90%', margin: '10px auto' }}
                       defaultValue={trainee}
                       onChange={newEventHandler}
                       required
@@ -448,6 +468,7 @@ const ModalContainer: React.FC<IModal> = props => {
                     </div>
                   </aside>
                   <section className="description">
+                    <h2>Course: {courseName}</h2>
                     <h2>Description</h2>
                     <a className="description-link" href={descriptionUrl}>
                       {descriptionUrl}
@@ -490,5 +511,17 @@ const ModalContainer: React.FC<IModal> = props => {
     </div>
   );
 };
+
+const courseswitch = css`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+`;
+
+const coursesSelect = css`
+  width: 200px;
+  margin-bottom: 10px;
+`;
 
 export default ModalContainer;
