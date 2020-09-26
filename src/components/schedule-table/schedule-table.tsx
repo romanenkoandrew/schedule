@@ -159,7 +159,6 @@ const ScheduleTable = (props: any) => {
   };
 
   const onClickRow = (record: { key: string }, event: any) => {
-    console.log(event.target);
     if (
       event.target.classList.contains('button-hide') ||
       event.target.classList.contains('button-delete') ||
@@ -460,7 +459,7 @@ const ScheduleTable = (props: any) => {
             {tags.map((tag: string, idx: number) => {
               let colorType = typeColors[tag];
               return (
-                <div key={tag} onClick={event => console.log(event.target)}>
+                <div key={tag}>
                   <Tag
                     color={colorType.background}
                     style={{ border: '0px', marginBottom: '3px', color: typeColors[tag].textColor }}
@@ -631,7 +630,6 @@ const ScheduleTable = (props: any) => {
       render: (props: any) => {
         const isDeadline = props.type.includes('deadline');
         const isHidden = hideRows.some(item => item.key === props.key);
-        console.log(isHidden);
         return (
           <Space size="middle">
             {!editableEvent.id && (
