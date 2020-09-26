@@ -1,10 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import ScheduleList from 'components/schedule-list';
 
 const List: React.FC = () => {
   return (
     <div>
-      <Link to="/main">to Main</Link>
+      <ScheduleList />
     </div>
   );
 };
