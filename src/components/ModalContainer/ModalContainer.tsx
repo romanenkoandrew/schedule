@@ -100,13 +100,10 @@ const ModalContainer: React.FC<IModal> = props => {
     timeToImplementation,
     broadcastUrl,
     materialsLinks,
-    block,
     result,
-    stack,
     feedBack,
     isFeedback,
-    isEventOnline,
-    videoLink
+    isEventOnline
   } = eventData;
 
   const [editMode, setEditMode] = React.useState(false);
@@ -126,13 +123,10 @@ const ModalContainer: React.FC<IModal> = props => {
     timeToImplementation: timeToImplementation,
     broadcastUrl: broadcastUrl,
     materialsLinks: materialsLinks,
-    block: block,
     result: result,
-    stack: stack,
     feedBack: feedBack,
     isFeedback: isFeedback,
-    isEventOnline: isEventOnline,
-    videoLink: videoLink
+    isEventOnline: isEventOnline
   });
   const defaultState = () => {
     setNewEvent({
@@ -151,13 +145,10 @@ const ModalContainer: React.FC<IModal> = props => {
       timeToImplementation: timeToImplementation || 0,
       broadcastUrl: broadcastUrl || '',
       materialsLinks: materialsLinks || [],
-      block: block || '',
       result: result || '',
-      stack: stack || [],
       feedBack: feedBack || [],
       isFeedback: isFeedback || false,
-      isEventOnline: isEventOnline || true,
-      videoLink: videoLink || ''
+      isEventOnline: isEventOnline || true
     });
   };
   const editModeOn = () => {
@@ -294,6 +285,7 @@ const ModalContainer: React.FC<IModal> = props => {
               <>
                 <div className="wrapper-title">
                   <Divider />
+                  <h2>Event name:</h2>
                   <TextArea
                     id="name"
                     placeholder="Сourse name"
@@ -303,7 +295,9 @@ const ModalContainer: React.FC<IModal> = props => {
                     onChange={newEventHandler}
                   />
                   <div>
-                    <label style={{ marginRight: '3px' }}>Event type:</label>
+                    <label style={{ marginRight: '3px' }}>
+                      <b>Event type:</b>
+                    </label>
                     <Select
                       mode="multiple"
                       showArrow
@@ -320,7 +314,7 @@ const ModalContainer: React.FC<IModal> = props => {
                   <aside>
                     <div className="wrapper-aside">
                       <div className="dates">
-                        <div className="date-title">Task start</div>
+                        <div className="date-title">Task start:</div>
                         <div className="date-description">
                           <TimePicker
                             format={timeFormat}
@@ -337,7 +331,7 @@ const ModalContainer: React.FC<IModal> = props => {
                         </div>
                       </div>
                       <div className="deadline">
-                        <div className="deadline-title">Deadline</div>
+                        <div className="deadline-title">Deadline:</div>
                         <TimePicker
                           format={timeFormat}
                           placeholder="The task ends at"
@@ -351,7 +345,7 @@ const ModalContainer: React.FC<IModal> = props => {
                         />
                       </div>
                       <div className="wrapper-time-to-finish">
-                        <div className="time-to-finish-title">Needed time to finish</div>
+                        <div className="time-to-finish-title">Needed time to finish:</div>
                         <div className="time-to-finish">
                           <InputNumber
                             min={0}
@@ -361,15 +355,6 @@ const ModalContainer: React.FC<IModal> = props => {
                             required
                           />
                         </div>
-                      </div>
-                      <div className="stack">
-                        <div className="stack-title">Stack</div>
-                        <ul>
-                          {stack &&
-                            stack.map(el => {
-                              return <li key={el}>{el}</li>;
-                            })}
-                        </ul>
                       </div>
                       <Radio.Group
                         style={{ margin: '5px 0' }}
@@ -398,21 +383,24 @@ const ModalContainer: React.FC<IModal> = props => {
                   </aside>
                   <section className="description">
                     <div css={courseswitch}>
-                      <label>Course</label>
+                      <label>
+                        <b>Course:</b>
+                      </label>
                       <Select defaultValue={defaultCourse} css={coursesSelect} onChange={newEventCourseNameHandler}>
                         {coursesOptions}
                       </Select>
                     </div>
-                    <h2>Description</h2>
+                    <h2>Event link:</h2>
                     <TextArea
                       id="descriptionUrl"
-                      placeholder="Link to task"
+                      placeholder="Link to event"
                       rows={1}
                       css={textAreaStyle}
                       defaultValue={descriptionUrl}
                       onChange={newEventHandler}
                       required
                     />
+                    <h2>Event Description:</h2>
                     <TextArea
                       id="description"
                       placeholder="Task description"
@@ -433,9 +421,30 @@ const ModalContainer: React.FC<IModal> = props => {
                         required
                       />
                     </div>
+                    <h2>Result:</h2>
+                    <TextArea
+                      id="result"
+                      placeholder="What knowledge the student will receive as a result"
+                      rows={3}
+                      css={textAreaStyle}
+                      defaultValue={result}
+                      onChange={newEventHandler}
+                      required
+                    />
+                    <h2>Comment:</h2>
+                    <TextArea
+                      id="comment"
+                      placeholder="Extra comment from mentor"
+                      rows={3}
+                      css={textAreaStyle}
+                      defaultValue={comment}
+                      onChange={newEventHandler}
+                      required
+                    />
+                    <h2>Author:</h2>
                     <TextArea
                       id="trainee"
-                      placeholder="Autor name"
+                      placeholder="Author name"
                       rows={1}
                       css={textAreaStyle}
                       defaultValue={trainee}

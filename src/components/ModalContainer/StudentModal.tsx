@@ -56,13 +56,10 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
     timeToImplementation,
     broadcastUrl,
     materialsLinks,
-    block,
     result,
-    stack,
     feedBack,
     isFeedback,
-    isEventOnline,
-    videoLink
+    isEventOnline
   } = eventData;
 
   const [isOpenFeedbaks, setIsOpenFeedbaks] = React.useState(false);
@@ -82,13 +79,10 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
     timeToImplementation: timeToImplementation,
     broadcastUrl: broadcastUrl,
     materialsLinks: materialsLinks,
-    block: block,
     result: result,
-    stack: stack,
     feedBack: feedBack,
     isFeedback: isFeedback,
-    isEventOnline: isEventOnline,
-    videoLink: videoLink
+    isEventOnline: isEventOnline
   });
   const newEventFeedbackHandler = (e: any) => {
     setNewEvent({ ...newEvent, feedBack: [...feedBack, e.target.value] });
@@ -137,17 +131,17 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
         <aside>
           <div className="wrapper-aside">
             <div className="dates">
-              <div className="date-title">Task start</div>
+              <div className="date-title">Task start:</div>
               <div className="date-description">
                 <span className="start-date">{moment(dateTime).format(`${timeFormat} ${dateFormat}`)}</span>
               </div>
             </div>
             <div className="deadline">
-              <div className="deadline-title">Deadline</div>
+              <div className="deadline-title">Deadline:</div>
               <div className="deadline-date">{moment(deadline).format(`${timeFormat} ${dateFormat}`)}</div>
             </div>
             <div className="wrapper-time-to-finish">
-              <div className="time-to-finish-title">Needed time to finish</div>
+              <div className="time-to-finish-title">Needed time to finish:</div>
               <div className="time-to-finish">
                 <img src="./assets/img/clock-circle.svg" alt="clock" />
                 &nbsp;&nbsp;{' '}
@@ -156,21 +150,12 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
                 </span>
               </div>
             </div>
-            <div className="stack">
-              <div className="stack-title">Stack</div>
-              <ul>
-                {stack &&
-                  stack.map(el => {
-                    return <li key={el}>{el}</li>;
-                  })}
-              </ul>
-            </div>
             <p>
               This event will be <b>{isEventOnline ? 'Online' : 'Offline'}</b>
             </p>
             {!isEventOnline && (
               <>
-                <h4>Location:</h4>
+                <h2>Location:</h2>
                 <p>{place}</p>
               </>
             )}
@@ -178,13 +163,14 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
         </aside>
         <section className="description">
           <h2>Course: {courseName}</h2>
-          <h2>Description</h2>
+          <h2 css={marginTop}>Event link:</h2>
           <a className="description-link" href={descriptionUrl}>
             {descriptionUrl}
           </a>
-          <p>{description}</p>
+          <h2 css={marginTop}>Event Description:</h2>
+          <div css={marginTop}>{description}</div>
           <div className="links-wrapper">
-            <h2>Materials:</h2>
+            <h2 css={marginTop}>Materials:</h2>
             <ul>
               {materialsLinks &&
                 materialsLinks.map(el => {
@@ -196,7 +182,13 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
                 })}
             </ul>
           </div>
-          This event was prepared by <b>{trainee}</b>
+          <h2 css={marginTop}>Result:</h2>
+          <div>{result}</div>
+          <h2 css={marginTop}>Comment:</h2>
+          <div>{comment}</div>
+          <div css={marginTop}>
+            This event was prepared by <b>{trainee}</b>
+          </div>
           {isFeedback && isStudent ? (
             <Form name="form" onFinish={sendFeedback} layout="vertical" css={marginTop}>
               <Form.Item

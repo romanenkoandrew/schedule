@@ -33,13 +33,10 @@ export interface IEvent {
   timeToImplementation: number;
   broadcastUrl: string;
   materialsLinks: string[];
-  block: string;
   result: string;
-  stack: string[];
   feedBack: string;
   isFeedback: boolean;
   taskBreakpoints: number[];
-  videoLink: string;
   isEventOnline: boolean;
   [propName: string]: any;
 }

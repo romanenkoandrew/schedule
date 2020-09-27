@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import ScheduleTable from 'components/schedule-table';
 import { css } from '@emotion/core';
@@ -20,7 +19,7 @@ const Main: React.FC = () => {
     setId(id);
   };
 
-  const eventId = '1GIPCkceqy7BWZL0E2FO';
+  const eventId = 'laFF2QdBuiU6jbeXZz3K';
   return (
     <div>
       <ScheduleTable openModal={openModalHandler} addId={addId} isOpenModal={isOpenModal} />
