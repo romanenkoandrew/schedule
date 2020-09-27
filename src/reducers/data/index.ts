@@ -151,7 +151,7 @@ const reducer = (state = initState, action: IAction) => {
     case ActionTypes.DELETE_EVENT_DATA_BY_ID_REQUEST:
       return {
         ...state,
-        loading: false,
+        loading: true,
         error: false
       };
     case ActionTypes.DELETE_EVENT_DATA_BY_ID_SUCCESS:
