@@ -1,6 +1,7 @@
 import { Calendar, Tag, Select, Col, Row, Typography, Button, Drawer, Card, Space, AutoComplete } from 'antd';
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
+import { TYPE_COLORS } from 'constants/globalConstants';
 import moment from 'moment';
 
 import 'antd/dist/antd.css';
@@ -28,118 +29,28 @@ const listData = [
     feedBack: 'Cool',
     taskBreakpoints: [1600291763391, 1600291764391],
     videoLink: 'string'
-  },
-  {
-    id: 'KyvcYfdhjasdasK4eoYc',
-    name: 'HTML',
-    description: 'Студент знакомится с HTML',
-    descriptionUrl: 'https://guides.hexlet.io/markdown/',
-    type: ['link', 'info'],
-    timeZone: 3,
-    dateTime: 1600391764391,
-    place: 'class',
-    comment: 'Создан и размещён на gh - pages файл HTML',
-    trainee: 'Сергей Шаляпин',
-    courseName: 'jsFrontEnd',
-    timeToImplementation: 4,
-    broadcastUrl: 'Link on Video',
-    materialsLinks: ['https: // github.com/rolling-scopes-school/tasks/blob/master/tasks/codewars-stage-1.md', 'link2'],
-    block: 'HTML',
-    result: 'Студент знает HTML',
-    stack: ['HTML', 'CSS', 'Markdown'],
-    feedBack: 'Cool',
-    taskBreakpoints: [1600291763391, 1600291764391],
-    videoLink: 'string'
-  },
-  {
-    id: 'KyasdasdhjMuXQeK4eoYc',
-    name: 'HTML',
-    description: 'Студент знакомится с HTML',
-    descriptionUrl: 'https://guides.hexlet.io/markdown/',
-    type: ['test', 'info'],
-    timeZone: 3,
-    dateTime: 1600391764391,
-    place: 'class',
-    comment: 'Создан и размещён на gh - pages файл HTML',
-    trainee: 'Сергей Шаляпин',
-    courseName: 'jsFrontEnd',
-    timeToImplementation: 4,
-    broadcastUrl: 'Link on Video',
-    materialsLinks: ['https: // github.com/rolling-scopes-school/tasks/blob/master/tasks/codewars-stage-1.md', 'link2'],
-    block: 'HTML',
-    result: 'Студент знает HTML',
-    stack: ['HTML', 'CSS', 'Markdown'],
-    feedBack: 'Cool',
-    taskBreakpoints: [1600291763391, 1600291764391],
-    videoLink: 'string'
-  },
-  {
-    id: 'KyvcYfdhjMuXQasdsadc',
-    name: 'HTML',
-    description: 'Студент знакомится с HTML',
-    descriptionUrl: 'https://guides.hexlet.io/markdown/',
-    type: ['warmup', 'info'],
-    timeZone: 3,
-    dateTime: 1600391764391,
-    place: 'class',
-    comment: 'Создан и размещён на gh - pages файл HTML',
-    trainee: 'Сергей Шаляпин',
-    courseName: 'jsFrontEnd',
-    timeToImplementation: 4,
-    broadcastUrl: 'Link on Video',
-    materialsLinks: ['https: // github.com/rolling-scopes-school/tasks/blob/master/tasks/codewars-stage-1.md', 'link2'],
-    block: 'HTML',
-    result: 'Студент знает HTML',
-    stack: ['HTML', 'CSS', 'Markdown'],
-    feedBack: 'Cool',
-    taskBreakpoints: [1600291763391, 1600291764391],
-    videoLink: 'string'
-  },
-  {
-    id: 'KyvcYfasdffas4eoYc',
-    name: 'HTML',
-    description: 'Студент знакомится с HTML',
-    descriptionUrl: 'https://guides.hexlet.io/markdown/',
-    type: ['interview', 'info'],
-    timeZone: 3,
-    dateTime: 1600391764391,
-    place: 'class',
-    comment: 'Создан и размещён на gh - pages файл HTML',
-    trainee: 'Сергей Шаляпин',
-    courseName: 'jsFrontEnd',
-    timeToImplementation: 4,
-    broadcastUrl: 'Link on Video',
-    materialsLinks: ['https: // github.com/rolling-scopes-school/tasks/blob/master/tasks/codewars-stage-1.md', 'link2'],
-    block: 'HTML',
-    result: 'Студент знает HTML',
-    stack: ['HTML', 'CSS', 'Markdown'],
-    feedBack: 'Cool',
-    taskBreakpoints: [1600291763391, 1600291764391],
-    videoLink: 'string'
-  },
-  {
-    id: 'KyvcYfdhjMuXQeK4eoYc',
-    name: 'HTML',
-    description: 'Студент знакомится с HTML',
-    descriptionUrl: 'https://guides.hexlet.io/markdown/',
-    type: ['deadline', 'info'],
-    timeZone: 3,
-    dateTime: 1600391764391,
-    place: 'class',
-    comment: 'Создан и размещён на gh - pages файл HTML',
-    trainee: 'Сергей Шаляпин',
-    courseName: 'jsFrontEnd',
-    timeToImplementation: 4,
-    broadcastUrl: 'Link on Video',
-    materialsLinks: ['https: // github.com/rolling-scopes-school/tasks/blob/master/tasks/codewars-stage-1.md', 'link2'],
-    block: 'HTML',
-    result: 'Студент знает HTML',
-    stack: ['HTML', 'CSS', 'Markdown'],
-    feedBack: 'Cool',
-    taskBreakpoints: [1600291763391, 1600291764391],
-    videoLink: 'string'
   }
 ];
+
+const styles = {
+  styleA: {
+    padding: '0px 5px',
+    fontSize: '12px'
+  },
+  styleLi: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    borderBottom: '1px solid #494e5c10',
+    color: '#5b5a59',
+    padding: '5px 0',
+    lineHeight: '18px'
+  },
+  eventPanelWrapper: {
+    margin: '0 auto',
+    padding: '40px 30px 0',
+    maxWidth: '1416px'
+  }
+};
 
 function getListData(value: { date: () => number; month: () => number }) {
   const data: any = [];
@@ -169,18 +80,6 @@ function getItemData(value: { date: () => number; month: () => number }) {
 
 function itemDataRender(value: { date: () => number; month: () => number }) {
   const listData = getItemData(value);
-  const styleA = {
-    padding: '0px 5px',
-    fontSize: '12px'
-  };
-  const styleLi = {
-    display: 'flex',
-    justifyContent: 'space-around',
-    borderBottom: '1px solid #494e5c10',
-    color: '#5b5a59',
-    padding: '5px 0',
-    lineHeight: '18px'
-  };
 
   return (
     <ul className="events">
@@ -193,18 +92,18 @@ function itemDataRender(value: { date: () => number; month: () => number }) {
           description: string | undefined;
           materialsLinks: (string | undefined)[];
         }) => (
-          <li key={item.id} style={styleLi}>
+          <li key={item.id} style={styles.styleLi}>
             <div style={{ paddingRight: '10px', fontSize: '14px', fontWeight: 'bold' }}>{item.name}</div>
             <div style={{ display: 'column', justifyContent: 'space-around' }}>
               {item.description}
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <a href={item.descriptionUrl} style={styleA}>
+                <a href={item.descriptionUrl} style={styles.styleA}>
                   More
                 </a>
-                <a href={item.materialsLinks[0]} style={styleA}>
+                <a href={item.materialsLinks[0]} style={styles.styleA}>
                   link 1
                 </a>
-                <a href={item.materialsLinks[1]} style={styleA}>
+                <a href={item.materialsLinks[1]} style={styles.styleA}>
                   link 2
                 </a>
               </div>
@@ -261,15 +160,26 @@ function dateCellRender(value: { date: () => number; month: () => number }) {
   );
 }
 
-const CalendarApp: React.FC<any> = () => {
+const CalendarApp: React.FC<any> = (props: any) => {
+  const { getEvents } = props;
+
+  const [data, setData] = useState([]);
   const [isToday, setDisableBtn] = useState(true);
   const [visible, setVisibleView] = useState(false);
   const [currentValue, setValue] = useState(moment());
 
+  useEffect(() => {
+    getEvents();
+    if (localStorage.getItem(TYPE_COLORS)) {
+      const colors = JSON.parse(localStorage.getItem(TYPE_COLORS) || '{}');
+      console.log(colors);
+    }
+  }, []);
+
   return (
     <main>
       <section className="evnt-panel evnt-card-panel evnt-calendar-card">
-        <div className="evnt-panel-wrapper">
+        <div style={styles.eventPanelWrapper}>
           <div className="evnt-calendar-table">
             <div className="evnt-calendar-container">
               {
@@ -280,6 +190,7 @@ const CalendarApp: React.FC<any> = () => {
                       const newValue = value.clone();
                       setValue(newValue);
                       setVisibleView(true);
+                      console.log(data);
                       return;
                     }
                     const newValue = value.clone();
@@ -292,7 +203,6 @@ const CalendarApp: React.FC<any> = () => {
                     const localeData = value.localeData();
                     const months = [];
                     const month = value.month();
-                    const currentDate = value.format('MMM YYYY');
 
                     for (let i = 0; i < 12; i++) {
                       current.month(i);

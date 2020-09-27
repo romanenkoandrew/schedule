@@ -3,8 +3,7 @@ import {
   loadingDataSelector,
   switchMentorStudentSelector,
   changeTimezoneSelector,
-  changeCourseSelector,
-  changeTypeColorSelector
+  changeCourseSelector
 } from 'selectors';
 
 import { createStructuredSelector } from 'reselect';
@@ -14,6 +13,5 @@ export default createStructuredSelector({
   loading: loadingDataSelector,
   isStudent: switchMentorStudentSelector,
   timeZone: changeTimezoneSelector,
-  courses: changeCourseSelector,
-  typeColors: changeTypeColorSelector
+  course: changeCourseSelector
 });

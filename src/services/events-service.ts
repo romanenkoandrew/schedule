@@ -14,7 +14,7 @@ export interface IEvent {
   descriptionUrl: string;
   type: string[];
   timeZone: number;
-  dateTime: number;
+  dateTime: [number, string];
   place: string;
   comment: string;
   trainee: string;
@@ -25,7 +25,7 @@ export interface IEvent {
   block: string;
   result: string;
   stack: string[];
-  deadline: number;
+  deadline: [number, string];
   videoLink: string;
   feedback: string[];
   [propName: string]: any;

@@ -24,47 +24,87 @@ export const initState: IState = {
   courses: ['JS/Frontend 2020-Q3'],
   layout: Layouts.Table,
   typeColors: {
-    deadline: 'red',
-    jsTask: 'green',
-    htmlTask: 'green',
-    selfEducation: 'green',
-    externalTask: 'green',
-    codeWars: 'green',
-    codeJam: 'green',
-    newTask: 'green',
-    lecture: 'blue',
-    lectureOnline: 'blue',
-    lectureOffline: 'blue',
-    lectureMixed: 'blue',
-    lectureSelfStudy: 'blue',
-    test: '#63ab91',
-    info: '#ff7b00',
-    warmup: '#63ab91',
-    meetup: '#bde04a',
-    workshop: '#bde04a',
-    interview: '#63ab91'
+    deadline: {
+      background: 'red',
+      textColor: 'white'
+    },
+    jsTask: {
+      background: 'green',
+      textColor: 'white'
+    },
+    htmlTask: {
+      background: 'green',
+      textColor: 'white'
+    },
+    selfEducation: {
+      background: 'green',
+      textColor: 'white'
+    },
+    externalTask: {
+      background: 'green',
+      textColor: 'white'
+    },
+    codeWars: {
+      background: 'green',
+      textColor: 'white'
+    },
+    codeJam: {
+      background: 'green',
+      textColor: 'white'
+    },
+    newTask: {
+      background: 'green',
+      textColor: 'white'
+    },
+    lecture: {
+      background: 'blue',
+      textColor: 'white'
+    },
+    lectureOnline: {
+      background: 'blue',
+      textColor: 'white'
+    },
+    lectureOffline: {
+      background: 'blue',
+      textColor: 'white'
+    },
+    lectureMixed: {
+      background: 'blue',
+      textColor: 'white'
+    },
+    lectureSelfStudy: {
+      background: 'blue',
+      textColor: 'white'
+    },
+    test: {
+      background: '#63ab91',
+      textColor: 'white'
+    },
+    info: {
+      background: '#ff7b00',
+      textColor: 'white'
+    },
+    warmup: {
+      background: '#63ab91',
+      textColor: 'white'
+    },
+    meetup: {
+      background: '#bde04a',
+      textColor: 'white'
+    },
+    workshop: {
+      background: '#bde04a',
+      textColor: 'white'
+    },
+    interview: {
+      background: '#63ab91',
+      textColor: 'white'
+    }
   }
 };
 
 const reducer = (state = initState, action: IAction) => {
   switch (action.type) {
-    case ActionTypes.INCREMENT: {
-      let score = get(action.payload, 'increment');
-      console.log(action);
-      console.log('score:', score);
-      score += 1;
-      return { ...state, score };
-    }
-    case ActionTypes.DECREMENT: {
-      let score = get(action.payload, 'decrement');
-      score -= 1;
-      return { ...state, score };
-    }
-    case ActionTypes.RESET: {
-      let score = get(action.payload, 'reset');
-      score = 0;
-      return { ...state, score };
-    }
     case ActionTypes.SWITCH_MENTOR_STUDENT: {
       let isStudent = get(action.payload, 'switchMentorStudent');
       isStudent = !isStudent;
