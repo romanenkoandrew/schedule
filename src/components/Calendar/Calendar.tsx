@@ -3,7 +3,7 @@ import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 
 import 'antd/dist/antd.css';
-import './Calendar.css';
+// import './Calendar.css';
 
 const listData = [
   {

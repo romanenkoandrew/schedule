@@ -1,4 +1,6 @@
 import moment from 'moment';
+import { TYPE_COLORS, TIME_ZONE, COURSES } from 'constants/globalConstants';
+import { Courses } from 'constants/header/header';
 
 const getDateFromTimeStamp = (dateData: [number, string], timeZone: number) => {
   const timestamp = dateData[0];
@@ -50,4 +52,13 @@ const getTimeFromString = (dateData: [number, string], timeZoneNow: number, time
   return `${hoursWithNowTimeZone}:${time.split(':')[1]}`;
 };
 
-export { getDateFromTimeStamp, getTimeFromString };
+const getFromLocalStorage = (key: string, replacing: any) => {
+  let result;
+  if (localStorage.getItem(key)) {
+    result = JSON.parse(localStorage.getItem(key) || `${replacing}`);
+    return result;
+  }
+  return replacing;
+};
+
+export { getDateFromTimeStamp, getTimeFromString, getFromLocalStorage };
