@@ -1,8 +1,36 @@
-export const TYPE_COLORS = 'TYPE_COLORS';
-export const TIME_ZONE = 'TIME_ZONE';
-export const COURSES = 'COURSES';
+export const TYPE_COLORS: string = 'TYPE_COLORS';
+export const TIME_ZONE: string = 'TIME_ZONE';
+export const COURSES: string = 'COURSES';
 
-export const COLORS_OF_TYPES = {
+export const COLUMN_OPTIONS: string = 'COLUMN_OPTIONS';
+
+export interface IColorType {
+  background: string;
+  textColor: string;
+}
+export interface IColorsOfTypes {
+  deadline: IColorType;
+  jsTask: IColorType;
+  htmlTask: IColorType;
+  selfEducation: IColorType;
+  externalTask: IColorType;
+  codeWars: IColorType;
+  codeJam: IColorType;
+  newTask: IColorType;
+  lecture: IColorType;
+  lectureOnline: IColorType;
+  lectureOffline: IColorType;
+  lectureMixed: IColorType;
+  lectureSelfStudy: IColorType;
+  test: IColorType;
+  info: IColorType;
+  warmup: IColorType;
+  meetup: IColorType;
+  workshop: IColorType;
+  interview: IColorType;
+}
+
+export const COLORS_OF_TYPES: IColorsOfTypes = {
   deadline: {
     background: '#e40000',
     textColor: 'white'

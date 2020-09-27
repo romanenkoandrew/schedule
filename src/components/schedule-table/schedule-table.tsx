@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Table,
   Tag,
   Button,
   Space,
   Input,
-  Spin,
   Select,
   DatePicker,
   Popconfirm,
@@ -18,15 +17,39 @@ import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
 // import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 import { FILTERS } from 'constants/dataForTable';
-import { TYPE_COLORS } from 'constants/globalConstants';
+import { TYPE_COLORS, COLUMN_OPTIONS, IColorsOfTypes, IColorType } from 'constants/globalConstants';
 import { SketchPicker } from 'react-color';
 import moment from 'moment';
 import { IEvent } from '../../services/events-service';
 import { css } from '@emotion/core';
 import TextArea from 'antd/lib/input/TextArea';
 import { getDateFromTimeStamp, getTimeFromString } from 'utils/utils';
-import ModalContainer from 'components/ModalContainer';
 import { isArray } from 'lodash';
+import { getFromLocalStorage } from 'utils/utils';
+
+export interface IEventWithKey {
+  id: string;
+  name: string;
+  description: string;
+  descriptionUrl: string;
+  type: string[];
+  timeZone: number;
+  dateTime: [number, string];
+  place: string;
+  comment: string;
+  trainee: string;
+  courseName: string;
+  timeToImplementation: number;
+  broadcastUrl: string;
+  materialsLinks: string[];
+  result: string;
+  deadline: [number, string];
+  feedback: string[];
+  isFeedback: boolean;
+  isEventOnline: boolean;
+  key: string;
+  [propName: string]: any;
+}
 
 const ScheduleTable = (props: any) => {
   const {
@@ -47,14 +70,13 @@ const ScheduleTable = (props: any) => {
     error
   } = props;
   const initialSelect: any[] = [];
+
   const optionsForSelect = [
     { value: 'Date' },
     { value: 'Time' },
     { value: 'Course' },
-    // { value: 'Blocks' },
     { value: 'Type' },
     { value: 'Task' },
-    // { value: 'Description' },
     { value: 'Place' },
     { value: 'Time Theory & practice' },
     { value: 'Trainee' },
@@ -64,15 +86,17 @@ const ScheduleTable = (props: any) => {
     { value: 'Action' }
   ];
 
-  const optionsForTagsSelect = FILTERS.map((type: any) => ({ value: type.text }));
+  const columnOptions = getFromLocalStorage(COLUMN_OPTIONS, optionsForSelect);
+
+  const optionsForTagsSelect = FILTERS.map((type: { text: string; value: string }) => ({ value: type.text }));
 
   const initialObj: any = {};
 
   const [selectedRowKeys, setSelectedRowKeys] = useState(initialSelect);
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
-  const [data, setData] = useState([]);
-  const [options, setOptions] = useState(optionsForSelect);
+  const [data, setData] = useState(initialSelect);
+  const [options, setOptions] = useState(columnOptions);
   const [tagOptions, setTagOptions] = useState(initialSelect);
   const [hideRows, setHideRows] = useState(initialSelect);
 
@@ -89,14 +113,15 @@ const ScheduleTable = (props: any) => {
 
   useEffect(() => {
     getEvents();
-    // if (localStorage.getItem(TYPE_COLORS)) {
-    //   const colors = JSON.parse(localStorage.getItem(TYPE_COLORS) || '{}');
-    //   changeTypeColors(colors);
-    // }
+    document.addEventListener('click', handleCloseColorPicker);
+
+    return () => {
+      document.removeEventListener('click', handleCloseColorPicker);
+    };
   }, []);
 
   useEffect(() => {
-    let newData: IEvent[] = eventsData.map((item: any, idx: number) => {
+    let newData: IEvent[] = eventsData.map((item: IEvent, idx: number) => {
       const key = item.id;
       return {
         ...item,
@@ -105,7 +130,7 @@ const ScheduleTable = (props: any) => {
       };
     });
 
-    const copy = newData.map((item: any, idx: number) => {
+    const copy = newData.map((item: IEvent, idx: number) => {
       const key = `${item.id}${idx}`;
       return {
         ...item,
@@ -116,14 +141,26 @@ const ScheduleTable = (props: any) => {
       };
     });
 
-    const result: any = [...newData, ...copy]
+    const result: IEvent[] = [...newData, ...copy]
       .filter((event: IEvent) => courses.includes(event.courseName))
-      .sort((a: IEvent, b: IEvent) => a.dateTime[0] - b.dateTime[0]);
+      .sort((a: IEvent, b: IEvent) => {
+        const [aHours, aMinutes] = a.dateTime[1].split(':');
+        const [bHours, bMinutes] = b.dateTime[1].split(':');
+        const aMilliseconds = +aHours * 3600000 + +aMinutes * 60000;
+        const bMilliseconds = +bHours * 3600000 + +bMinutes * 60000;
+        return a.dateTime[0] + aMilliseconds - (b.dateTime[0] + bMilliseconds);
+      });
 
     setData(result);
   }, [eventsData, courses]);
 
-  const handleChangeEvent = (row: IEvent, block: any, event: any): void => {
+  const handleCloseColorPicker = (event: any): void => {
+    if (event.target.closest('.css-163w0fi-popover') === null && !event.target.closest('.ant-tag')) {
+      setDisplayColorPicker(false);
+    }
+  };
+
+  const handleChangeEvent = (row: IEvent, block: string, event: any): void => {
     if (block === 'materialsLinks') {
       setEditableEvent({
         ...editableEvent,
@@ -143,16 +180,15 @@ const ScheduleTable = (props: any) => {
     });
   };
 
-  const handleChangeTypeColors = (typeColors: any) => {
+  const handleChangeTypeColors = (typeColors: IColorsOfTypes) => {
     changeTypeColors(typeColors);
-    // localStorage.setItem(TYPE_COLORS, JSON.stringify(typeColors));
   };
 
   const checkDate = (dateData: [number, string]) => {
     if (!dateData.length) {
       return false;
     }
-    const timestamp = dateData[0];
+    const timestamp: number = dateData[0];
     const [hours, minutes] = dateData[1].split(':');
     const dateWithUserUTC =
       timestamp -
@@ -185,8 +221,7 @@ const ScheduleTable = (props: any) => {
     });
   };
 
-  const onClickRow = (record: IEvent, event: any) => {
-    console.log(event.target);
+  const onClickRow = (record: IEventWithKey, event: any) => {
     if (
       event.target.classList.contains('button-hide') ||
       event.target.classList.contains('button-delete') ||
@@ -200,8 +235,8 @@ const ScheduleTable = (props: any) => {
       return;
     }
     const { key } = record;
-    let newSelectedRowKeys: {}[] = [...selectedRowKeys];
-    const index = newSelectedRowKeys.findIndex((item: any) => {
+    let newSelectedRowKeys: string[] = [...selectedRowKeys];
+    const index = newSelectedRowKeys.findIndex((item: string) => {
       return item === key;
     });
     if (event.shiftKey) {
@@ -219,8 +254,16 @@ const ScheduleTable = (props: any) => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
-  const dblClickRowHandler = (record: IEvent) => {
+  const dblClickRowHandler = (record: IEvent): void => {
+    const isHidden = hideRows.some(item => item.key === record.key);
+    if (isHidden) {
+      return;
+    }
     if (record.type.includes('deadline')) {
+      const id = record.id.slice(0, record.id.length - 1);
+      setEditableEvent(initialObj);
+      addId(id);
+      openModal();
       return;
     }
     setEditableEvent(initialObj);
@@ -247,7 +290,7 @@ const ScheduleTable = (props: any) => {
     return newDataItem;
   };
 
-  const hideHandle = (row: { [propName: string]: any }) => {
+  const hideHandle = (row: { [propName: string]: any }): void => {
     const newData: any = [...data];
     const newHideRows: any = [...hideRows];
     const index = newData.findIndex((item: { [propName: string]: any }) => item.key === row.key);
@@ -371,14 +414,20 @@ const ScheduleTable = (props: any) => {
     setSearchText('');
   };
 
-  const columns: any = [
+  const columns: {}[] = [
     {
       title: 'Date',
       dataIndex: 'dateTime',
       width: 110,
       key: 'dateTime',
       align: 'center',
-      sorter: (a: any, b: any) => a.dateTime[0] - b.dateTime[0],
+      sorter: (a: IEvent, b: IEvent) => {
+        const [aHours, aMinutes] = a.dateTime[1].split(':');
+        const [bHours, bMinutes] = b.dateTime[1].split(':');
+        const aMilliseconds = +aHours * 3600000 + +aMinutes * 60000;
+        const bMilliseconds = +bHours * 3600000 + +bMinutes * 60000;
+        return a.dateTime[0] + aMilliseconds - (b.dateTime[0] + bMilliseconds);
+      },
       fixed: 'left',
       render: (dateData: [number, string], row: IEvent) => {
         const isLost = checkDate(dateData);
@@ -407,12 +456,10 @@ const ScheduleTable = (props: any) => {
       width: 120,
       key: 'Time',
       align: 'center',
-      // sorter: (a: any, b: any) => a.dateTime - b.dateTime,
       render: (dateData: [number, string], row: any) => {
         const isLost = checkDate(dateData);
         const timeWithTimeZone = dateData.length ? getTimeFromString(dateData, timeZone, row.timeZone) : null;
         if (editableEvent && editableEvent.id === row.id) {
-          // const timeWithTimeZone = getTimeFromString(editableEvent.dateTime, timeZone, row.timeZone);
           const timeWithTimeZone = editableEvent.dateTime[1];
           return (
             <TimePicker
@@ -435,21 +482,6 @@ const ScheduleTable = (props: any) => {
         return <span style={isLost ? { opacity: '.5' } : {}}>{courseName}</span>;
       }
     },
-    // {
-    //   title: 'Blocks',
-    //   dataIndex: 'block',
-    //   key: 'block',
-    //   width: 140,
-    //   align: 'center',
-    //   render: (block: any, row: any) => {
-    //     if (editableEvent && editableEvent.id === row.id) {
-    //       return (
-    //         <TextArea value={editableEvent.block} onChange={(event: any) => handleChangeEvent(row, 'block', event)} />
-    //       );
-    //     }
-    //     return <span>{block}</span>;
-    //   }
-    // },
     {
       title: 'Type',
       dataIndex: 'type',
@@ -457,11 +489,11 @@ const ScheduleTable = (props: any) => {
       filters: FILTERS,
       width: 170,
       align: 'center',
-      onFilter: (value: any, record: any) => record.type.includes(value),
-      render: (tags: any, row: any) => {
+      onFilter: (value: string, record: IEvent) => record.type.includes(value),
+      render: (tags: string[], row: IEvent) => {
         const isLost = checkDate(row.dateTime);
         if (editableEvent && editableEvent.id === row.id) {
-          const tagsOptions = tags.reduce((acc: any, tag: any) => {
+          const tagsOptions = tags.reduce((acc: any, tag: string) => {
             const findTag: any = FILTERS.find((type: any) => type.value === tag);
             acc.push(findTag.text);
             return acc;
@@ -477,11 +509,9 @@ const ScheduleTable = (props: any) => {
               defaultValue={tagsOptions}
               onSelect={(option, ...args) => {
                 const newTagOptions = [...tagOptions];
-                // console.log(newTagOptions, option.toLowerCase().replace(/\b\s([a-z])/g, (_: any, char: any) => char.toUpperCase()))
                 newTagOptions.push({
                   value: option.toLowerCase().replace(/\b\s([a-z])/g, (_: any, char: any) => char.toUpperCase())
                 });
-                // console.log(newTagOptions)
                 setEditableEvent({
                   ...editableEvent,
                   type: newTagOptions.map(tag => tag.value)
@@ -507,7 +537,7 @@ const ScheduleTable = (props: any) => {
         }
         return (
           <>
-            {tags.map((tag: string, idx: number) => {
+            {tags.map((tag: string) => {
               let colorType = typeColors[tag];
               return (
                 <div key={tag} style={isLost ? { opacity: '.5' } : {}}>
@@ -558,10 +588,8 @@ const ScheduleTable = (props: any) => {
       dataIndex: 'name',
       key: 'name',
       width: 200,
-      // align: 'center',
       ...getColumnSearchProps('name'),
-      // render: (text: string, itemData: any) => <a href={`${itemData.descriptionUrl}`}>{text}</a>
-      render: (block: any, row: any) => {
+      render: (taskName: string, row: IEventWithKey) => {
         const isLost = checkDate(row.dateTime);
         if (editableEvent && editableEvent.id === row.id) {
           return (
@@ -570,39 +598,18 @@ const ScheduleTable = (props: any) => {
         }
         return (
           <a href={`${row.descriptionUrl}`} target="_blank" style={isLost ? { opacity: '.5' } : {}}>
-            {block}
+            {taskName}
           </a>
         );
       }
     },
-    // {
-    //   title: 'Description',
-    //   dataIndex: 'description',
-    //   key: 'description',
-    //   render: (block: any, row: any) => {
-    //     if (editableEvent && editableEvent.id === row.id) {
-    //       return (
-    //         <TextArea
-    //           value={editableEvent.description}
-    //           onChange={(event: any) => handleChangeEvent(row, 'description', event)}
-    //         />
-    //       );
-    //     }
-    //     return <span>{block}</span>;
-    //   }
-    // },
     {
       title: 'Place',
       dataIndex: 'place',
       key: 'place',
       width: 150,
-      render: (block: any, row: IEvent) => {
+      render: (place: string, row: IEvent) => {
         const isLost = checkDate(row.dateTime);
-        // if (editableEvent && editableEvent.id === row.id) {
-        //   return (
-        //     <TextArea value={editableEvent.place} onChange={(event: any) => handleChangeEvent(row, 'place', event)} />
-        //   );
-        // }
         if (row.isEventOnline) {
           return (
             <a href={`${row.broadcastUrl}`} target="_blank" style={isLost ? { opacity: '.5' } : {}}>
@@ -610,7 +617,7 @@ const ScheduleTable = (props: any) => {
             </a>
           );
         }
-        return <span style={isLost ? { opacity: '.5' } : {}}>{block}</span>;
+        return <span style={isLost ? { opacity: '.5' } : {}}>{place}</span>;
       }
     },
     {
@@ -619,7 +626,7 @@ const ScheduleTable = (props: any) => {
       key: 'timeToImplementation',
       width: 100,
       align: 'center',
-      render: (block: any, row: any) => {
+      render: (hours: string, row: IEventWithKey) => {
         const isLost = checkDate(row.dateTime);
         if (editableEvent && editableEvent.id === row.id) {
           return (
@@ -631,7 +638,7 @@ const ScheduleTable = (props: any) => {
             />
           );
         }
-        return <span style={isLost ? { opacity: '.5' } : {}}>{block}</span>;
+        return <span style={isLost ? { opacity: '.5' } : {}}>{hours}</span>;
       }
     },
     {
@@ -642,7 +649,6 @@ const ScheduleTable = (props: any) => {
       width: 230,
       render: (links: string[], row: IEvent) => {
         const isLost = checkDate(row.dateTime);
-        // if (typeof links === 'object') {
         if (editableEvent && editableEvent.id === row.id) {
           return (
             <TextArea
@@ -659,6 +665,7 @@ const ScheduleTable = (props: any) => {
           <List
             dataSource={links || ['']}
             style={isLost ? { opacity: '.5' } : {}}
+            locale={{ emptyText: ' ' }}
             renderItem={(itemList: string) => {
               return (
                 <List.Item>
@@ -675,7 +682,6 @@ const ScheduleTable = (props: any) => {
             }}
           />
         );
-        // }
       }
     },
     {
@@ -694,14 +700,14 @@ const ScheduleTable = (props: any) => {
       dataIndex: 'result',
       key: 'result',
       width: 200,
-      render: (block: any, row: any) => {
+      render: (result: string, row: IEventWithKey) => {
         const isLost = checkDate(row.dateTime);
         if (editableEvent && editableEvent.id === row.id) {
           return (
             <TextArea value={editableEvent.result} onChange={(event: any) => handleChangeEvent(row, 'result', event)} />
           );
         }
-        return <span style={isLost ? { opacity: '.5' } : {}}>{block}</span>;
+        return <span style={isLost ? { opacity: '.5' } : {}}>{result}</span>;
       }
     },
     {
@@ -709,7 +715,7 @@ const ScheduleTable = (props: any) => {
       dataIndex: 'comment',
       key: 'comment',
       width: 200,
-      render: (block: any, row: any) => {
+      render: (comment: string, row: IEventWithKey) => {
         const isLost = checkDate(row.dateTime);
         if (editableEvent && editableEvent.id === row.id) {
           return (
@@ -727,7 +733,7 @@ const ScheduleTable = (props: any) => {
                 : { textOverflow: 'ellipsis', overflow: 'hidden' }
             }
           >
-            {block}
+            {comment}
           </span>
         );
       }
@@ -770,7 +776,6 @@ const ScheduleTable = (props: any) => {
                       });
                       return acc;
                     }, []);
-                    // console.log(tagsOptions);
                     setEditableEvent(props);
                     setTagOptions(tagsOptions);
                   }}
@@ -817,18 +822,13 @@ const ScheduleTable = (props: any) => {
         );
       }
     }
-  ].filter((item: any) => options.reduce((acc: any, item) => acc.concat(item.value), []).includes(item.title));
+  ].filter((item: any) => options.reduce((acc: any, item: any) => acc.concat(item.value), []).includes(item.title));
 
   function tagRender(props: any, row?: any) {
     const { label, value, closable, onClose } = props;
     const colorKey = label.toLowerCase().replace(/\b\s([a-z])/g, (_: any, char: any) => char.toUpperCase());
-    // console.log(!!typeColors[colorKey])
     let colorType = !!typeColors[colorKey] ? typeColors[colorKey].background : null;
     const textColor = !!typeColors[colorKey] ? typeColors[colorKey].textColor : null;
-    // if (colorType) {
-    // console.log(typeColors, colorKey)
-    // }
-    // console.log(colorKey, row)
     return (
       <>
         <Tag
@@ -879,10 +879,9 @@ const ScheduleTable = (props: any) => {
     );
   }
 
-  // if (loading && data.length === 0) return <Spin />;
-  if (error) {
-    return <Alert message="Error" description="This is an error message about copywriting." type="error" showIcon />;
-  }
+  // if (error) {
+  //   return <Alert message="Error" description="This is an error message about copywriting." type="error" showIcon />;
+  // }
   return (
     <div className="schedule-table-container" css={container}>
       {/* <ReactHTMLTableToExcel
@@ -897,8 +896,8 @@ const ScheduleTable = (props: any) => {
         showArrow
         tagRender={tagRender}
         size="large"
-        defaultValue={columns.reduce((acc: any, item: any) => {
-          acc.push(item.title);
+        defaultValue={options.reduce((acc: any, item: any) => {
+          acc.push(item.value);
           return acc;
         }, [])}
         style={{ width: '100%' }}
@@ -907,12 +906,14 @@ const ScheduleTable = (props: any) => {
           const newOptions = [...options];
           newOptions.push({ value: option });
           setOptions(newOptions);
+          localStorage.setItem(COLUMN_OPTIONS, JSON.stringify(newOptions));
         }}
         onDeselect={option => {
           const newOptions = [...options];
           const index = newOptions.findIndex(item => item.value === option);
           newOptions.splice(index, 1);
           setOptions(newOptions);
+          localStorage.setItem(COLUMN_OPTIONS, JSON.stringify(newOptions));
         }}
       ></Select>
 
@@ -922,9 +923,9 @@ const ScheduleTable = (props: any) => {
         columns={columns}
         dataSource={data}
         bordered
-        pagination={{ pageSize: 50, total: 50 }}
+        // pagination={{ pageSize: 10}}
         loading={loading && !isOpenModal}
-        onRow={(record: IEvent, rowIndex: any) => {
+        onRow={(record: IEventWithKey) => {
           return {
             onClick: event => onClickRow(record, event),
             onDoubleClick: () => dblClickRowHandler(record)
@@ -932,7 +933,7 @@ const ScheduleTable = (props: any) => {
         }}
         scroll={{ y: 1000 }}
       ></Table>
-      <Button onClick={() => addNewEvent(event)}>Create Event</Button>
+      {/* <Button onClick={() => addNewEvent(event)}>Create Event</Button> */}
     </div>
   );
 };
@@ -955,13 +956,10 @@ const event = {
   timeToImplementation: 4,
   broadcastUrl: 'LinkonVideo',
   materialsLinks: ['link1', 'link2'],
-  // block: 'HTML',
   result: 'Студент знает HTML',
-  // stack: ['HTML', 'CSS', 'Markdown'],
   feedBack: ['Cool', 'Bad'],
   isFeedback: false,
   isEventOnline: true
-  // videoLink: 'string'
 };
 
 const popover = css`
@@ -982,9 +980,3 @@ const container = css`
   margin: 20px;
   user-select: none;
 `;
-
-const hide = css`
-  width: 0px;
-`;
-
-const filter = ['description', 'type', 'place'];
