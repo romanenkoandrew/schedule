@@ -2,7 +2,11 @@ import ActionTypes from 'action-types';
 import get from 'lodash/get';
 
 import { Layouts } from 'constants/header/header';
+import { TYPE_COLORS, COURSES, TIME_ZONE, COLORS_OF_TYPES } from 'constants/globalConstants';
+import { getFromLocalStorage } from 'utils/utils';
+import { Courses } from 'constants/header/header';
 
+console.log('reducer');
 interface IState {
   score: number;
   isStudent: boolean;
@@ -20,87 +24,10 @@ interface IAction {
 export const initState: IState = {
   score: 0,
   isStudent: true,
-  timezone: 3,
-  courses: ['JS/Frontend 2020-Q3'],
+  timezone: getFromLocalStorage(TIME_ZONE, 3),
+  courses: getFromLocalStorage(COURSES, Courses),
   layout: Layouts.Table,
-  typeColors: {
-    deadline: {
-      background: 'red',
-      textColor: 'white'
-    },
-    jsTask: {
-      background: 'green',
-      textColor: 'white'
-    },
-    htmlTask: {
-      background: 'green',
-      textColor: 'white'
-    },
-    selfEducation: {
-      background: 'green',
-      textColor: 'white'
-    },
-    externalTask: {
-      background: 'green',
-      textColor: 'white'
-    },
-    codeWars: {
-      background: 'green',
-      textColor: 'white'
-    },
-    codeJam: {
-      background: 'green',
-      textColor: 'white'
-    },
-    newTask: {
-      background: 'green',
-      textColor: 'white'
-    },
-    lecture: {
-      background: 'blue',
-      textColor: 'white'
-    },
-    lectureOnline: {
-      background: 'blue',
-      textColor: 'white'
-    },
-    lectureOffline: {
-      background: 'blue',
-      textColor: 'white'
-    },
-    lectureMixed: {
-      background: 'blue',
-      textColor: 'white'
-    },
-    lectureSelfStudy: {
-      background: 'blue',
-      textColor: 'white'
-    },
-    test: {
-      background: '#63ab91',
-      textColor: 'white'
-    },
-    info: {
-      background: '#ff7b00',
-      textColor: 'white'
-    },
-    warmup: {
-      background: '#63ab91',
-      textColor: 'white'
-    },
-    meetup: {
-      background: '#bde04a',
-      textColor: 'white'
-    },
-    workshop: {
-      background: '#bde04a',
-      textColor: 'white'
-    },
-    interview: {
-      background: '#63ab91',
-      textColor: 'white'
-    }
-  }
+  typeColors: getFromLocalStorage(TYPE_COLORS, COLORS_OF_TYPES)
 };
 
 const reducer = (state = initState, action: IAction) => {
@@ -116,14 +43,17 @@ const reducer = (state = initState, action: IAction) => {
     }
     case ActionTypes.CHANGE_TIMEZONE: {
       let timezone = get(action.payload, 'changeTimezone');
+      localStorage.setItem(TIME_ZONE, JSON.stringify(timezone));
       return { ...state, timezone };
     }
     case ActionTypes.CHANGE_COURSE: {
       let courses = get(action.payload, 'changeCourse');
+      localStorage.setItem(COURSES, JSON.stringify(courses));
       return { ...state, courses };
     }
     case ActionTypes.CHANGE_TYPE_COLORS: {
       let typeColors = action.payload;
+      localStorage.setItem(TYPE_COLORS, JSON.stringify(typeColors));
       return { ...state, typeColors };
     }
 
