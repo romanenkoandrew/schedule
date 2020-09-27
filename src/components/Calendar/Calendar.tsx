@@ -1,36 +1,9 @@
-import { Calendar, Tag, Select, Col, Row, Typography, Button, Drawer, Card, Space, AutoComplete } from 'antd';
+import { Calendar, Tag, Select, Col, Row, Typography, Button, Drawer, Spin } from 'antd';
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
-import { TYPE_COLORS } from 'constants/globalConstants';
+import { IEvent } from '../../services/events-service';
 import moment from 'moment';
-
-import 'antd/dist/antd.css';
-import './Calendar.css';
-
-const listData = [
-  {
-    id: 'KyvcYasdasdsadoYc',
-    name: 'HTML',
-    description: 'Студент знакомится с HTML',
-    descriptionUrl: 'https://guides.hexlet.io/markdown/',
-    type: ['htmlTask', 'info'],
-    timeZone: 3,
-    dateTime: 1600291763391,
-    place: 'class',
-    comment: 'Создан и размещён на gh - pages файл HTML',
-    trainee: 'Сергей Шаляпин',
-    courseName: 'jsFrontEnd',
-    timeToImplementation: 4,
-    broadcastUrl: 'Link on Video',
-    materialsLinks: ['https: // github.com/rolling-scopes-school/tasks/blob/master/tasks/codewars-stage-1.md', 'link2'],
-    block: 'HTML',
-    result: 'Студент знает HTML',
-    stack: ['HTML', 'CSS', 'Markdown'],
-    feedBack: 'Cool',
-    taskBreakpoints: [1600291763391, 1600291764391],
-    videoLink: 'string'
-  }
-];
+import Loading from 'helpers/Loading';
 
 const styles = {
   styleA: {
@@ -44,124 +17,11 @@ const styles = {
     color: '#5b5a59',
     padding: '5px 0',
     lineHeight: '18px'
-  },
-  eventPanelWrapper: {
-    margin: '0 auto',
-    padding: '40px 30px 0',
-    maxWidth: '1416px'
   }
 };
 
-function getListData(value: { date: () => number; month: () => number }) {
-  const data: any = [];
-  listData.map(item => {
-    let eventStart = new Date(item.dateTime);
-    if (eventStart.getUTCMonth() !== value.month()) {
-      return;
-    }
-    if (eventStart.getUTCDay() === value.date()) {
-      data.push(item);
-    }
-  });
-  return data;
-}
-
-function getItemData(value: { date: () => number; month: () => number }) {
-  const data: any = [];
-  const listData = getListData(value);
-  listData.filter((item: { dateTime: string | number | Date }) => {
-    let eventStart = new Date(item.dateTime);
-    if (eventStart.getUTCDay() === value.date()) {
-      data.push(item);
-    }
-  });
-  return data;
-}
-
-function itemDataRender(value: { date: () => number; month: () => number }) {
-  const listData = getItemData(value);
-
-  return (
-    <ul className="events">
-      {listData.map(
-        (item: {
-          id: string;
-          name: string;
-          type: (string | undefined)[];
-          descriptionUrl: string | undefined;
-          description: string | undefined;
-          materialsLinks: (string | undefined)[];
-        }) => (
-          <li key={item.id} style={styles.styleLi}>
-            <div style={{ paddingRight: '10px', fontSize: '14px', fontWeight: 'bold' }}>{item.name}</div>
-            <div style={{ display: 'column', justifyContent: 'space-around' }}>
-              {item.description}
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <a href={item.descriptionUrl} style={styles.styleA}>
-                  More
-                </a>
-                <a href={item.materialsLinks[0]} style={styles.styleA}>
-                  link 1
-                </a>
-                <a href={item.materialsLinks[1]} style={styles.styleA}>
-                  link 2
-                </a>
-              </div>
-            </div>
-          </li>
-        )
-      )}
-    </ul>
-  );
-}
-
-function RenderModalView(props: { onClose: any; visible: any; title: string; value: any }) {
-  const { onClose, visible, title, value } = props;
-  return (
-    <div className="site-drawer-render-in-current-wrapper">
-      <Drawer
-        title={title}
-        placement="right"
-        closable={false}
-        onClose={onClose}
-        visible={visible}
-        getContainer={false}
-        style={{
-          position: 'absolute',
-          overflow: 'hidden'
-        }}
-      >
-        {itemDataRender(value)}
-      </Drawer>
-    </div>
-  );
-}
-
-function dateCellRender(value: { date: () => number; month: () => number }) {
-  const listData = getListData(value);
-  return (
-    <ul className="events" onClick={() => console.log('hi')}>
-      {listData.map(
-        (item: {
-          id: string;
-          name: string;
-          type: (string | undefined)[];
-          descriptionUrl: string | undefined;
-          description: string | undefined;
-        }) => (
-          <li key={item.id} title={item.description}>
-            <Tag className={item.type[0]}>
-              <a href={item.descriptionUrl}>{`${item.name}, ${item.type[0]}`}</a>
-            </Tag>
-          </li>
-        )
-      )}
-    </ul>
-  );
-}
-
 const CalendarApp: React.FC<any> = (props: any) => {
-  const { getEvents } = props;
+  const { getEvents, eventsData, loading, timeZone } = props;
 
   const [data, setData] = useState([]);
   const [isToday, setDisableBtn] = useState(true);
@@ -170,22 +30,158 @@ const CalendarApp: React.FC<any> = (props: any) => {
 
   useEffect(() => {
     getEvents();
-    if (localStorage.getItem(TYPE_COLORS)) {
-      const colors = JSON.parse(localStorage.getItem(TYPE_COLORS) || '{}');
-      console.log(colors);
-    }
   }, []);
+
+  useEffect(() => {
+    let newData: any = eventsData.map((item: any, idx: number) => {
+      const key = item.id;
+      return {
+        ...item,
+        key,
+        timeToImplementation: `${item.timeToImplementation} h`
+      };
+    });
+
+    const copy = newData.map((item: any, idx: number) => {
+      const key = `${item.id}${idx}`;
+      return {
+        ...item,
+        key,
+        id: key,
+        timeToImplementation: `${item.timeToImplementation} h`,
+        dateTime: item.deadline,
+        type: [...item.type, 'deadline']
+      };
+    });
+
+    const result: any = [...newData, ...copy].sort((a: any, b: any) => a.dateTime[0] - b.dateTime[0]);
+    setData(result);
+    console.log(result);
+  }, [eventsData]);
+
+  const getListData = (value: { date: () => number; month: () => number }) => {
+    const dataList: IEvent[] = [];
+    data.map((item: IEvent) => {
+      const dateItem: any = item.dateTime[0];
+      let eventStart: any = new Date(dateItem);
+      if (eventStart.getUTCMonth() !== value.month()) {
+        return;
+      }
+      if (eventStart.getUTCDay() === value.date()) {
+        dataList.push(item);
+      }
+    });
+    return dataList;
+  };
+
+  const RenderModalView = (props: { onClose: any; visible: any; title: string; value: any }) => {
+    const { onClose, visible, title, value } = props;
+    return (
+      <div className="site-drawer-render-in-current-wrapper">
+        <Drawer
+          title={title}
+          placement="right"
+          closable={false}
+          onClose={onClose}
+          visible={visible}
+          getContainer={false}
+          style={{
+            position: 'absolute',
+            overflow: 'hidden'
+          }}
+        >
+          {itemDataRender(value)}
+        </Drawer>
+      </div>
+    );
+  };
+
+  const dateCellRender = (value: { date: () => number; month: () => number }) => {
+    const listData = getListData(value);
+    console.log(listData);
+    return (
+      <ul className="events" onClick={() => console.log('hi')}>
+        {listData.map(
+          (item: {
+            id: string;
+            name: string;
+            type: (string | undefined)[];
+            descriptionUrl: string | undefined;
+            description: string | undefined;
+          }) => (
+            <li key={item.id} title={item.description}>
+              <Tag className={item.type[0]}>
+                <a href={item.descriptionUrl}>{`${item.name}, ${item.type[0]}`}</a>
+              </Tag>
+            </li>
+          )
+        )}
+      </ul>
+    );
+  };
+
+  const getItemData = (value: { date: () => number; month: () => number }) => {
+    const dayData: any = [];
+    const listData = getListData(value);
+    listData.filter((item: any) => {
+      let eventStart = new Date(item.dateTime);
+      if (eventStart.getUTCDay() === value.date()) {
+        dayData.push(item);
+      }
+    });
+    return dayData;
+  };
+
+  const itemDataRender = (value: { date: () => number; month: () => number }) => {
+    const listData = getItemData(value);
+
+    return (
+      <ul className="events">
+        {listData.map(
+          (item: {
+            id: string;
+            name: string;
+            type: (string | undefined)[];
+            descriptionUrl: string | undefined;
+            description: string | undefined;
+            materialsLinks: (string | undefined)[];
+          }) => (
+            <li key={item.id} style={styles.styleLi}>
+              <div style={{ paddingRight: '10px', fontSize: '14px', fontWeight: 'bold' }}>{item.name}</div>
+              <div style={{ display: 'column', justifyContent: 'space-around' }}>
+                {item.description}
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <a href={item.descriptionUrl} style={styles.styleA}>
+                    More
+                  </a>
+                  <a href={item.materialsLinks[0]} style={styles.styleA}>
+                    link 1
+                  </a>
+                  <a href={item.materialsLinks[1]} style={styles.styleA}>
+                    link 2
+                  </a>
+                </div>
+              </div>
+            </li>
+          )
+        )}
+      </ul>
+    );
+  };
+
+  if (loading && eventsData.length === 0) return <Loading />;
 
   return (
     <main>
       <section className="evnt-panel evnt-card-panel evnt-calendar-card">
-        <div style={styles.eventPanelWrapper}>
+        <div>
           <div className="evnt-calendar-table">
             <div className="evnt-calendar-container">
               {
                 <Calendar
                   value={currentValue}
                   onSelect={value => {
+                    getListData(value);
                     if (value.month() === currentValue.month()) {
                       const newValue = value.clone();
                       setValue(newValue);
