@@ -23,9 +23,6 @@ const Main: React.FC = () => {
     <div>
       <ScheduleTable openModal={openModalHandler} addId={addId} isOpenModal={isOpenModal} />
       {isOpenModal && <ModalContainer eventId={id} isOpenModal={isOpenModal} closeModalHandler={closeModalHandler} />}
-      <Button type="primary" onClick={openModalHandler}>
-        MODAL
-      </Button>
     </div>
   );
 };

@@ -1,10 +1,13 @@
 import React from 'react';
 import moment from 'moment';
-import { Button, Divider, Input, Tag, Form } from 'antd';
+import { Button, Divider, Input, Tag, Form, Select, TimePicker } from 'antd';
 import { css } from '@emotion/core';
 import { FILTERS } from 'constants/dataForTable';
+import Timezones from 'constants/timezone/timezone';
+import { getTimeFromString, getDateFromTimeStamp } from 'utils/utils';
 
 interface IStudentModal {
+  timeZoneHeader: number;
   updateEvent: any;
   isStudent: boolean;
   typeColor: any;
@@ -15,7 +18,7 @@ interface IStudentModal {
     descriptionUrl: string;
     type: string[];
     timeZone: number;
-    dateTime: number;
+    dateTime: [number, string];
     place: string;
     comment: string;
     trainee: string;
@@ -23,11 +26,8 @@ interface IStudentModal {
     timeToImplementation: number;
     broadcastUrl: string;
     materialsLinks: string[];
-    block: string;
     result: string;
-    stack: string[];
-    deadline: number;
-    videoLink: string;
+    deadline: [number, string];
     feedBack: string[];
     isFeedback: boolean;
     isEventOnline: boolean;
@@ -38,8 +38,13 @@ interface IStudentModal {
 const timeFormat = 'HH:mm';
 const dateFormat = 'DD.MM.YYYY';
 const { TextArea } = Input;
+const timezoneOptions = Timezones.map((i, idx) => (
+  <Select.Option key={idx.toString()} value={i.value}>
+    {i.name}
+  </Select.Option>
+));
 
-const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStudent, typeColor }) => {
+const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStudent, typeColor, timeZoneHeader }) => {
   const {
     id,
     name,
@@ -94,7 +99,9 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
   const toogleFeedbaks = () => {
     setIsOpenFeedbaks(!isOpenFeedbaks);
   };
-
+  const newEventTimezoneHandler = (value: any) => {
+    setNewEvent({ ...newEvent, timeZone: value });
+  };
   const defaultTypes = () => {
     const index: any = [];
     let defTypes: any = [];
@@ -106,6 +113,18 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
     });
     return defTypes;
   };
+  const currentEventTime = (dateData: [number, string]) => {
+    const timeWithTimeZone = dateData.length ? getTimeFromString(dateData, newEvent.timeZone, timeZone) : null;
+    return timeWithTimeZone;
+  };
+  const currentEventData = (dateData: [number, string]) => {
+    const date = dateData.length ? getDateFromTimeStamp(dateData, newEvent.timeZone) : null;
+    return date;
+  };
+
+  React.useEffect(() => {
+    setNewEvent({ ...newEvent, timeZone: timeZoneHeader });
+  }, []);
   return (
     <>
       <div className="wrapper-title">
@@ -130,15 +149,30 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
       <div className="wrapper-content">
         <aside>
           <div className="wrapper-aside">
+            <div css={timezoneswitch}>
+              <label>Timezone</label>
+              <Select
+                css={timezoneSelect}
+                placeholder="Please select a timezone"
+                defaultValue={timeZoneHeader}
+                onChange={newEventTimezoneHandler}
+              >
+                {timezoneOptions}
+              </Select>
+            </div>
             <div className="dates">
-              <div className="date-title">Task start:</div>
+              <div className="date-title">Task start at:</div>
               <div className="date-description">
-                <span className="start-date">{moment(dateTime).format(`${timeFormat} ${dateFormat}`)}</span>
+                <span className="start-date">{`${currentEventTime(newEvent.dateTime)}h ${currentEventData(
+                  newEvent.dateTime
+                )}`}</span>
               </div>
             </div>
             <div className="deadline">
               <div className="deadline-title">Deadline:</div>
-              <div className="deadline-date">{moment(deadline).format(`${timeFormat} ${dateFormat}`)}</div>
+              <div className="deadline-date">{`${currentEventTime(newEvent.deadline)}h ${currentEventData(
+                newEvent.deadline
+              )}`}</div>
             </div>
             <div className="wrapper-time-to-finish">
               <div className="time-to-finish-title">Needed time to finish:</div>
@@ -224,6 +258,17 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
 
 const marginTop = css`
   margin-top: 10px;
+`;
+const timezoneswitch = css`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+`;
+
+const timezoneSelect = css`
+  width: 230px;
+  margin-bottom: 10px;
 `;
 
 export default StudentModal;
