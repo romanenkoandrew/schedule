@@ -33,13 +33,10 @@ export interface IEvent {
   timeToImplementation: number;
   broadcastUrl: string;
   materialsLinks: string[];
-  block: string;
   result: string;
-  stack: string[];
   feedBack: string;
   isFeedback: boolean;
   taskBreakpoints: number[];
-  videoLink: string;
   isEventOnline: boolean;
   [propName: string]: any;
 }
@@ -154,7 +151,7 @@ const reducer = (state = initState, action: IAction) => {
     case ActionTypes.DELETE_EVENT_DATA_BY_ID_REQUEST:
       return {
         ...state,
-        loading: false,
+        loading: true,
         error: false
       };
     case ActionTypes.DELETE_EVENT_DATA_BY_ID_SUCCESS:

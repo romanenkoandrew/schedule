@@ -22,12 +22,12 @@ export interface IEvent {
   timeToImplementation: number;
   broadcastUrl: string;
   materialsLinks: string[];
-  block: string;
   result: string;
-  stack: string[];
   deadline: [number, string];
-  videoLink: string;
   feedback: string[];
+  isFeedback: boolean;
+  isEventOnline: boolean;
+  key?: string;
   [propName: string]: any;
 }
 export default class EventsService {
