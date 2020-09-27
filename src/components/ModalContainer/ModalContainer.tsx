@@ -17,7 +17,7 @@ import {
 } from 'antd';
 import { css } from '@emotion/core';
 import { WrapperModalMentor } from './WrapperModalMentor';
-import { TYPES_WITH_COLORS, FILTERS } from 'constants/dataForTable';
+import { FILTERS } from 'constants/dataForTable';
 import Loading from 'helpers/Loading';
 import { Courses } from 'constants/header/header';
 import StudentModal from './StudentModal';
@@ -31,6 +31,7 @@ export interface IModal {
   updateEvent: any;
   addNewEvent: any;
   eventId: string;
+  typeColor: any;
   eventData: {
     id: string;
     name: string;
@@ -61,6 +62,7 @@ export interface IModal {
 const timeFormat = 'HH:mm';
 const dateFormat = 'DD.MM.YYYY';
 const { TextArea } = Input;
+const optionsForTagsSelect = FILTERS.map((type: any) => ({ value: type.text }));
 
 const coursesOptions = Courses.map((i, idx) => (
   <Select.Option key={i} value={idx}>
@@ -74,6 +76,7 @@ const ModalContainer: React.FC<IModal> = props => {
     eventId,
     isOpenModal,
     eventData,
+    typeColor,
     loading,
     closeModalHandler,
     getEventById,
@@ -163,8 +166,13 @@ const ModalContainer: React.FC<IModal> = props => {
   };
   const tagRender = FILTERS.map(el => {
     return (
-      <Select.Option value={el.text} key={el.text}>
-        <Tag color={TYPES_WITH_COLORS[el.value]}>{el.text}</Tag>
+      <Select.Option value={el.value} key={el.value}>
+        <Tag
+          style={{ backgroundColor: typeColor[el.value].background, marginRight: 3 }}
+          color={typeColor[el.value].textColor}
+        >
+          {el.text}
+        </Tag>
       </Select.Option>
     );
   });
@@ -209,6 +217,10 @@ const ModalContainer: React.FC<IModal> = props => {
     return defCourse === -1 ? 0 : defCourse;
   };
 
+  const defaultTypes = () => {
+    const defTypes = [...FILTERS.map(el => {})];
+  };
+
   const materialsLinksHandler = (e: any) => {
     setNewEvent({ ...newEvent, materialsLinks: e.target.value.split('\n') });
   };
@@ -220,7 +232,8 @@ const ModalContainer: React.FC<IModal> = props => {
     }
   };
   const resetEvent = () => {
-    console.log(newEvent.isFeedback);
+    // console.log(newEvent.isFeedback);
+    console.log(optionsForTagsSelect);
   };
   const createOrUpdateEvent = () => {
     if (eventId === '') {
@@ -296,7 +309,7 @@ const ModalContainer: React.FC<IModal> = props => {
                       showArrow
                       dropdownMatchSelectWidth={150}
                       defaultValue={type}
-                      // onChange={newEventTypeHandler}
+                      onChange={newEventTypeHandler}
                     >
                       {tagRender}
                     </Select>
@@ -437,7 +450,12 @@ const ModalContainer: React.FC<IModal> = props => {
                 <Divider />
               </>
             ) : (
-              <StudentModal eventData={eventData} updateEvent={updateEvent} isStudent={isStudent} />
+              <StudentModal
+                eventData={eventData}
+                updateEvent={updateEvent}
+                isStudent={isStudent}
+                typeColor={typeColor}
+              />
             )}
           </div>
         </WrapperModalMentor>

@@ -1,28 +1,13 @@
 import React from 'react';
 import moment from 'moment';
-import {
-  Button,
-  Modal,
-  Divider,
-  Input,
-  Tag,
-  Select,
-  InputNumber,
-  TimePicker,
-  DatePicker,
-  Checkbox,
-  Tooltip,
-  Radio,
-  Result,
-  Form,
-  List
-} from 'antd';
+import { Button, Divider, Input, Tag, Form } from 'antd';
 import { css } from '@emotion/core';
-import { TYPES_WITH_COLORS, FILTERS } from 'constants/dataForTable';
+import { FILTERS } from 'constants/dataForTable';
 
 interface IStudentModal {
   updateEvent: any;
   isStudent: boolean;
+  typeColor: any;
   eventData: {
     id: string;
     name: string;
@@ -54,7 +39,7 @@ const timeFormat = 'HH:mm';
 const dateFormat = 'DD.MM.YYYY';
 const { TextArea } = Input;
 
-const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStudent }) => {
+const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStudent, typeColor }) => {
   const {
     id,
     name,
@@ -116,6 +101,17 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
     setIsOpenFeedbaks(!isOpenFeedbaks);
   };
 
+  const defaultTypes = () => {
+    const index: any = [];
+    let defTypes: any = [];
+    type.map(el => {
+      FILTERS.findIndex((item, ind) => {
+        if (el === item.value) index.push(ind);
+      });
+      defTypes = [...index.map((el: any) => FILTERS[el])];
+    });
+    return defTypes;
+  };
   return (
     <>
       <div className="wrapper-title">
@@ -123,10 +119,14 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
         <h1>{name}</h1>
         <div>
           {type &&
-            type.map(el => {
+            defaultTypes().map((el: any) => {
               return (
-                <Tag key={el} color={TYPES_WITH_COLORS[el]}>
-                  {el}
+                <Tag
+                  key={el.value}
+                  style={{ backgroundColor: typeColor[el.value].background, marginRight: 3 }}
+                  color={typeColor[el.value].textColor}
+                >
+                  {el.text}
                 </Tag>
               );
             })}
