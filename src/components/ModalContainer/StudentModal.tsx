@@ -120,7 +120,7 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
                   style={{ backgroundColor: typeColor[el.value].background, marginRight: 3 }}
                   color={typeColor[el.value].textColor}
                 >
-                  {el.text}
+                  {el.text.toUpperCase()}
                 </Tag>
               );
             })}
