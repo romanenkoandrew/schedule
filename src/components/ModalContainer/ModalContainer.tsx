@@ -17,7 +17,7 @@ import {
 } from 'antd';
 import { css } from '@emotion/core';
 import { WrapperModalMentor } from './WrapperModalMentor';
-import { TYPES_WITH_COLORS, FILTERS } from 'constants/dataForTable';
+import { FILTERS } from 'constants/dataForTable';
 import Loading from 'helpers/Loading';
 import { Courses } from 'constants/header/header';
 import StudentModal from './StudentModal';
@@ -31,6 +31,7 @@ export interface IModal {
   updateEvent: any;
   addNewEvent: any;
   eventId: string;
+  typeColor: any;
   eventData: {
     id: string;
     name: string;
@@ -74,6 +75,7 @@ const ModalContainer: React.FC<IModal> = props => {
     eventId,
     isOpenModal,
     eventData,
+    typeColor,
     loading,
     closeModalHandler,
     getEventById,
@@ -97,13 +99,10 @@ const ModalContainer: React.FC<IModal> = props => {
     timeToImplementation,
     broadcastUrl,
     materialsLinks,
-    block,
     result,
-    stack,
     feedBack,
     isFeedback,
-    isEventOnline,
-    videoLink
+    isEventOnline
   } = eventData;
 
   const [editMode, setEditMode] = React.useState(false);
@@ -123,38 +122,55 @@ const ModalContainer: React.FC<IModal> = props => {
     timeToImplementation: timeToImplementation,
     broadcastUrl: broadcastUrl,
     materialsLinks: materialsLinks,
-    block: block,
     result: result,
-    stack: stack,
     feedBack: feedBack,
     isFeedback: isFeedback,
-    isEventOnline: isEventOnline,
-    videoLink: videoLink
+    isEventOnline: isEventOnline
   });
   const defaultState = () => {
     setNewEvent({
-      id: id || '',
-      name: name || '',
-      description: description || '',
-      descriptionUrl: descriptionUrl || '',
-      type: type || [],
-      timeZone: timeZone || 0,
-      dateTime: dateTime || 0,
-      deadline: deadline || 0,
-      place: place || '',
-      comment: comment || '',
-      trainee: trainee || '',
-      courseName: courseName || '',
-      timeToImplementation: timeToImplementation || 0,
-      broadcastUrl: broadcastUrl || '',
-      materialsLinks: materialsLinks || [],
-      block: block || '',
-      result: result || '',
-      stack: stack || [],
-      feedBack: feedBack || [],
-      isFeedback: isFeedback || false,
-      isEventOnline: isEventOnline || true,
-      videoLink: videoLink || ''
+      id: id,
+      name: name,
+      description: description,
+      descriptionUrl: descriptionUrl,
+      type: type,
+      timeZone: timeZone,
+      dateTime: dateTime,
+      deadline: deadline,
+      place: place,
+      comment: comment,
+      trainee: trainee,
+      courseName: courseName,
+      timeToImplementation: timeToImplementation,
+      broadcastUrl: broadcastUrl,
+      materialsLinks: materialsLinks,
+      result: result,
+      feedBack: feedBack,
+      isFeedback: isFeedback,
+      isEventOnline: isEventOnline
+    });
+  };
+  const clearState = () => {
+    setNewEvent({
+      id: '',
+      name: '',
+      description: '',
+      descriptionUrl: '',
+      type: [],
+      timeZone: 3,
+      dateTime: 0,
+      deadline: 0,
+      place: '',
+      comment: '',
+      trainee: '',
+      courseName: 'JS/Frontend 2020-Q3',
+      timeToImplementation: 0,
+      broadcastUrl: '',
+      materialsLinks: [],
+      result: '',
+      feedBack: [],
+      isFeedback: false,
+      isEventOnline: true
     });
   };
   const editModeOn = () => {
@@ -163,16 +179,21 @@ const ModalContainer: React.FC<IModal> = props => {
   };
   const tagRender = FILTERS.map(el => {
     return (
-      <Select.Option value={el.text} key={el.text}>
-        <Tag color={TYPES_WITH_COLORS[el.value]}>{el.text}</Tag>
+      <Select.Option value={el.value} key={el.value}>
+        <Tag
+          style={{ backgroundColor: typeColor[el.value].background, marginRight: 3 }}
+          color={typeColor[el.value].textColor}
+        >
+          {el.text.toUpperCase()}
+        </Tag>
       </Select.Option>
     );
   });
 
   const onCloseModal = () => {
     setEditMode(false);
-    closeModalHandler();
     defaultState();
+    closeModalHandler();
   };
 
   const newEventHandler = (e: any) => {
@@ -199,13 +220,13 @@ const ModalContainer: React.FC<IModal> = props => {
   };
 
   const defaultMaterialLinks = () => {
-    if (materialsLinks) {
-      const newArr = materialsLinks.toString().replace(/,/g, '\n');
+    if (newEvent.materialsLinks) {
+      const newArr = newEvent.materialsLinks.toString().replace(/,/g, '\n');
       return newArr;
     }
   };
   const defaultCourse: any = () => {
-    const defCourse = Courses.findIndex(el => el === courseName);
+    const defCourse = Courses.findIndex(el => el === newEvent.courseName);
     return defCourse === -1 ? 0 : defCourse;
   };
 
@@ -220,7 +241,7 @@ const ModalContainer: React.FC<IModal> = props => {
     }
   };
   const resetEvent = () => {
-    console.log(newEvent.isFeedback);
+    console.log('resetEvent:', newEvent);
   };
   const createOrUpdateEvent = () => {
     if (eventId === '') {
@@ -230,21 +251,11 @@ const ModalContainer: React.FC<IModal> = props => {
       updateEvent(newEvent);
       setEditMode(false);
       // getEventById(eventId);
-
-      // return (<Result
-      //   status="success"
-      //   title="Successfully"
-      //   extra={[
-      //     <Button type="primary" onClick={() => getEventById(eventId)}>
-      //       Ok
-      //     </Button>
-      //   ]}
-      // />);
     }
   };
   React.useEffect(() => {
-    if (eventId === '') {
-      defaultState();
+    if (!eventId) {
+      clearState();
       setEditMode(true);
     } else {
       getEventById(eventId);
@@ -281,22 +292,25 @@ const ModalContainer: React.FC<IModal> = props => {
               <>
                 <div className="wrapper-title">
                   <Divider />
+                  <h2>Event name:</h2>
                   <TextArea
                     id="name"
                     placeholder="Сourse name"
                     rows={1}
                     style={{ width: '80%', margin: '10px auto' }}
-                    defaultValue={name}
+                    defaultValue={newEvent.name}
                     onChange={newEventHandler}
                   />
                   <div>
-                    <label style={{ marginRight: '3px' }}>Event type:</label>
+                    <label style={{ marginRight: '3px' }}>
+                      <b>Event type:</b>
+                    </label>
                     <Select
                       mode="multiple"
                       showArrow
                       dropdownMatchSelectWidth={150}
-                      defaultValue={type}
-                      // onChange={newEventTypeHandler}
+                      defaultValue={newEvent.type}
+                      onChange={newEventTypeHandler}
                     >
                       {tagRender}
                     </Select>
@@ -307,61 +321,52 @@ const ModalContainer: React.FC<IModal> = props => {
                   <aside>
                     <div className="wrapper-aside">
                       <div className="dates">
-                        <div className="date-title">Task start</div>
+                        <div className="date-title">Task start:</div>
                         <div className="date-description">
                           <TimePicker
                             format={timeFormat}
                             placeholder="The task starts at"
                             style={{ marginBottom: '5px' }}
-                            defaultValue={moment(dateTime)}
+                            defaultValue={moment(newEvent.dateTime)}
                             onChange={newEventTimeStartHandler}
                           />
                           <DatePicker
                             format={dateFormat}
                             placeholder="The task starts on"
-                            defaultValue={moment(dateTime)}
+                            defaultValue={moment(newEvent.dateTime)}
                           />
                         </div>
                       </div>
                       <div className="deadline">
-                        <div className="deadline-title">Deadline</div>
+                        <div className="deadline-title">Deadline:</div>
                         <TimePicker
                           format={timeFormat}
                           placeholder="The task ends at"
                           style={{ marginBottom: '5px' }}
-                          defaultValue={moment(deadline)}
+                          defaultValue={moment(newEvent.deadline)}
                         />
                         <DatePicker
                           format={dateFormat}
                           placeholder="The task ends on"
-                          defaultValue={moment(deadline)}
+                          defaultValue={moment(newEvent.deadline)}
                         />
                       </div>
                       <div className="wrapper-time-to-finish">
-                        <div className="time-to-finish-title">Needed time to finish</div>
+                        <div className="time-to-finish-title">Needed time to finish:</div>
                         <div className="time-to-finish">
                           <InputNumber
                             min={0}
                             max={1000}
-                            defaultValue={timeToImplementation}
+                            defaultValue={newEvent.timeToImplementation}
                             onChange={newEventTimeHandler}
                             required
                           />
                         </div>
                       </div>
-                      <div className="stack">
-                        <div className="stack-title">Stack</div>
-                        <ul>
-                          {stack &&
-                            stack.map(el => {
-                              return <li key={el}>{el}</li>;
-                            })}
-                        </ul>
-                      </div>
                       <Radio.Group
                         style={{ margin: '5px 0' }}
                         onChange={isEventOnlineHandler}
-                        defaultValue={isEventOnline ? 'Online' : 'Offline'}
+                        defaultValue={newEvent.isEventOnline ? 'Online' : 'Offline'}
                       >
                         <Radio value={'Online'}>Online</Radio>
                         <Radio value={'Offline'}>Offline</Radio>
@@ -374,7 +379,7 @@ const ModalContainer: React.FC<IModal> = props => {
                             placeholder="City"
                             rows={1}
                             css={textAreaStyle}
-                            defaultValue={place}
+                            defaultValue={newEvent.place}
                             onChange={newEventHandler}
                             autoFocus
                             required
@@ -385,27 +390,30 @@ const ModalContainer: React.FC<IModal> = props => {
                   </aside>
                   <section className="description">
                     <div css={courseswitch}>
-                      <label>Course</label>
+                      <label>
+                        <b>Course:</b>
+                      </label>
                       <Select defaultValue={defaultCourse} css={coursesSelect} onChange={newEventCourseNameHandler}>
                         {coursesOptions}
                       </Select>
                     </div>
-                    <h2>Description</h2>
+                    <h2>Event link:</h2>
                     <TextArea
                       id="descriptionUrl"
-                      placeholder="Link to task"
+                      placeholder="Link to event"
                       rows={1}
                       css={textAreaStyle}
-                      defaultValue={descriptionUrl}
+                      defaultValue={newEvent.descriptionUrl}
                       onChange={newEventHandler}
                       required
                     />
+                    <h2>Event Description:</h2>
                     <TextArea
                       id="description"
                       placeholder="Task description"
                       rows={3}
                       css={textAreaStyle}
-                      defaultValue={description}
+                      defaultValue={newEvent.description}
                       onChange={newEventHandler}
                       required
                     />
@@ -420,16 +428,37 @@ const ModalContainer: React.FC<IModal> = props => {
                         required
                       />
                     </div>
+                    <h2>Result:</h2>
                     <TextArea
-                      id="trainee"
-                      placeholder="Autor name"
-                      rows={1}
+                      id="result"
+                      placeholder="What knowledge the student will receive as a result"
+                      rows={3}
                       css={textAreaStyle}
-                      defaultValue={trainee}
+                      defaultValue={newEvent.result}
                       onChange={newEventHandler}
                       required
                     />
-                    <Checkbox onChange={newEventFeedbackHandler} defaultChecked={isFeedback}>
+                    <h2>Comment:</h2>
+                    <TextArea
+                      id="comment"
+                      placeholder="Extra comment from mentor"
+                      rows={3}
+                      css={textAreaStyle}
+                      defaultValue={newEvent.comment}
+                      onChange={newEventHandler}
+                      required
+                    />
+                    <h2>Author:</h2>
+                    <TextArea
+                      id="trainee"
+                      placeholder="Author name"
+                      rows={1}
+                      css={textAreaStyle}
+                      defaultValue={newEvent.trainee}
+                      onChange={newEventHandler}
+                      required
+                    />
+                    <Checkbox onChange={newEventFeedbackHandler} defaultChecked={newEvent.isFeedback}>
                       Can a student leave a feedback?
                     </Checkbox>
                   </section>
@@ -437,7 +466,12 @@ const ModalContainer: React.FC<IModal> = props => {
                 <Divider />
               </>
             ) : (
-              <StudentModal eventData={eventData} updateEvent={updateEvent} isStudent={isStudent} />
+              <StudentModal
+                eventData={eventData}
+                updateEvent={updateEvent}
+                isStudent={isStudent}
+                typeColor={typeColor}
+              />
             )}
           </div>
         </WrapperModalMentor>

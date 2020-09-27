@@ -157,7 +157,6 @@ export const WrapperModalMentor = styled.div`
       line-height: 22px;
       color: #000000;
       padding: 0;
-      margin-bottom: 10px;
     }
 
     & p {
