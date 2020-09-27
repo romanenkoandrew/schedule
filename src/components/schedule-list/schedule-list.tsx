@@ -19,6 +19,7 @@ const ScheduleList = (props: any) => {
   } = props;
   
   const [data, setData] = useState([]);
+  const [selectedRows, setSelectedRow] = useState([]);
 
   useEffect(() => {
     getEvents();
@@ -49,6 +50,11 @@ const ScheduleList = (props: any) => {
     const result: any = [...newData, ...copy].sort((a: IEvent, b: IEvent) => a.dateTime[0] - b.dateTime[0]);
     setData(result);
   }, [eventsData]);
+  
+  const handleSelectRow = (evt: any) => {
+    console.log(evt.target);
+  };
+
 
   const getData = (items: any, query: string) =>
     [items.find((item:any) => query === item.value)]
@@ -60,10 +66,10 @@ const ScheduleList = (props: any) => {
     <div className="schedule-list-container" css={container}>
       <List css={listStyles}
         bordered={true}
-        dataSource={eventsData}
+        dataSource={data}
         size="large"
         renderItem={(item:IEvent) => (
-          <List.Item>
+          <List.Item onClick={handleSelectRow}>
             <div css={listItemContainer}>
               <p css={listItemDate}>
                 <span>{getDateFromTimeStamp(item.dateTime, timeZone)}</span>
@@ -74,7 +80,7 @@ const ScheduleList = (props: any) => {
             </div>
             <div css={tagsStyles}>
               {item.type.map((typeitem, idx) => {
-              return <Tag color={TYPES_WITH_COLORS[typeitem]} key={idx.toString()}>{getData(FILTERS, typeitem)}</Tag>
+                return <Tag color={TYPES_WITH_COLORS[typeitem]} key={idx.toString()}>{getData(FILTERS, typeitem)}</Tag>
               })}
             </div>
           </List.Item>
@@ -102,8 +108,7 @@ const listItemContainer = css`
 `;
 
 const tagsStyles = css`
-  display: flex;
-  flex-wrap: wrap;
+  width: 150px;
 `;
   
 const listItemDate = css`
