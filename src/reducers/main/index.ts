@@ -7,7 +7,6 @@ import { getFromLocalStorage } from 'utils/utils';
 import { Courses } from 'constants/header/header';
 
 interface IState {
-  score: number;
   isStudent: boolean;
   timezone: number;
   courses: string[];
@@ -21,7 +20,6 @@ interface IAction {
 }
 
 export const initState: IState = {
-  score: 0,
   isStudent: true,
   timezone: getFromLocalStorage(TIME_ZONE, 3),
   courses: getFromLocalStorage(COURSES, Courses),

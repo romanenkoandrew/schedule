@@ -1,6 +1,4 @@
-import { scoreSelector } from 'selectors';
+import {} from 'selectors';
 import { createStructuredSelector } from 'reselect';
 
-export default createStructuredSelector({
-  score: scoreSelector
-});
+export default createStructuredSelector({});

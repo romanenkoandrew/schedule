@@ -1,0 +1,20 @@
+.listHeader {
+  width: 100%;  
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.headerDate {
+  width: 90px;
+  font-weight: bold;
+}
+
+.headerTime {
+  width: 60px;
+  font-weight: bold;
+}
+
+.headerName {
+  font-weight: bold;
+} 

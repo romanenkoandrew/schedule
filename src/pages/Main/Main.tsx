@@ -25,9 +25,6 @@ const Main: React.FC = () => {
       <BugCatcher>
         <ScheduleTable openModal={openModalHandler} addId={addId} isOpenModal={isOpenModal} />
         {isOpenModal && <ModalContainer eventId={id} isOpenModal={isOpenModal} closeModalHandler={closeModalHandler} />}
-        <Button type="primary" onClick={openModalHandler}>
-          MODAL
-        </Button>
       </BugCatcher>
     </div>
   );
