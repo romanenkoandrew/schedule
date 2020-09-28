@@ -17,15 +17,14 @@ const Main: React.FC = () => {
   };
 
   const addId = (id: string) => {
+    console.log(id);
     setId(id);
   };
 
   return (
     <div>
-      <BugCatcher>
-        <ScheduleTable openModal={openModalHandler} addId={addId} isOpenModal={isOpenModal} />
-        {isOpenModal && <ModalContainer eventId={id} isOpenModal={isOpenModal} closeModalHandler={closeModalHandler} />}
-      </BugCatcher>
+      <ScheduleTable openModal={openModalHandler} addId={addId} isOpenModal={isOpenModal} />
+      {isOpenModal && <ModalContainer eventId={id} isOpenModal={isOpenModal} closeModalHandler={closeModalHandler} />}
     </div>
   );
 };
