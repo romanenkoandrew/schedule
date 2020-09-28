@@ -144,9 +144,7 @@ const listItemTime = css`
 `;
 
 const listItemName = css`
-  max-width: 640px;
-  width: calc(100vw-360px);
-  text-align: center;
+
 `;
 
 const tagsStyles = css`
