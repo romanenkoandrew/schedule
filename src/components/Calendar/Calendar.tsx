@@ -1,4 +1,4 @@
-import { Calendar, Tag, Select, Col, Row, Typography, Button, Drawer, List } from 'antd';
+import { Calendar, Tag, Select, Col, Row, Typography, Button, Drawer } from 'antd';
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
 import { IEvent } from '../../services/events-service';
@@ -7,8 +7,29 @@ import { css } from '@emotion/core';
 import moment from 'moment';
 import Loading from 'helpers/Loading';
 
+const getDateFromTimeStamp = (dateData: [number, string], timeZone: number) => {
+  const timestamp = dateData[0];
+  const [hours, minutes] = dateData[1].split(':');
+  const options = {
+    year: 'numeric',
+    day: 'numeric',
+    month: 'numeric'
+  };
+  const dateWithUserUTC =
+    timestamp -
+    -new Date().getTimezoneOffset() * 60000 +
+    timeZone * 3600000 -
+    new Date(timestamp).getHours() * 3600000 -
+    new Date(timestamp).getMinutes() * 60000 -
+    new Date(timestamp).getSeconds() * 1000 -
+    new Date(timestamp).getMilliseconds() +
+    +hours * 3600000 +
+    +minutes * 60000;
+  return new Date(dateWithUserUTC);
+};
+
 const CalendarApp: React.FC<any> = (props: any) => {
-  const { getEvents, eventsData, loading, timeZone, typeColors, changeTypeColors } = props;
+  const { getEvents, eventsData, loading, timeZone, typeColors, changeTypeColors, courses } = props;
 
   const [data, setData] = useState([]);
   const [isToday, setDisableBtn] = useState(true);
@@ -47,14 +68,40 @@ const CalendarApp: React.FC<any> = (props: any) => {
 
     const result: any = [...newData, ...copy].sort((a: any, b: any) => a.dateTime[0] - b.dateTime[0]);
     setData(result);
-    console.log(result);
   }, [eventsData]);
+
+  useEffect(() => {
+    let newData: IEvent[] = eventsData.map((item: IEvent, idx: number) => {
+      const key = item.id;
+      return {
+        ...item,
+        key,
+        timeToImplementation: `${item.timeToImplementation} h`
+      };
+    });
+
+    const copy = newData.map((item: IEvent, idx: number) => {
+      const key = `${item.id}${idx}`;
+      return {
+        ...item,
+        key,
+        id: key,
+        dateTime: item.deadline,
+        type: ['deadline']
+      };
+    });
+
+    const result: any = [...newData, ...copy].filter((event: any) => courses.includes(event.courseName));
+
+    setData(result);
+    console.log(result);
+  }, [eventsData, courses]);
 
   const getListData = (value: { date: () => number; month: () => number }) => {
     const dataList: IEvent[] = [];
     data.map((item: IEvent) => {
-      const dateItem: any = item.dateTime[0];
-      let eventStart: any = new Date(dateItem);
+      const dateItem: any = item.dateTime;
+      let eventStart: any = getDateFromTimeStamp(dateItem, timeZone);
       if (eventStart.getUTCMonth() !== value.month()) {
         return;
       }
@@ -65,8 +112,26 @@ const CalendarApp: React.FC<any> = (props: any) => {
     return dataList;
   };
 
-  const getData = (items: any, query: string) =>
-    [items.find((item: any) => query === item.value)].map(x => x && x.text).shift();
+  const isColor = (item: { type: string | any[] }) => {
+    if (!item.type.length) {
+      return 'orange';
+    }
+    const color: string = typeColors[item.type[0]].background;
+    return color;
+  };
+
+  const getItemLabel = (item: {
+    id?: string;
+    name: any;
+    type: any;
+    descriptionUrl?: string | undefined;
+    description?: string | undefined;
+  }) => {
+    if (item.type[0] === 'deadline') {
+      return `Deadline ${item.name}`;
+    }
+    return `${item.name}`;
+  };
 
   const dateCellRender = (value: { date: () => number; month: () => number }) => {
     const listData = getListData(value);
@@ -82,11 +147,8 @@ const CalendarApp: React.FC<any> = (props: any) => {
               description: string | undefined;
             }) => (
               <li key={item.id} title={item.description}>
-                <Tag
-                  color={typeColors[item.type[0]].background}
-                  style={{ border: '0px', marginBottom: '3px', color: typeColors[item.type[1]].textColor }}
-                >
-                  <a css={linkToTask} href={item.descriptionUrl}>{`${item.name}, ${item.type[0]}`}</a>
+                <Tag color={isColor(item)} style={{ width: '100%', border: '0px', color: typeColors[item.type[0]] }}>
+                  {getItemLabel(item)}
                 </Tag>
               </li>
             )
@@ -100,11 +162,13 @@ const CalendarApp: React.FC<any> = (props: any) => {
     const dayData: any = [];
     const listData = getListData(value);
     listData.filter((item: any) => {
-      let eventStart = new Date(item.dateTime[0]);
+      const dateItem: any = item.dateTime;
+      let eventStart = getDateFromTimeStamp(dateItem, timeZone);
       if (eventStart.getUTCDate() === value.date()) {
         dayData.push(item);
       }
     });
+    console.log(dayData);
     return dayData;
   };
 
@@ -114,6 +178,7 @@ const CalendarApp: React.FC<any> = (props: any) => {
       <div className="site-drawer-render-in-current-wrapper">
         <Drawer
           title={title}
+          bodyStyle={{ padding: '15px' }}
           placement="right"
           closable={false}
           onClose={onClose}
@@ -138,25 +203,31 @@ const CalendarApp: React.FC<any> = (props: any) => {
           (item: {
             id: string;
             name: string;
-            type: (string | undefined)[];
+            type: (string | number)[];
             descriptionUrl: string | undefined;
             description: string | undefined;
             materialsLinks: (string | undefined)[];
           }) => (
             <li key={item.id} css={styleLi}>
-              <div style={{ paddingRight: '10px', fontSize: '14px', fontWeight: 'bold' }}>{item.name}</div>
-              <div style={{ display: 'column', maxWidth: '150px' }}>
-                <div>
-                  {item.description}
+              <div style={{ fontSize: '14px', fontWeight: 'bold', overflow: 'hidden' }}>
+                <Tag
+                  color={typeColors[item.type[0]].background}
+                  style={{ width: '100%', border: '0px', margin: '5px 0', color: typeColors[item.type[0]] }}
+                >
+                  {getItemLabel(item)}
+                </Tag>
+              </div>
+
+              <div style={{ display: 'column' }}>
+                <div>{item.description}</div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <a href={item.descriptionUrl} style={styles.styleA}>
                     More information
                   </a>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   {item.materialsLinks.map((link, idx) => {
                     return (
-                      <a href={item.materialsLinks[idx]} style={styles.styleA}>
+                      <a href={item.materialsLinks[idx]} style={styles.styleA} key={item.id + `${idx}`}>
                         link {idx + 1}
                       </a>
                     );
@@ -313,26 +384,17 @@ export default CalendarApp;
 
 const styles = {
   styleA: {
-    padding: '0px 5px',
     fontSize: '12px'
   },
   styleLi: {
     display: 'flex',
     justifyContent: 'space-around',
-    borderBottom: '1px solid #494e5c10',
+    borderBottom: '2px solid #494e5c10',
     color: '#5b5a59',
     padding: '5px 0',
     lineHeight: '18px'
   }
 };
-
-const linkToTask = css`
-  margin: 0;
-  padding: 0;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
 
 const eventPanelWrapper = css`
   position: relative;
@@ -340,7 +402,7 @@ const eventPanelWrapper = css`
 `;
 
 const styleLi = css`
-  display: flex;
+  display: column;
   justify-content: space-between;
   border-bottom: 1px solid #494e5c10;
   color: #5b5a59;
@@ -356,6 +418,7 @@ const events = css`
 `;
 
 const eventsDayList = css`
+  height: 70px;
   margin: 0;
   padding: 0;
   list-style: none;
