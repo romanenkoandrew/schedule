@@ -1,5 +1,18 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Table, Tag, Button, Space, Input, Select, DatePicker, Popconfirm, InputNumber, TimePicker, List } from 'antd';
+import {
+  Table,
+  Tag,
+  Button,
+  Space,
+  Input,
+  Select,
+  DatePicker,
+  Popconfirm,
+  InputNumber,
+  TimePicker,
+  List,
+  message
+} from 'antd';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
 // import ReactHTMLTableToExcel from 'react-html-table-to-excel';
@@ -148,6 +161,22 @@ const ScheduleTable = (props: any) => {
 
     setData(unHidden);
   }, [eventsData, courses]);
+
+  const showMessage = () => {
+    if (loading) {
+      return message.loading({ content: 'request...', key: 'updatable' });
+    }
+    if (!loading && error) {
+      return message.error({ content: 'Bad Request!', key: 'updatable', duration: 2 });
+    }
+    if (!loading && !error) {
+      return message.success({ content: 'Success!', key: 'updatable', duration: 2 });
+    }
+  };
+
+  useEffect(() => {
+    showMessage();
+  }, [loading, error]);
 
   const handleCloseColorPicker = (event: any): void => {
     if (event.target.closest('.css-163w0fi-popover') === null && !event.target.closest('.ant-tag')) {

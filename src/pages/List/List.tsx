@@ -17,13 +17,11 @@ const List: React.FC = () => {
   const addId = (id: string) => {
     setId(id);
   };
-  
+
   return (
     <div>
-        <BugCatcher>
       <ScheduleList openModal={openModalHandler} addId={addId} isOpenModal={isOpenModal} />
       {isOpenModal && <ModalContainer eventId={id} isOpenModal={isOpenModal} closeModalHandler={closeModalHandler} />}
-        </BugCatcher>
     </div>
   );
 };

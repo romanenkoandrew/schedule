@@ -1,4 +1,4 @@
-import { Calendar, Tag, Select, Col, Row, Typography, Button, Drawer } from 'antd';
+import { Calendar, Tag, Select, Col, Row, Typography, Button, Drawer, message } from 'antd';
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
 import { IEvent } from '../../services/events-service';
@@ -29,7 +29,7 @@ const getDateFromTimeStamp = (dateData: [number, string], timeZone: number) => {
 };
 
 const CalendarApp: React.FC<any> = (props: any) => {
-  const { getEvents, eventsData, loading, timeZone, typeColors, changeTypeColors, courses } = props;
+  const { getEvents, eventsData, loading, timeZone, typeColors, courses, error } = props;
 
   const [data, setData] = useState([]);
   const [isToday, setDisableBtn] = useState(true);
@@ -38,10 +38,6 @@ const CalendarApp: React.FC<any> = (props: any) => {
 
   useEffect(() => {
     getEvents();
-    if (localStorage.getItem(TYPE_COLORS)) {
-      const colors = JSON.parse(localStorage.getItem(TYPE_COLORS) || '{}');
-      changeTypeColors(colors);
-    }
   }, []);
 
   useEffect(() => {
@@ -111,6 +107,22 @@ const CalendarApp: React.FC<any> = (props: any) => {
     });
     return dataList;
   };
+
+  const showMessage = () => {
+    if (loading) {
+      return message.loading({ content: 'request...', key: 'updatable' });
+    }
+    if (!loading && error) {
+      return message.error({ content: 'Bad Request!', key: 'updatable', duration: 2 });
+    }
+    if (!loading && !error) {
+      return message.success({ content: 'Success!', key: 'updatable', duration: 2 });
+    }
+  };
+
+  useEffect(() => {
+    showMessage();
+  }, [loading, error]);
 
   const isColor = (item: { type: string | any[] }) => {
     if (!item.type.length) {
