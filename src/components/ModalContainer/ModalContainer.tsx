@@ -177,13 +177,13 @@ const ModalContainer: React.FC<IModal> = props => {
       comment: '',
       trainee: '',
       courseName: 'JS/Frontend 2020-Q3',
-      timeToImplementation: 0,
+      timeToImplementation: 1,
       broadcastUrl: '',
       materialsLinks: [],
       result: '',
       feedBack: [],
       isFeedback: false,
-      isEventOnline: true
+      isEventOnline: false
     });
   };
   const editModeOn = () => {
@@ -316,6 +316,21 @@ const ModalContainer: React.FC<IModal> = props => {
       />
     );
   };
+  const newFieldTextArea = (tagName: string, id: string, placeholder: string, rows: number, value: string) => {
+    return (
+      <>
+        <h2>{tagName}:</h2>
+        <TextArea
+          id={id}
+          placeholder={placeholder}
+          rows={rows}
+          css={textAreaStyle}
+          defaultValue={value}
+          onChange={newEventHandler}
+        />
+      </>
+    );
+  };
   const defaultMaterialLinks = () => {
     if (newEvent.materialsLinks) {
       const newArr = newEvent.materialsLinks.toString().replace(/,/g, '\n');
@@ -344,7 +359,7 @@ const ModalContainer: React.FC<IModal> = props => {
     } else {
       updateEvent(newEvent);
       setEditMode(false);
-      // getEventById(eventId);
+      closeModalHandler();
     }
   };
   React.useEffect(() => {
@@ -457,21 +472,7 @@ const ModalContainer: React.FC<IModal> = props => {
                         <Radio value={'Online'}>Online</Radio>
                         <Radio value={'Offline'}>Offline</Radio>
                       </Radio.Group>
-                      {!newEvent.isEventOnline && (
-                        <>
-                          <h4>Location:</h4>
-                          <TextArea
-                            id="place"
-                            placeholder="City"
-                            rows={1}
-                            css={textAreaStyle}
-                            defaultValue={newEvent.place}
-                            onChange={newEventHandler}
-                            autoFocus
-                            required
-                          />
-                        </>
-                      )}
+                      {!newEvent.isEventOnline && newFieldTextArea('Location', 'place', 'City', 1, newEvent.place)}
                     </div>
                   </aside>
                   <section className="description">
@@ -483,26 +484,15 @@ const ModalContainer: React.FC<IModal> = props => {
                         {coursesOptions}
                       </Select>
                     </div>
-                    <h2>Event link:</h2>
-                    <TextArea
-                      id="descriptionUrl"
-                      placeholder="Link to event"
-                      rows={1}
-                      css={textAreaStyle}
-                      defaultValue={newEvent.descriptionUrl}
-                      onChange={newEventHandler}
-                      required
-                    />
-                    <h2>Event Description:</h2>
-                    <TextArea
-                      id="description"
-                      placeholder="Task description"
-                      rows={3}
-                      css={textAreaStyle}
-                      defaultValue={newEvent.description}
-                      onChange={newEventHandler}
-                      required
-                    />
+                    {newFieldTextArea('Event link', 'descriptionUrl', 'Link to event', 1, newEvent.descriptionUrl)}
+                    {newFieldTextArea(
+                      'Youtube link',
+                      'broadcastUrl',
+                      'Event link to youtube',
+                      1,
+                      newEvent.broadcastUrl
+                    )}
+                    {newFieldTextArea('Event Description', 'description', 'Event description', 3, newEvent.description)}
                     <div className="links-wrapper">
                       <h2>Materials:</h2>
                       <TextArea
@@ -511,39 +501,17 @@ const ModalContainer: React.FC<IModal> = props => {
                         css={textAreaStyle}
                         defaultValue={defaultMaterialLinks()}
                         onChange={materialsLinksHandler}
-                        required
                       />
                     </div>
-                    <h2>Result:</h2>
-                    <TextArea
-                      id="result"
-                      placeholder="What knowledge the student will receive as a result"
-                      rows={3}
-                      css={textAreaStyle}
-                      defaultValue={newEvent.result}
-                      onChange={newEventHandler}
-                      required
-                    />
-                    <h2>Comment:</h2>
-                    <TextArea
-                      id="comment"
-                      placeholder="Extra comment from mentor"
-                      rows={3}
-                      css={textAreaStyle}
-                      defaultValue={newEvent.comment}
-                      onChange={newEventHandler}
-                      required
-                    />
-                    <h2>Author:</h2>
-                    <TextArea
-                      id="trainee"
-                      placeholder="Author name"
-                      rows={1}
-                      css={textAreaStyle}
-                      defaultValue={newEvent.trainee}
-                      onChange={newEventHandler}
-                      required
-                    />
+                    {newFieldTextArea(
+                      'Result',
+                      'result',
+                      'What knowledge the student will receive as a result',
+                      3,
+                      newEvent.result
+                    )}
+                    {newFieldTextArea('Comment', 'comment', 'Extra comment from mentor', 3, newEvent.comment)}
+                    {newFieldTextArea('Author', 'trainee', 'Author name', 1, newEvent.trainee)}
                     <Checkbox onChange={newEventFeedbackHandler} defaultChecked={newEvent.isFeedback}>
                       Can a student leave a feedback?
                     </Checkbox>
@@ -581,7 +549,7 @@ const coursesSelect = css`
 
 const textAreaStyle = css`
   width: 90%;
-  margin: 10px auto;
+  margin-bottom: 10px;
 `;
 
 const timezoneswitch = css`

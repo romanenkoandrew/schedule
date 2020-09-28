@@ -47,7 +47,7 @@ export const WrapperModalMentor = styled.div`
         font-family: 'Roboto', sans-serif;
         font-style: normal;
         font-weight: bold;
-        font-size: 14px;
+        font-size: 16px;
         line-height: 22px;
         color: #000000;
       }
@@ -59,7 +59,7 @@ export const WrapperModalMentor = styled.div`
         font-family: 'Roboto', sans-serif;
         font-style: normal;
         font-weight: normal;
-        font-size: 14px;
+        font-size: 16px;
         line-height: 22px;
         color: #595959;
       }
@@ -136,7 +136,7 @@ export const WrapperModalMentor = styled.div`
       font-family: 'Roboto';
       font-style: normal;
       font-weight: normal;
-      font-size: 14px;
+      font-size: 16px;
       line-height: 22px;
       display: flex;
       align-items: center;
@@ -157,7 +157,7 @@ export const WrapperModalMentor = styled.div`
       font-family: 'Roboto';
       font-style: normal;
       font-weight: bold;
-      font-size: 14px;
+      font-size: 16px;
       line-height: 22px;
       color: #000000;
       padding: 0;
@@ -201,7 +201,7 @@ export const WrapperModalMentor = styled.div`
       font-family: 'Roboto';
       font-style: normal;
       font-weight: bold;
-      font-size: 14px;
+      font-size: 16px;
       line-height: 22px;
       color: #000000;
       padding: 0;
@@ -212,7 +212,7 @@ export const WrapperModalMentor = styled.div`
       font-family: 'Roboto';
       font-style: normal;
       font-weight: normal;
-      font-size: 14px;
+      font-size: 16px;
       line-height: 22px;
     }
   }
