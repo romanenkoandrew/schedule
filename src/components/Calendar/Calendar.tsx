@@ -67,11 +67,46 @@ const CalendarApp: React.FC<any> = (props: any) => {
       if (eventStart.getUTCMonth() !== value.month()) {
         return;
       }
-      if (eventStart.getUTCDay() === value.date()) {
+      if (eventStart.getUTCDate() === value.date()) {
         dataList.push(item);
       }
     });
     return dataList;
+  };
+
+  const dateCellRender = (value: { date: () => number; month: () => number }) => {
+    const listData = getListData(value);
+    return (
+      <ul className="events">
+        {listData.map(
+          (item: {
+            id: string;
+            name: string;
+            type: (string | undefined)[];
+            descriptionUrl: string | undefined;
+            description: string | undefined;
+          }) => (
+            <li key={item.id} title={item.description}>
+              <Tag className={item.type[0]}>
+                <a href={item.descriptionUrl}>{`${item.name}, ${item.type[0]}`}</a>
+              </Tag>
+            </li>
+          )
+        )}
+      </ul>
+    );
+  };
+
+  const getItemData = (value: { date: () => number; month: () => number }) => {
+    const dayData: any = [];
+    const listData = getListData(value);
+    listData.filter((item: any) => {
+      let eventStart = new Date(item.dateTime[0]);
+      if (eventStart.getUTCDate() === value.date()) {
+        dayData.push(item);
+      }
+    });
+    return dayData;
   };
 
   const RenderModalView = (props: { onClose: any; visible: any; title: string; value: any }) => {
@@ -96,45 +131,9 @@ const CalendarApp: React.FC<any> = (props: any) => {
     );
   };
 
-  const dateCellRender = (value: { date: () => number; month: () => number }) => {
-    const listData = getListData(value);
-    console.log(listData);
-    return (
-      <ul className="events" onClick={() => console.log('hi')}>
-        {listData.map(
-          (item: {
-            id: string;
-            name: string;
-            type: (string | undefined)[];
-            descriptionUrl: string | undefined;
-            description: string | undefined;
-          }) => (
-            <li key={item.id} title={item.description}>
-              <Tag className={item.type[0]}>
-                <a href={item.descriptionUrl}>{`${item.name}, ${item.type[0]}`}</a>
-              </Tag>
-            </li>
-          )
-        )}
-      </ul>
-    );
-  };
-
-  const getItemData = (value: { date: () => number; month: () => number }) => {
-    const dayData: any = [];
-    const listData = getListData(value);
-    listData.filter((item: any) => {
-      let eventStart = new Date(item.dateTime);
-      if (eventStart.getUTCDay() === value.date()) {
-        dayData.push(item);
-      }
-    });
-    return dayData;
-  };
-
   const itemDataRender = (value: { date: () => number; month: () => number }) => {
     const listData = getItemData(value);
-
+    console.log(listData);
     return (
       <ul className="events">
         {listData.map(
@@ -186,7 +185,6 @@ const CalendarApp: React.FC<any> = (props: any) => {
                       const newValue = value.clone();
                       setValue(newValue);
                       setVisibleView(true);
-                      console.log(data);
                       return;
                     }
                     const newValue = value.clone();
@@ -289,7 +287,7 @@ const CalendarApp: React.FC<any> = (props: any) => {
                         </div>
                         <RenderModalView
                           title={currentValue.format('dddd DD MMMM')}
-                          value={currentValue}
+                          value={value}
                           visible={visible}
                           onClose={() => {
                             setVisibleView(false);
