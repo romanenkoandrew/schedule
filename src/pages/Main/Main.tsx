@@ -19,7 +19,6 @@ const Main: React.FC = () => {
     setId(id);
   };
 
-  const eventId = '1GIPCkceqy7BWZL0E2FO';
   return (
     <div>
       <ScheduleTable openModal={openModalHandler} addId={addId} isOpenModal={isOpenModal} />

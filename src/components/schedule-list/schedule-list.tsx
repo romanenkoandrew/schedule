@@ -49,6 +49,8 @@ const ScheduleList = (props: any) => {
     [items.find((item: any) => query === item.value)].map(x => x && x.text).shift();
 
   if (loading && eventsData.length === 0) return <Spin />;
+  
+  console.log(eventsData);
 
   return (
     <div className="schedule-list-container" css={container}>
