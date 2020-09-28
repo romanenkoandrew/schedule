@@ -29,12 +29,16 @@ export const WrapperModalMentor = styled.div`
   }
 
   aside {
-    width: 19.7%;
-    min-width: 253px;
-
     & .wrapper-aside {
       padding: 19px 26px;
       border: 1px solid #e8e8e8;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      & .deadline-title {
+        text-align: center;
+      }
 
       & .date-title,
       & .deadline-title,
@@ -43,7 +47,7 @@ export const WrapperModalMentor = styled.div`
         font-family: 'Roboto', sans-serif;
         font-style: normal;
         font-weight: bold;
-        font-size: 14px;
+        font-size: 16px;
         line-height: 22px;
         color: #000000;
       }
@@ -55,7 +59,7 @@ export const WrapperModalMentor = styled.div`
         font-family: 'Roboto', sans-serif;
         font-style: normal;
         font-weight: normal;
-        font-size: 14px;
+        font-size: 16px;
         line-height: 22px;
         color: #595959;
       }
@@ -64,10 +68,10 @@ export const WrapperModalMentor = styled.div`
       & .deadline,
       & .wrapper-time-to-finish {
         padding-bottom: 17px;
+        text-align: center;
       }
 
       & .deadline-date {
-        width: 110px;
         height: 32px;
         background: #fcddee;
         text-align: center;
@@ -132,7 +136,7 @@ export const WrapperModalMentor = styled.div`
       font-family: 'Roboto';
       font-style: normal;
       font-weight: normal;
-      font-size: 14px;
+      font-size: 16px;
       line-height: 22px;
       display: flex;
       align-items: center;
@@ -153,7 +157,7 @@ export const WrapperModalMentor = styled.div`
       font-family: 'Roboto';
       font-style: normal;
       font-weight: bold;
-      font-size: 14px;
+      font-size: 16px;
       line-height: 22px;
       color: #000000;
       padding: 0;
@@ -186,6 +190,7 @@ export const WrapperModalMentor = styled.div`
   @media (max-width: 674px) {
     .description {
       width: 100%;
+      padding: 0 10px;
     }
   }
 
@@ -196,7 +201,7 @@ export const WrapperModalMentor = styled.div`
       font-family: 'Roboto';
       font-style: normal;
       font-weight: bold;
-      font-size: 14px;
+      font-size: 16px;
       line-height: 22px;
       color: #000000;
       padding: 0;
@@ -207,13 +212,14 @@ export const WrapperModalMentor = styled.div`
       font-family: 'Roboto';
       font-style: normal;
       font-weight: normal;
-      font-size: 14px;
+      font-size: 16px;
       line-height: 22px;
     }
   }
 
   .panel-mentor-wrapper {
     position: absolute;
+    height: 100px;
     z-index: 2;
     top: 0;
     right: 0;
@@ -270,7 +276,6 @@ export const WrapperModalMentor = styled.div`
         font-size: 25px;
         border-top: 1px solid transparent;
         border-bottom: 1px solid transparent;
-        padding: 16px 0;
       }
     }
   }

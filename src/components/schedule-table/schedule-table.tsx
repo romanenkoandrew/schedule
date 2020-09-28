@@ -460,7 +460,7 @@ const ScheduleTable = (props: any) => {
         const isLost = checkDate(dateData);
         const timeWithTimeZone = dateData.length ? getTimeFromString(dateData, timeZone, row.timeZone) : null;
         if (editableEvent && editableEvent.id === row.id) {
-          const timeWithTimeZone = editableEvent.dateTime[1];
+          const timeWithTimeZone = getTimeFromString(editableEvent.dateTime, timeZone, editableEvent.timeZone);
           return (
             <TimePicker
               value={moment(timeWithTimeZone, 'HH:mm')}
