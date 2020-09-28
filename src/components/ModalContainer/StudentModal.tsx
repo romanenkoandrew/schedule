@@ -1,10 +1,10 @@
 import React from 'react';
-import moment from 'moment';
-import { Button, Divider, Input, Tag, Form, Select, TimePicker } from 'antd';
+import { Button, Divider, Input, Tag, Form, Select } from 'antd';
 import { css } from '@emotion/core';
 import { FILTERS } from 'constants/dataForTable';
 import Timezones from 'constants/timezone/timezone';
 import { getTimeFromString, getDateFromTimeStamp } from 'utils/utils';
+import ReactPlayer from 'react-player';
 
 interface IStudentModal {
   timeZoneHeader: number;
@@ -35,8 +35,6 @@ interface IStudentModal {
   };
 }
 
-const timeFormat = 'HH:mm';
-const dateFormat = 'DD.MM.YYYY';
 const { TextArea } = Input;
 const timezoneOptions = Timezones.map((i, idx) => (
   <Select.Option key={idx.toString()} value={i.value}>
@@ -92,7 +90,8 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
   const newEventFeedbackHandler = (e: any) => {
     setNewEvent({ ...newEvent, feedBack: [...feedBack, e.target.value] });
   };
-  const sendFeedback = () => {
+  const sendFeedback = (e: React.SyntheticEvent) => {
+    e.preventDefault();
     updateEvent(newEvent);
   };
 
@@ -189,22 +188,32 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
             </p>
             {!isEventOnline && (
               <>
-                <h2>Location:</h2>
+                <h1>Location:</h1>
                 <p>{place}</p>
               </>
             )}
           </div>
         </aside>
         <section className="description">
-          <h2>Course: {courseName}</h2>
-          <h2 css={marginTop}>Event link:</h2>
+          <h1>Course: {courseName}</h1>
+          {broadcastUrl.length ? (
+            <ReactPlayer
+              url={broadcastUrl}
+              controls
+              width="auto"
+              height="250px"
+              style={{ maxWidth: '550px' }}
+              onError={() => <p>Something went wrong</p>}
+            />
+          ) : null}
+          <h1 css={marginTop}>Event link:</h1>
           <a className="description-link" href={descriptionUrl}>
             {descriptionUrl}
           </a>
-          <h2 css={marginTop}>Event Description:</h2>
+          <h1 css={marginTop}>Event Description:</h1>
           <div css={marginTop}>{description}</div>
           <div className="links-wrapper">
-            <h2 css={marginTop}>Materials:</h2>
+            <h1 css={marginTop}>Materials:</h1>
             <ul>
               {materialsLinks &&
                 materialsLinks.map(el => {
@@ -216,15 +225,15 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
                 })}
             </ul>
           </div>
-          <h2 css={marginTop}>Result:</h2>
+          <h1 css={marginTop}>Result:</h1>
           <div>{result}</div>
-          <h2 css={marginTop}>Comment:</h2>
+          <h1 css={marginTop}>Comment:</h1>
           <div>{comment}</div>
           <div css={marginTop}>
             This event was prepared by <b>{trainee}</b>
           </div>
           {isFeedback && isStudent ? (
-            <Form name="form" onFinish={sendFeedback} layout="vertical" css={marginTop}>
+            <Form name="form" onFinish={e => sendFeedback(e)} layout="vertical" css={marginTop}>
               <Form.Item
                 label="Feedback:"
                 name="feedBack"
@@ -243,11 +252,15 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
             </Button>
           ) : null}
           {!isStudent && isOpenFeedbaks ? (
-            <ol>
-              {feedBack.map(el => (
-                <li key={el}>{el}</li>
-              ))}
-            </ol>
+            feedBack.length ? (
+              <p>Oops!!! No feedbaks...</p>
+            ) : (
+              <ol>
+                {feedBack.map(el => (
+                  <li key={el}>{el}</li>
+                ))}
+              </ol>
+            )
           ) : null}
         </section>
       </div>
