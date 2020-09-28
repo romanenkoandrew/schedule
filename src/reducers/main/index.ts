@@ -6,7 +6,6 @@ import { TYPE_COLORS, COURSES, TIME_ZONE, COLORS_OF_TYPES } from 'constants/glob
 import { getFromLocalStorage } from 'utils/utils';
 import { Courses } from 'constants/header/header';
 
-console.log('reducer');
 interface IState {
   score: number;
   isStudent: boolean;

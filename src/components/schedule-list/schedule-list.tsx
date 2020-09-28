@@ -41,10 +41,6 @@ const ScheduleList = (props: any) => {
     setData(result);
   }, [eventsData]);
 
-  const handleSelectRow = (evt: any) => {
-    console.log(evt.target);
-  };
-
   const getData = (items: any, query: string) =>
     [items.find((item: any) => query === item.value)].map(x => x && x.text).shift();
 
@@ -58,7 +54,7 @@ const ScheduleList = (props: any) => {
         dataSource={data}
         size="large"
         renderItem={(item: IEvent) => (
-          <List.Item onClick={handleSelectRow}>
+          <List.Item>
             <div css={listItemContainer}>
               <p css={listItemDate}>
                 <span>{getDateFromTimeStamp(item.dateTime, timeZone)}</span>

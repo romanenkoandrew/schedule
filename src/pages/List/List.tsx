@@ -1,10 +1,13 @@
 import React from 'react';
 import ScheduleList from 'components/schedule-list';
+import BugCatcher from 'components/bug-catcher';
 
 const List: React.FC = () => {
   return (
     <div>
-      <ScheduleList />
+      <BugCatcher>
+        <ScheduleList />
+      </BugCatcher>
     </div>
   );
 };
