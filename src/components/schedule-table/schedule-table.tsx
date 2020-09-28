@@ -1,23 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Table,
-  Tag,
-  Button,
-  Space,
-  Input,
-  Select,
-  DatePicker,
-  Popconfirm,
-  InputNumber,
-  TimePicker,
-  Alert,
-  List
-} from 'antd';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Table, Tag, Button, Space, Input, Select, DatePicker, Popconfirm, InputNumber, TimePicker, List } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
 // import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 import { FILTERS } from 'constants/dataForTable';
-import { TYPE_COLORS, COLUMN_OPTIONS, IColorsOfTypes, IColorType } from 'constants/globalConstants';
+import { TYPE_COLORS, COLUMN_OPTIONS, IColorsOfTypes, HIDE_ROWS } from 'constants/globalConstants';
 import { SketchPicker } from 'react-color';
 import moment from 'moment';
 import { IEvent } from '../../services/events-service';
@@ -87,6 +74,7 @@ const ScheduleTable = (props: any) => {
   ];
 
   const columnOptions = getFromLocalStorage(COLUMN_OPTIONS, optionsForSelect);
+  const hideRowsFromLocalStorage = getFromLocalStorage(HIDE_ROWS, initialSelect);
 
   const optionsForTagsSelect = FILTERS.map((type: { text: string; value: string }) => ({ value: type.text }));
 
@@ -98,7 +86,7 @@ const ScheduleTable = (props: any) => {
   const [data, setData] = useState(initialSelect);
   const [options, setOptions] = useState(columnOptions);
   const [tagOptions, setTagOptions] = useState(initialSelect);
-  const [hideRows, setHideRows] = useState(initialSelect);
+  const [hideRows, setHideRows] = useState(hideRowsFromLocalStorage);
 
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
   const [changingType, setChangingType] = useState('');
@@ -151,7 +139,14 @@ const ScheduleTable = (props: any) => {
         return a.dateTime[0] + aMilliseconds - (b.dateTime[0] + bMilliseconds);
       });
 
-    setData(result);
+    const unHidden = result.map((item: IEvent, idx: number) => {
+      if (hideRows.some((newItem: IEventWithKey) => item.key === newItem.key)) {
+        return transformRow(item);
+      }
+      return item;
+    });
+
+    setData(unHidden);
   }, [eventsData, courses]);
 
   const handleCloseColorPicker = (event: any): void => {
@@ -255,7 +250,7 @@ const ScheduleTable = (props: any) => {
   };
 
   const dblClickRowHandler = (record: IEvent): void => {
-    const isHidden = hideRows.some(item => item.key === record.key);
+    const isHidden = hideRows.some((item: IEventWithKey) => item.key === record.key);
     if (isHidden) {
       return;
     }
@@ -303,6 +298,7 @@ const ScheduleTable = (props: any) => {
         newData[index] = showRow;
         newHideRows.splice(idx, 1);
         setHideRows(newHideRows);
+        localStorage.setItem(HIDE_ROWS, JSON.stringify(newHideRows));
         setData(newData);
         setSelectedRowKeys([]);
         return;
@@ -312,6 +308,7 @@ const ScheduleTable = (props: any) => {
       newHideRows.push(newData[index]);
       newData[index] = newDataItem;
       setHideRows(newHideRows);
+      localStorage.setItem(HIDE_ROWS, JSON.stringify(newHideRows));
       setData(newData);
       setSelectedRowKeys([]);
     }
@@ -327,6 +324,7 @@ const ScheduleTable = (props: any) => {
           }
         });
         setHideRows(newHideRows);
+        localStorage.setItem(HIDE_ROWS, JSON.stringify(newHideRows));
         setData(newData);
         setSelectedRowKeys([]);
         return;
@@ -340,6 +338,7 @@ const ScheduleTable = (props: any) => {
         }
       });
       setHideRows(newHideRows);
+      localStorage.setItem(HIDE_ROWS, JSON.stringify(newHideRows));
       setData(newData);
       setSelectedRowKeys([]);
     }
@@ -597,7 +596,12 @@ const ScheduleTable = (props: any) => {
           );
         }
         return (
-          <a href={`${row.descriptionUrl}`} target="_blank" style={isLost ? { opacity: '.5' } : {}}>
+          <a
+            href={`${row.descriptionUrl}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={isLost ? { opacity: '.5' } : {}}
+          >
             {taskName}
           </a>
         );
@@ -612,7 +616,12 @@ const ScheduleTable = (props: any) => {
         const isLost = checkDate(row.dateTime);
         if (row.isEventOnline) {
           return (
-            <a href={`${row.broadcastUrl}`} target="_blank" style={isLost ? { opacity: '.5' } : {}}>
+            <a
+              href={`${row.broadcastUrl}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={isLost ? { opacity: '.5' } : {}}
+            >
               Online
             </a>
           );
@@ -624,7 +633,7 @@ const ScheduleTable = (props: any) => {
       title: 'Time Theory & practice',
       dataIndex: 'timeToImplementation',
       key: 'timeToImplementation',
-      width: 100,
+      width: 120,
       align: 'center',
       render: (hours: string, row: IEventWithKey) => {
         const isLost = checkDate(row.dateTime);
@@ -672,6 +681,7 @@ const ScheduleTable = (props: any) => {
                   <a
                     href={itemList}
                     target="_blank"
+                    rel="noopener noreferrer"
                     key={itemList}
                     style={{ display: 'inline-block', margin: '2px auto' }}
                   >
@@ -747,12 +757,12 @@ const ScheduleTable = (props: any) => {
       render: (props: IEvent) => {
         const isLost = checkDate(props.dateTime);
         const isDeadline = props.type.includes('deadline');
-        const isHidden = hideRows.some(item => item.key === props.key);
+        const isHidden = hideRows.some((item: IEventWithKey) => item.key === props.key);
         return (
           <Space size="middle" direction="vertical" style={isLost ? { opacity: '.5' } : {}}>
             {!editableEvent.id && (
               <a className="button-hide" onClick={() => hideHandle(props)}>
-                {hideRows.some(item => item.key === props.key) ? 'Show' : 'Hide'}
+                {hideRows.some((item: IEventWithKey) => item.key === props.key) ? 'Show' : 'Hide'}
               </a>
             )}
             {!isStudent && !editableEvent.id && !isDeadline && !isHidden && (
@@ -879,88 +889,64 @@ const ScheduleTable = (props: any) => {
     );
   }
 
-  // if (error) {
-  //   return <Alert message="Error" description="This is an error message about copywriting." type="error" showIcon />;
-  // }
   return (
-    <div className="schedule-table-container" css={container}>
-      {/* <ReactHTMLTableToExcel
-        id="test-table-xls-button"
-        className="download-table-xls-button"
-        table="table-to-xls"
-        filename="tablexls"
-        sheet="tablexls"
-        buttonText="Download as XLS" /> */}
-      <Select
-        mode="multiple"
-        showArrow
-        tagRender={tagRender}
-        size="large"
-        defaultValue={options.reduce((acc: any, item: any) => {
-          acc.push(item.value);
-          return acc;
-        }, [])}
-        style={{ width: '100%' }}
-        options={optionsForSelect}
-        onSelect={(option: any): void => {
-          const newOptions = [...options];
-          newOptions.push({ value: option });
-          setOptions(newOptions);
-          localStorage.setItem(COLUMN_OPTIONS, JSON.stringify(newOptions));
-        }}
-        onDeselect={option => {
-          const newOptions = [...options];
-          const index = newOptions.findIndex(item => item.value === option);
-          newOptions.splice(index, 1);
-          setOptions(newOptions);
-          localStorage.setItem(COLUMN_OPTIONS, JSON.stringify(newOptions));
-        }}
-      ></Select>
+    <>
+      <div className="schedule-table-container" css={container}>
+        {/* <ReactHTMLTableToExcel
+      id="test-table-xls-button"
+      className="download-table-xls-button"
+      table="table-to-xls"
+      filename="tablexls"
+      sheet="tablexls"
+      buttonText="Download as XLS" /> */}
+        <Select
+          mode="multiple"
+          showArrow
+          tagRender={tagRender}
+          size="large"
+          defaultValue={options.reduce((acc: any, item: any) => {
+            acc.push(item.value);
+            return acc;
+          }, [])}
+          style={{ width: '100%' }}
+          options={optionsForSelect}
+          onSelect={(option: any): void => {
+            const newOptions = [...options];
+            newOptions.push({ value: option });
+            setOptions(newOptions);
+            localStorage.setItem(COLUMN_OPTIONS, JSON.stringify(newOptions));
+          }}
+          onDeselect={option => {
+            const newOptions = [...options];
+            const index = newOptions.findIndex(item => item.value === option);
+            newOptions.splice(index, 1);
+            setOptions(newOptions);
+            localStorage.setItem(COLUMN_OPTIONS, JSON.stringify(newOptions));
+          }}
+        ></Select>
 
-      <Table
-        id="table-to-xls"
-        rowSelection={rowSelection}
-        columns={columns}
-        dataSource={data}
-        bordered
-        // pagination={{ pageSize: 10}}
-        loading={loading && !isOpenModal}
-        onRow={(record: IEventWithKey) => {
-          return {
-            onClick: event => onClickRow(record, event),
-            onDoubleClick: () => dblClickRowHandler(record)
-          };
-        }}
-        scroll={{ y: 1000 }}
-      ></Table>
-      {/* <Button onClick={() => addNewEvent(event)}>Create Event</Button> */}
-    </div>
+        <Table
+          id="table-to-xls"
+          rowSelection={rowSelection}
+          columns={columns}
+          dataSource={data}
+          bordered
+          // pagination={{ pageSize: 10}}
+          loading={loading && !isOpenModal}
+          onRow={(record: IEventWithKey) => {
+            return {
+              onClick: event => onClickRow(record, event),
+              onDoubleClick: () => dblClickRowHandler(record)
+            };
+          }}
+          scroll={{ y: 1000 }}
+        ></Table>
+      </div>
+    </>
   );
 };
 
 export default ScheduleTable;
-
-const event = {
-  id: 'KyvcYfdhjMuXQeK4eoYc',
-  name: 'HTML',
-  description: 'Студент знакомится с HTML',
-  descriptionUrl: 'https://guides.hexlet.io/markdown/',
-  type: ['htmlTask', 'info'],
-  timeZone: 3,
-  dateTime: [new Date().getTime(), `${new Date().getHours()}:${new Date().getMinutes()}`],
-  deadline: [new Date().getTime() + 9000000, `${new Date().getHours()}:${new Date().getMinutes()}`],
-  place: 'class',
-  comment: 'Создан и размещён на gh-pages файл HTML',
-  trainee: 'Сергей Шаляпин',
-  courseName: 'JS/Frontend 2020-Q3',
-  timeToImplementation: 4,
-  broadcastUrl: 'LinkonVideo',
-  materialsLinks: ['link1', 'link2'],
-  result: 'Студент знает HTML',
-  feedBack: ['Cool', 'Bad'],
-  isFeedback: false,
-  isEventOnline: true
-};
 
 const popover = css`
   position: absolute;

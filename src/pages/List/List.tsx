@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ScheduleList from 'components/schedule-list';
+import BugCatcher from 'components/bug-catcher';
 import ModalContainer from 'components/ModalContainer';
 
 const List: React.FC = () => {
@@ -19,8 +20,10 @@ const List: React.FC = () => {
   
   return (
     <div>
+        <BugCatcher>
       <ScheduleList openModal={openModalHandler} addId={addId} isOpenModal={isOpenModal} />
       {isOpenModal && <ModalContainer eventId={id} isOpenModal={isOpenModal} closeModalHandler={closeModalHandler} />}
+        </BugCatcher>
     </div>
   );
 };

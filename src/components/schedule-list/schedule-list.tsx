@@ -53,6 +53,7 @@ const ScheduleList = (props: any) => {
       .filter((event: IEvent) => courses.includes(event.courseName))
       .sort((a: IEvent, b: IEvent) => a.dateTime[0] - b.dateTime[0]);
     setData(result);
+
   }, [eventsData, courses]);
   
   useEffect(() => {

@@ -3,6 +3,7 @@ export const TIME_ZONE: string = 'TIME_ZONE';
 export const COURSES: string = 'COURSES';
 
 export const COLUMN_OPTIONS: string = 'COLUMN_OPTIONS';
+export const HIDE_ROWS = 'HIDE_ROWS';
 
 export interface IColorType {
   background: string;
