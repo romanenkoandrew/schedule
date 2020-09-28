@@ -504,7 +504,7 @@ const ScheduleTable = (props: any) => {
       title: 'Course',
       dataIndex: 'courseName',
       key: 'courseName',
-      width: 120,
+      width: 110,
       render: (courseName: string, row: IEvent) => {
         const isLost = checkDate(row.dateTime);
         return <span style={isLost ? { opacity: '.5' } : {}}>{courseName}</span>;
@@ -515,7 +515,7 @@ const ScheduleTable = (props: any) => {
       dataIndex: 'type',
       key: 'type',
       filters: FILTERS,
-      width: 170,
+      width: 190,
       align: 'center',
       onFilter: (value: string, record: IEvent) => record.type.includes(value),
       render: (tags: string[], row: IEvent) => {
@@ -573,7 +573,7 @@ const ScheduleTable = (props: any) => {
                     color={colorType.background}
                     style={{ border: '0px', marginBottom: '3px', color: typeColors[tag].textColor }}
                     onClick={() => {
-                      if (tag === 'deadline') return;
+                      if (tag === 'deadline' || isLost) return;
                       setDisplayColorPicker(prev => !prev);
                       setChangingType(tag);
                       setChangingRowType(row);
@@ -615,7 +615,7 @@ const ScheduleTable = (props: any) => {
       title: 'Task',
       dataIndex: 'name',
       key: 'name',
-      width: 200,
+      width: 160,
       ...getColumnSearchProps('name'),
       render: (taskName: string, row: IEventWithKey) => {
         const isLost = checkDate(row.dateTime);
@@ -640,7 +640,7 @@ const ScheduleTable = (props: any) => {
       title: 'Place',
       dataIndex: 'place',
       key: 'place',
-      width: 150,
+      width: 110,
       render: (place: string, row: IEvent) => {
         const isLost = checkDate(row.dateTime);
         if (row.isEventOnline) {
@@ -684,7 +684,7 @@ const ScheduleTable = (props: any) => {
       dataIndex: 'materialsLinks',
       key: 'materialsLinks',
       align: 'center',
-      width: 230,
+      width: 210,
       render: (links: string[], row: IEvent) => {
         const isLost = checkDate(row.dateTime);
         if (editableEvent && editableEvent.id === row.id) {
@@ -712,7 +712,12 @@ const ScheduleTable = (props: any) => {
                     target="_blank"
                     rel="noopener noreferrer"
                     key={itemList}
-                    style={{ display: 'inline-block', margin: '2px auto' }}
+                    style={{
+                      display: 'inline-block',
+                      margin: '2px auto',
+                      textOverflow: 'ellipsis',
+                      overflow: 'hidden'
+                    }}
                   >
                     {itemList}
                   </a>
@@ -738,7 +743,7 @@ const ScheduleTable = (props: any) => {
       title: 'Result',
       dataIndex: 'result',
       key: 'result',
-      width: 200,
+      width: 180,
       render: (result: string, row: IEventWithKey) => {
         const isLost = checkDate(row.dateTime);
         if (editableEvent && editableEvent.id === row.id) {
@@ -753,7 +758,7 @@ const ScheduleTable = (props: any) => {
       title: 'Comment',
       dataIndex: 'comment',
       key: 'comment',
-      width: 200,
+      width: 180,
       render: (comment: string, row: IEventWithKey) => {
         const isLost = checkDate(row.dateTime);
         if (editableEvent && editableEvent.id === row.id) {
@@ -782,7 +787,7 @@ const ScheduleTable = (props: any) => {
       dataIndex: '',
       key: 'x',
       height: 500,
-      width: 170,
+      width: 130,
       render: (props: IEvent) => {
         const isLost = checkDate(props.dateTime);
         const isDeadline = props.type.includes('deadline');
@@ -802,6 +807,7 @@ const ScheduleTable = (props: any) => {
             {!isStudent &&
               !isDeadline &&
               !isHidden &&
+              !isLost &&
               (!editableEvent.id ? (
                 <a
                   className="button-edit"
