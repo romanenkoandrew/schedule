@@ -1,27 +1,14 @@
-import { Calendar, Tag, Select, Col, Row, Typography, Button, Drawer, Spin } from 'antd';
+import { Calendar, Tag, Select, Col, Row, Typography, Button, Drawer, List } from 'antd';
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
 import { IEvent } from '../../services/events-service';
+import { TYPE_COLORS } from 'constants/globalConstants';
+import { css } from '@emotion/core';
 import moment from 'moment';
 import Loading from 'helpers/Loading';
 
-const styles = {
-  styleA: {
-    padding: '0px 5px',
-    fontSize: '12px'
-  },
-  styleLi: {
-    display: 'flex',
-    justifyContent: 'space-around',
-    borderBottom: '1px solid #494e5c10',
-    color: '#5b5a59',
-    padding: '5px 0',
-    lineHeight: '18px'
-  }
-};
-
 const CalendarApp: React.FC<any> = (props: any) => {
-  const { getEvents, eventsData, loading, timeZone } = props;
+  const { getEvents, eventsData, loading, timeZone, typeColors, changeTypeColors } = props;
 
   const [data, setData] = useState([]);
   const [isToday, setDisableBtn] = useState(true);
@@ -30,6 +17,10 @@ const CalendarApp: React.FC<any> = (props: any) => {
 
   useEffect(() => {
     getEvents();
+    if (localStorage.getItem(TYPE_COLORS)) {
+      const colors = JSON.parse(localStorage.getItem(TYPE_COLORS) || '{}');
+      changeTypeColors(colors);
+    }
   }, []);
 
   useEffect(() => {
@@ -74,26 +65,34 @@ const CalendarApp: React.FC<any> = (props: any) => {
     return dataList;
   };
 
+  const getData = (items: any, query: string) =>
+    [items.find((item: any) => query === item.value)].map(x => x && x.text).shift();
+
   const dateCellRender = (value: { date: () => number; month: () => number }) => {
     const listData = getListData(value);
     return (
-      <ul className="events">
-        {listData.map(
-          (item: {
-            id: string;
-            name: string;
-            type: (string | undefined)[];
-            descriptionUrl: string | undefined;
-            description: string | undefined;
-          }) => (
-            <li key={item.id} title={item.description}>
-              <Tag className={item.type[0]}>
-                <a href={item.descriptionUrl}>{`${item.name}, ${item.type[0]}`}</a>
-              </Tag>
-            </li>
-          )
-        )}
-      </ul>
+      <div>
+        <ul css={events}>
+          {listData.map(
+            (item: {
+              id: string;
+              name: string;
+              type: string[];
+              descriptionUrl: string | undefined;
+              description: string | undefined;
+            }) => (
+              <li key={item.id} title={item.description}>
+                <Tag
+                  color={typeColors[item.type[0]].background}
+                  style={{ border: '0px', marginBottom: '3px', color: typeColors[item.type[1]].textColor }}
+                >
+                  <a css={linkToTask} href={item.descriptionUrl}>{`${item.name}, ${item.type[0]}`}</a>
+                </Tag>
+              </li>
+            )
+          )}
+        </ul>
+      </div>
     );
   };
 
@@ -133,9 +132,8 @@ const CalendarApp: React.FC<any> = (props: any) => {
 
   const itemDataRender = (value: { date: () => number; month: () => number }) => {
     const listData = getItemData(value);
-    console.log(listData);
     return (
-      <ul className="events">
+      <ul css={eventsDayList}>
         {listData.map(
           (item: {
             id: string;
@@ -145,20 +143,24 @@ const CalendarApp: React.FC<any> = (props: any) => {
             description: string | undefined;
             materialsLinks: (string | undefined)[];
           }) => (
-            <li key={item.id} style={styles.styleLi}>
+            <li key={item.id} css={styleLi}>
               <div style={{ paddingRight: '10px', fontSize: '14px', fontWeight: 'bold' }}>{item.name}</div>
-              <div style={{ display: 'column', justifyContent: 'space-around' }}>
-                {item.description}
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <div style={{ display: 'column', maxWidth: '150px' }}>
+                <div>
+                  {item.description}
                   <a href={item.descriptionUrl} style={styles.styleA}>
-                    More
+                    More information
                   </a>
-                  <a href={item.materialsLinks[0]} style={styles.styleA}>
-                    link 1
-                  </a>
-                  <a href={item.materialsLinks[1]} style={styles.styleA}>
-                    link 2
-                  </a>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  {item.materialsLinks.map((link, idx) => {
+                    return (
+                      <a href={item.materialsLinks[idx]} style={styles.styleA}>
+                        link {idx + 1}
+                      </a>
+                    );
+                  })}
                 </div>
               </div>
             </li>
@@ -173,7 +175,7 @@ const CalendarApp: React.FC<any> = (props: any) => {
   return (
     <main>
       <section className="evnt-panel evnt-card-panel evnt-calendar-card">
-        <div>
+        <div css={eventPanelWrapper}>
           <div className="evnt-calendar-table">
             <div className="evnt-calendar-container">
               {
@@ -243,12 +245,12 @@ const CalendarApp: React.FC<any> = (props: any) => {
                             type="text"
                             disabled={isToday}
                             onClick={() => {
-                              setDisableBtn(true);
                               let currentMonth = new Date().getMonth();
                               let currentYear = new Date().getFullYear();
                               const newValue = value.clone();
                               setValue(newValue);
                               onChange(newValue.month(currentMonth).year(currentYear));
+                              setDisableBtn(true);
                             }}
                           >
                             Today
@@ -308,3 +310,53 @@ const CalendarApp: React.FC<any> = (props: any) => {
 };
 
 export default CalendarApp;
+
+const styles = {
+  styleA: {
+    padding: '0px 5px',
+    fontSize: '12px'
+  },
+  styleLi: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    borderBottom: '1px solid #494e5c10',
+    color: '#5b5a59',
+    padding: '5px 0',
+    lineHeight: '18px'
+  }
+};
+
+const linkToTask = css`
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+
+const eventPanelWrapper = css`
+  position: relative;
+  margin: 0 10px;
+`;
+
+const styleLi = css`
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #494e5c10;
+  color: #5b5a59;
+  padding: 5px 0;
+  line-height: 18px;
+`;
+
+const events = css`
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+`;
+
+const eventsDayList = css`
+  margin: 0;
+  padding: 0;
+  list-style: none;
+`;
