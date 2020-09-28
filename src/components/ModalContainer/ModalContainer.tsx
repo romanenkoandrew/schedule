@@ -12,8 +12,7 @@ import {
   DatePicker,
   Checkbox,
   Tooltip,
-  Radio,
-  Result
+  Radio
 } from 'antd';
 import { css } from '@emotion/core';
 import { WrapperModalMentor } from './WrapperModalMentor';
@@ -21,8 +20,11 @@ import { FILTERS } from 'constants/dataForTable';
 import Loading from 'helpers/Loading';
 import { Courses } from 'constants/header/header';
 import StudentModal from './StudentModal';
+import Timezones from 'constants/timezone/timezone';
+import { getTimeFromString, getDateFromTimeStamp } from 'utils/utils';
 
 export interface IModal {
+  timeZoneHeader: number;
   isStudent: boolean;
   isOpenModal: boolean;
   loading: boolean;
@@ -39,7 +41,7 @@ export interface IModal {
     descriptionUrl: string;
     type: string[];
     timeZone: number;
-    dateTime: number;
+    dateTime: [number, string];
     place: string;
     comment: string;
     trainee: string;
@@ -47,11 +49,8 @@ export interface IModal {
     timeToImplementation: number;
     broadcastUrl: string;
     materialsLinks: string[];
-    block: string;
     result: string;
-    stack: string[];
-    deadline: number;
-    videoLink: string;
+    deadline: [number, string];
     feedBack: string[];
     isFeedback: boolean;
     isEventOnline: boolean;
@@ -59,10 +58,13 @@ export interface IModal {
   };
 }
 
-const timeFormat = 'HH:mm';
-const dateFormat = 'DD.MM.YYYY';
 const { TextArea } = Input;
 
+const timezoneOptions = Timezones.map((i, idx) => (
+  <Select.Option key={idx.toString()} value={i.value}>
+    {i.name}
+  </Select.Option>
+));
 const coursesOptions = Courses.map((i, idx) => (
   <Select.Option key={i} value={idx}>
     {i}
@@ -71,6 +73,7 @@ const coursesOptions = Courses.map((i, idx) => (
 
 const ModalContainer: React.FC<IModal> = props => {
   const {
+    timeZoneHeader,
     isStudent,
     eventId,
     isOpenModal,
@@ -158,8 +161,18 @@ const ModalContainer: React.FC<IModal> = props => {
       descriptionUrl: '',
       type: [],
       timeZone: 3,
-      dateTime: 0,
-      deadline: 0,
+      dateTime: [
+        Number(moment().format('x')),
+        moment()
+          .format('HH:mm')
+          .toString()
+      ],
+      deadline: [
+        Number(moment().format('x')),
+        moment()
+          .format('HH:mm')
+          .toString()
+      ],
       place: '',
       comment: '',
       trainee: '',
@@ -202,6 +215,9 @@ const ModalContainer: React.FC<IModal> = props => {
       [e.target.id]: e.target.value
     });
   };
+  const newEventTimezoneHandler = (value: any) => {
+    setNewEvent({ ...newEvent, timeZone: value });
+  };
   const newEventTimeHandler = (value: any) => {
     setNewEvent({ ...newEvent, timeToImplementation: value });
   };
@@ -211,14 +227,95 @@ const ModalContainer: React.FC<IModal> = props => {
   const newEventTypeHandler = (value: any) => {
     setNewEvent({ ...newEvent, type: value });
   };
-  const newEventTimeStartHandler = (value: any) => {
-    // setNewEvent({...newEvent, type: value})
-    console.log(moment(value).hour());
-  };
   const newEventFeedbackHandler = (e: any) => {
     setNewEvent({ ...newEvent, isFeedback: e.target.checked });
   };
-
+  const newEventChangeTimeStart = (moment: any, timeString: string) => {
+    setNewEvent({
+      ...newEvent,
+      timeZone,
+      dateTime: [newEvent.dateTime[0], timeString]
+    });
+  };
+  const newEventChangeDeadline = (moment: any, timeString: string) => {
+    setNewEvent({
+      ...newEvent,
+      timeZone,
+      deadline: [newEvent.deadline[0], timeString]
+    });
+  };
+  const newEventChangeDateStart = (moment: any, timeString: string) => {
+    const date = new Date(moment);
+    setNewEvent({
+      ...newEvent,
+      timeZone,
+      dateTime: [date.getTime(), newEvent.dateTime[1]]
+    });
+  };
+  const newEventChangeDateDeadline = (moment: any, timeString: string) => {
+    const date = new Date(moment);
+    setNewEvent({
+      ...newEvent,
+      timeZone,
+      deadline: [date.getTime(), newEvent.dateTime[1]]
+    });
+  };
+  const currentEventTimeStart = () => {
+    if (newEvent.id) {
+      const timeStartWithTimeZone = getTimeFromString(newEvent.dateTime, newEvent.timeZone, timeZone);
+      return (
+        <TimePicker
+          value={moment(timeStartWithTimeZone, 'HH:mm')}
+          format={'HH:mm'}
+          onChange={(moment, dateString) => newEventChangeTimeStart(moment, dateString)}
+        />
+      );
+    }
+    return (
+      <TimePicker format={'HH:mm'} onChange={(moment, dateString) => newEventChangeTimeStart(moment, dateString)} />
+    );
+  };
+  const currentEventTimeDeadline = () => {
+    if (newEvent.id) {
+      const deadlineWithTimeZone = getTimeFromString(newEvent.deadline, newEvent.timeZone, timeZone);
+      return (
+        <TimePicker
+          value={moment(deadlineWithTimeZone, 'HH:mm')}
+          format={'HH:mm'}
+          onChange={(moment, dateString) => newEventChangeDeadline(moment, dateString)}
+        />
+      );
+    }
+    return (
+      <TimePicker format={'HH:mm'} onChange={(moment, dateString) => newEventChangeDeadline(moment, dateString)} />
+    );
+  };
+  const currentEventDataStart = () => {
+    const date = getDateFromTimeStamp(newEvent.dateTime, newEvent.timeZone);
+    return (
+      <DatePicker
+        format={'DD/MM/YYYY'}
+        defaultValue={moment(date, 'DD/MM/YYYY')}
+        value={moment(date, 'DD/MM/YYYY')}
+        onChange={(moment, dateString) => {
+          newEventChangeDateStart(moment, dateString);
+        }}
+      />
+    );
+  };
+  const currentEventDataDeadline = () => {
+    const date = getDateFromTimeStamp(newEvent.deadline, newEvent.timeZone);
+    return (
+      <DatePicker
+        format={'DD/MM/YYYY'}
+        defaultValue={moment(date, 'DD/MM/YYYY')}
+        value={moment(date, 'DD/MM/YYYY')}
+        onChange={(moment, dateString) => {
+          newEventChangeDateDeadline(moment, dateString);
+        }}
+      />
+    );
+  };
   const defaultMaterialLinks = () => {
     if (newEvent.materialsLinks) {
       const newArr = newEvent.materialsLinks.toString().replace(/,/g, '\n');
@@ -240,9 +337,6 @@ const ModalContainer: React.FC<IModal> = props => {
       setNewEvent({ ...newEvent, isEventOnline: false });
     }
   };
-  const resetEvent = () => {
-    console.log('resetEvent:', newEvent);
-  };
   const createOrUpdateEvent = () => {
     if (eventId === '') {
       addNewEvent(newEvent);
@@ -262,6 +356,11 @@ const ModalContainer: React.FC<IModal> = props => {
       defaultState();
     }
   }, []);
+  React.useEffect(() => {
+    if (eventId) {
+      setNewEvent({ ...newEvent, timeZone: timeZoneHeader });
+    }
+  }, [editMode]);
 
   if (loading) return <Loading />;
   return (
@@ -280,11 +379,6 @@ const ModalContainer: React.FC<IModal> = props => {
                   <Button disabled={!editMode} onClick={createOrUpdateEvent}>
                     <img src={editMode ? './assets/img/check.svg' : './assets/img/check-disabled.svg'} alt="right" />
                   </Button>
-                </Tooltip>
-                <Tooltip placement="left" title="Reset" color={'red'}>
-                  <button onClick={resetEvent} disabled={!editMode}>
-                    <img src={editMode ? './assets/img/stop.svg' : './assets/img/stop-disabled.svg'} alt="decline" />
-                  </button>
                 </Tooltip>
               </div>
             )}
@@ -320,36 +414,28 @@ const ModalContainer: React.FC<IModal> = props => {
                 <div className="wrapper-content">
                   <aside>
                     <div className="wrapper-aside">
+                      <div css={timezoneswitch}>
+                        <label>Timezone</label>
+                        <Select
+                          css={timezoneSelect}
+                          placeholder="Please select a timezone"
+                          defaultValue={timeZoneHeader}
+                          onChange={newEventTimezoneHandler}
+                        >
+                          {timezoneOptions}
+                        </Select>
+                      </div>
                       <div className="dates">
                         <div className="date-title">Task start:</div>
                         <div className="date-description">
-                          <TimePicker
-                            format={timeFormat}
-                            placeholder="The task starts at"
-                            style={{ marginBottom: '5px' }}
-                            defaultValue={moment(newEvent.dateTime)}
-                            onChange={newEventTimeStartHandler}
-                          />
-                          <DatePicker
-                            format={dateFormat}
-                            placeholder="The task starts on"
-                            defaultValue={moment(newEvent.dateTime)}
-                          />
+                          {currentEventTimeStart()}
+                          {currentEventDataStart()}
                         </div>
                       </div>
                       <div className="deadline">
                         <div className="deadline-title">Deadline:</div>
-                        <TimePicker
-                          format={timeFormat}
-                          placeholder="The task ends at"
-                          style={{ marginBottom: '5px' }}
-                          defaultValue={moment(newEvent.deadline)}
-                        />
-                        <DatePicker
-                          format={dateFormat}
-                          placeholder="The task ends on"
-                          defaultValue={moment(newEvent.deadline)}
-                        />
+                        {currentEventTimeDeadline()}
+                        {currentEventDataDeadline()}
                       </div>
                       <div className="wrapper-time-to-finish">
                         <div className="time-to-finish-title">Needed time to finish:</div>
@@ -471,6 +557,7 @@ const ModalContainer: React.FC<IModal> = props => {
                 updateEvent={updateEvent}
                 isStudent={isStudent}
                 typeColor={typeColor}
+                timeZoneHeader={timeZoneHeader}
               />
             )}
           </div>
@@ -495,6 +582,18 @@ const coursesSelect = css`
 const textAreaStyle = css`
   width: 90%;
   margin: 10px auto;
+`;
+
+const timezoneswitch = css`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+`;
+
+const timezoneSelect = css`
+  width: 230px;
+  margin-bottom: 10px;
 `;
 
 export default ModalContainer;
