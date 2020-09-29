@@ -291,12 +291,22 @@ const ModalContainer: React.FC<IModal> = props => {
     );
   };
   const currentEventDataStart = () => {
-    const date = getDateFromTimeStamp(newEvent.dateTime, newEvent.timeZone);
+    if (newEvent.id) {
+      const date = getDateFromTimeStamp(newEvent.dateTime, newEvent.timeZone);
+      return (
+        <DatePicker
+          format={'DD/MM/YYYY'}
+          defaultValue={moment(date, 'DD/MM/YYYY')}
+          value={moment(date, 'DD/MM/YYYY')}
+          onChange={(moment, dateString) => {
+            newEventChangeDateStart(moment, dateString);
+          }}
+        />
+      );
+    }
     return (
       <DatePicker
         format={'DD/MM/YYYY'}
-        defaultValue={moment(date, 'DD/MM/YYYY')}
-        value={moment(date, 'DD/MM/YYYY')}
         onChange={(moment, dateString) => {
           newEventChangeDateStart(moment, dateString);
         }}
@@ -304,14 +314,24 @@ const ModalContainer: React.FC<IModal> = props => {
     );
   };
   const currentEventDataDeadline = () => {
-    const date = getDateFromTimeStamp(newEvent.deadline, newEvent.timeZone);
+    if (newEvent.id) {
+      const date = getDateFromTimeStamp(newEvent.deadline, newEvent.timeZone);
+      return (
+        <DatePicker
+          format={'DD/MM/YYYY'}
+          defaultValue={moment(date, 'DD/MM/YYYY')}
+          value={moment(date, 'DD/MM/YYYY')}
+          onChange={(moment, dateString) => {
+            newEventChangeDateDeadline(moment, dateString);
+          }}
+        />
+      );
+    }
     return (
       <DatePicker
         format={'DD/MM/YYYY'}
-        defaultValue={moment(date, 'DD/MM/YYYY')}
-        value={moment(date, 'DD/MM/YYYY')}
         onChange={(moment, dateString) => {
-          newEventChangeDateDeadline(moment, dateString);
+          newEventChangeDateStart(moment, dateString);
         }}
       />
     );
