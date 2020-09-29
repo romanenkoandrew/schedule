@@ -1,7 +1,3 @@
-import moment from 'moment';
-import { TYPE_COLORS, TIME_ZONE, COURSES } from 'constants/globalConstants';
-import { Courses } from 'constants/header/header';
-
 const getDateFromTimeStamp = (dateData: [number, string], timeZone: number) => {
   const timestamp = dateData[0];
   const [hours, minutes] = dateData[1].split(':');

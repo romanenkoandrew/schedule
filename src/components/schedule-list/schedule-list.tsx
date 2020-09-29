@@ -1,7 +1,7 @@
 import './list.css';
 
 import React, { useState, useEffect } from 'react';
-import { Tag, Spin, List, message, Alert } from 'antd';
+import { Tag, Spin, List, message } from 'antd';
 import { TYPE_COLORS } from 'constants/globalConstants';
 import { FILTERS } from 'constants/dataForTable';
 import { IEvent } from '../../services/events-service';
@@ -23,7 +23,6 @@ const ScheduleList = (props: any) => {
   } = props;
 
   const [data, setData] = useState([]);
-  const [selectedRows, setSelectedRow] = useState([]);
 
   useEffect(() => {
     getEvents();
@@ -119,7 +118,7 @@ const ScheduleList = (props: any) => {
               <p css={listItemDate}>{getDateFromTimeStamp(item.dateTime, timeZone)}</p>
               <p css={listItemTime}>{getTimeFromString(item.dateTime, timeZone, item.timeZone)}</p>
               <p css={listItemName}>
-                <a target="_blank" href={item.descriptionUrl}>
+                <a target="_blank" rel="noopener noreferrer" href={item.descriptionUrl}>
                   {item.name}
                 </a>
               </p>

@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import CalendarApp from 'components/Calendar';
-import BugCatcher from 'components/bug-catcher';
 import ModalContainer from 'components/ModalContainer';
 
 const CalendarPage: React.FC = () => {
