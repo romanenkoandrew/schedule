@@ -2,7 +2,6 @@ import { Calendar, Tag, Select, Col, Row, Typography, Button, Drawer, message } 
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
 import { IEvent } from '../../services/events-service';
-import { TYPE_COLORS } from 'constants/globalConstants';
 import { css } from '@emotion/core';
 import moment from 'moment';
 import Loading from 'helpers/Loading';
@@ -29,7 +28,7 @@ const getDateFromTimeStamp = (dateData: [number, string], timeZone: number) => {
 };
 
 const CalendarApp: React.FC<any> = (props: any) => {
-  const { getEvents, eventsData, loading, timeZone, typeColors, courses, error } = props;
+  const { getEvents, eventsData, loading, timeZone, typeColors, courses, error, addId, openModal } = props;
 
   const [data, setData] = useState([]);
   const [isToday, setDisableBtn] = useState(true);
@@ -90,7 +89,6 @@ const CalendarApp: React.FC<any> = (props: any) => {
     const result: any = [...newData, ...copy].filter((event: any) => courses.includes(event.courseName));
 
     setData(result);
-    console.log(result);
   }, [eventsData, courses]);
 
   const getListData = (value: { date: () => number; month: () => number }) => {
@@ -180,7 +178,6 @@ const CalendarApp: React.FC<any> = (props: any) => {
         dayData.push(item);
       }
     });
-    console.log(dayData);
     return dayData;
   };
 
@@ -207,6 +204,17 @@ const CalendarApp: React.FC<any> = (props: any) => {
     );
   };
 
+  const openModalHandler = (record: any): void => {
+    if (record.type.includes('deadline')) {
+      const id = record.id.slice(0, record.id.length - 1);
+      addId(id);
+      openModal();
+      return;
+    }
+    addId(record.id);
+    openModal();
+  };
+
   const itemDataRender = (value: { date: () => number; month: () => number }) => {
     const listData = getItemData(value);
     return (
@@ -219,6 +227,7 @@ const CalendarApp: React.FC<any> = (props: any) => {
             descriptionUrl: string | undefined;
             description: string | undefined;
             materialsLinks: (string | undefined)[];
+            courseName: string;
           }) => (
             <li key={item.id} css={styleLi}>
               <div style={{ fontSize: '14px', fontWeight: 'bold', overflow: 'hidden' }}>
@@ -231,19 +240,12 @@ const CalendarApp: React.FC<any> = (props: any) => {
               </div>
 
               <div style={{ display: 'column' }}>
-                <div>{item.description}</div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <a href={item.descriptionUrl} style={styles.styleA}>
-                    More information
-                  </a>
-                  {item.materialsLinks.map((link, idx) => {
-                    return (
-                      <a href={item.materialsLinks[idx]} style={styles.styleA} key={item.id + `${idx}`}>
-                        link {idx + 1}
-                      </a>
-                    );
-                  })}
+                <div style={{ marginBottom: '8px' }}>{item.description}</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column' }}>
+                  <div>{item.courseName}</div>
+                  <Button type="primary" onClick={() => openModalHandler(item)}>
+                    Show Details
+                  </Button>
                 </div>
               </div>
             </li>

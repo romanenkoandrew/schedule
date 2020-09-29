@@ -19,11 +19,31 @@ interface IAction {
   payload: {};
 }
 
+const initialLayout = () => {
+  const url = window.location.href;
+  const final = url.substr(url.lastIndexOf('/') + 1);
+  let layout;
+  switch (final) {
+    case 'calendar':
+      layout = Layouts.Calendar;
+      break;
+    case 'main':
+      layout = Layouts.Table;
+      break;
+    case 'list':
+      layout = Layouts.List;
+      break;
+    default:
+      layout = Layouts.Table;
+  }
+  return layout;
+};
+
 export const initState: IState = {
   isStudent: true,
   timezone: getFromLocalStorage(TIME_ZONE, 3),
   courses: getFromLocalStorage(COURSES, Courses),
-  layout: Layouts.Table,
+  layout: initialLayout(),
   typeColors: getFromLocalStorage(TYPE_COLORS, COLORS_OF_TYPES)
 };
 

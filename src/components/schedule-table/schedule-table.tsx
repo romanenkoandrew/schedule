@@ -11,7 +11,8 @@ import {
   InputNumber,
   TimePicker,
   List,
-  message
+  message,
+  Popover
 } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
@@ -442,6 +443,42 @@ const ScheduleTable = (props: any) => {
     setSearchText('');
   };
 
+  const sentUpdatedEvent = () => {
+    if (!editableEvent.name.length || !editableEvent.type.length) {
+      return;
+    }
+
+    const updatedEvent = {
+      ...editableEvent,
+      timeToImplementation: parseFloat(editableEvent.timeToImplementation),
+      materialsLinks: isArray(editableEvent.materialsLinks)
+        ? editableEvent.materialsLinks
+        : editableEvent.materialsLinks.split('\n')
+    };
+    delete updatedEvent.key;
+    updateEvent(updatedEvent);
+    setEditableEvent(initialObj);
+    localStorage.setItem(TYPE_COLORS, JSON.stringify(typeColors));
+  };
+
+  const showPopover = () => {
+    if (!editableEvent.name.length) {
+      return <span>Enter the name of the task</span>;
+    }
+    if (!editableEvent.type.length) {
+      return <span>Select at least one type</span>;
+    }
+  };
+
+  const showTitleOfPopover = () => {
+    if (!editableEvent.name.length) {
+      return <span>Task name not entered</span>;
+    }
+    if (!editableEvent.type.length) {
+      return <span>Task type not selected</span>;
+    }
+  };
+
   const columns: {}[] = [
     {
       title: 'Date',
@@ -829,24 +866,11 @@ const ScheduleTable = (props: any) => {
                 </a>
               ) : (
                 <span>
-                  <a
-                    onClick={() => {
-                      const updatedEvent = {
-                        ...editableEvent,
-                        timeToImplementation: parseFloat(editableEvent.timeToImplementation),
-                        materialsLinks: isArray(editableEvent.materialsLinks)
-                          ? editableEvent.materialsLinks
-                          : editableEvent.materialsLinks.split('\n')
-                      };
-                      delete updatedEvent.key;
-                      updateEvent(updatedEvent);
-                      setEditableEvent(initialObj);
-                      localStorage.setItem(TYPE_COLORS, JSON.stringify(typeColors));
-                    }}
-                    style={{ marginRight: 8 }}
-                  >
-                    Save
-                  </a>
+                  <Popover content={showPopover()} title={showTitleOfPopover()} trigger="click">
+                    <a onClick={sentUpdatedEvent} style={{ marginRight: 8 }}>
+                      Save
+                    </a>
+                  </Popover>
                   <Popconfirm
                     title="Sure to cancel?"
                     onConfirm={() => {
