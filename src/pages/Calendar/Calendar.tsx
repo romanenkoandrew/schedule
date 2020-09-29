@@ -6,14 +6,12 @@ import BugCatcher from 'components/bug-catcher';
 const CalendarPage: React.FC = () => {
   return (
     <div className="evnt-body-wrapper">
-      <BugCatcher>
-        <div className="evnt-main-container">
-          {<CalendarApp />}
-          <div>
-            <Link to="/main">to Main</Link>
-          </div>
+      <div className="evnt-main-container">
+        {<CalendarApp />}
+        <div>
+          <Link to="/main">to Main</Link>
         </div>
-      </BugCatcher>
+      </div>
     </div>
   );
 };

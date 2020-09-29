@@ -1,12 +1,26 @@
+import './list.css';
+
 import React, { useState, useEffect } from 'react';
-import { Tag, Card, Spin, List } from 'antd';
-import { TYPES_WITH_COLORS, FILTERS } from 'constants/dataForTable';
+import { Tag, Spin, List, message, Alert } from 'antd';
+import { TYPE_COLORS } from 'constants/globalConstants';
+import { FILTERS } from 'constants/dataForTable';
 import { IEvent } from '../../services/events-service';
 import { getDateFromTimeStamp, getTimeFromString } from '../../utils/utils';
 import { css } from '@emotion/core';
 
 const ScheduleList = (props: any) => {
-  const { getEvents, eventsData, loading, isStudent, timeZone, course, typeColors, changeTypeColors } = props;
+  const {
+    getEvents,
+    eventsData,
+    loading,
+    timeZone,
+    courses,
+    typeColors,
+    changeTypeColors,
+    openModal,
+    addId,
+    error
+  } = props;
 
   const [data, setData] = useState([]);
   const [selectedRows, setSelectedRow] = useState([]);
@@ -16,7 +30,7 @@ const ScheduleList = (props: any) => {
   }, []);
 
   useEffect(() => {
-    let newData: any = eventsData.map((item: any, idx: number) => {
+    let newData: IEvent[] = eventsData.map((item: any, idx: number) => {
       const key = item.id;
       return {
         ...item,
@@ -31,42 +45,93 @@ const ScheduleList = (props: any) => {
         ...item,
         key,
         id: key,
-        timeToImplementation: `${item.timeToImplementation} h`,
         dateTime: item.deadline,
-        type: [...item.type, 'deadline']
+        type: ['deadline']
       };
     });
-
-    const result: any = [...newData, ...copy].sort((a: IEvent, b: IEvent) => a.dateTime[0] - b.dateTime[0]);
+    const result: any = [...newData, ...copy]
+      .filter((event: IEvent) => courses.includes(event.courseName))
+      .sort((a: IEvent, b: IEvent) => a.dateTime[0] - b.dateTime[0]);
     setData(result);
-  }, [eventsData]);
+  }, [eventsData, courses]);
+
+  useEffect(() => {
+    getEvents();
+    if (localStorage.getItem(TYPE_COLORS)) {
+      const colors = JSON.parse(localStorage.getItem(TYPE_COLORS) || '{}');
+      changeTypeColors(colors);
+    }
+  }, []);
+
+  const showMessage = () => {
+    if (loading) {
+      return message.loading({ content: 'request...', key: 'updatable' });
+    }
+    if (!loading && error) {
+      return message.error({ content: 'Bad Request!', key: 'updatable', duration: 2 });
+    }
+    if (!loading && !error) {
+      return message.success({ content: 'Success!', key: 'updatable', duration: 2 });
+    }
+  };
+
+  useEffect(() => {
+    showMessage();
+  }, [loading, error]);
+
+  const handleClick = (evt: any) => {
+    addId(evt.currentTarget.dataset.id);
+  };
+
+  const handleDblClick = (item: IEvent) => {
+    if (item.type.includes('deadline')) {
+      const id = item.id.slice(0, item.id.length - 1);
+      addId(id);
+      openModal();
+      return;
+    }
+    addId(item.id);
+    openModal();
+  };
 
   const getData = (items: any, query: string) =>
     [items.find((item: any) => query === item.value)].map(x => x && x.text).shift();
 
-  if (loading && eventsData.length === 0) return <Spin />;
-  console.log(eventsData);
+  if (loading && eventsData.length === 0) return <Spin css={centerSpin} />;
+
   return (
     <div className="schedule-list-container" css={container}>
       <List
         css={listStyles}
         bordered={true}
+        header={
+          <div className="listHeader">
+            <p className="headerDate">{'Date'}</p>
+            <p className="headerTime">{'Time'}</p>
+            <p className="headerName">{'Event Name'}</p>
+          </div>
+        }
         dataSource={data}
         size="large"
         renderItem={(item: IEvent) => (
-          <List.Item>
+          <List.Item css={listitem} data-id={item.id} onClick={handleClick} onDoubleClick={() => handleDblClick(item)}>
             <div css={listItemContainer}>
-              <p css={listItemDate}>
-                <span>{getDateFromTimeStamp(item.dateTime, timeZone)}</span>
-                <span> </span>
-                <span>{getTimeFromString(item.dateTime, timeZone, item.timeZone)}</span>
+              <p css={listItemDate}>{getDateFromTimeStamp(item.dateTime, timeZone)}</p>
+              <p css={listItemTime}>{getTimeFromString(item.dateTime, timeZone, item.timeZone)}</p>
+              <p css={listItemName}>
+                <a target="_blank" href={item.descriptionUrl}>
+                  {item.name}
+                </a>
               </p>
-              <p css={listItemName}>{item.name}</p>
             </div>
             <div css={tagsStyles}>
               {item.type.map((typeitem, idx) => {
                 return (
-                  <Tag color={TYPES_WITH_COLORS[typeitem]} key={idx.toString()}>
+                  <Tag
+                    color={typeColors[typeitem].background}
+                    style={{ border: '0px', marginBottom: '3px', color: typeColors[typeitem].textColor }}
+                    key={idx.toString()}
+                  >
                     {getData(FILTERS, typeitem)}
                   </Tag>
                 );
@@ -93,23 +158,36 @@ const listStyles = css`
 const listItemContainer = css`
   display: flex;
   align-items: center;
-  margin-right: 30px;
+  justify-content: flex-start;
 `;
 
-const tagsStyles = css`
-  width: 150px;
+const listitem = css`
+  cursor: pointer;
+  &:hover {
+    background-color: #eee;
+  }
 `;
 
 const listItemDate = css`
-  margin-right: 15px;
-  font-weight: bold;
+  width: 60px;
+  margin-right: 30px;
 `;
 
 const listItemTime = css`
-  margin-right: 15px;
-  font-weight: bold;
+  width: 60px;
 `;
 
-const listItemName = css`
-  font-weight: bold;
+const listItemName = css``;
+
+const tagsStyles = css`
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+`;
+
+const centerSpin = css`
+  position: absolute;
+  left: calc(100vw / 2);
+  top: calc(100vh / 2);
 `;

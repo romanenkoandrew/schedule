@@ -25,7 +25,7 @@ const BugCatcher = (props: any) => {
   const { ErrorBoundary, didCatch } = useErrorBoundary();
 
   const showAlert = () => {
-    setTimeout(() => (document.location.href = DEPLOY_URL), 2000);
+    // setTimeout(() => (document.location.href = DEPLOY_URL), 2000);
     return (
       <Alert
         message="Error"
@@ -36,7 +36,7 @@ const BugCatcher = (props: any) => {
     );
   };
 
-  return <div>{didCatch ? showAlert() : <ErrorBoundary>{props.children}</ErrorBoundary>}</div>;
+  return <>{didCatch ? showAlert() : <ErrorBoundary>{props.children}</ErrorBoundary>}</>;
 };
 
 export default BugCatcher;
