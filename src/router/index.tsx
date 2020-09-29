@@ -29,21 +29,21 @@ const Routers = () => {
 
   return (
     <Provider store={store}>
-      {didCatch ? (
-        showAlert()
-      ) : (
-        <ErrorBoundary>
-          <Router history={history}>
-            <Header />
+      <Router history={history}>
+        <Header />
+        {didCatch ? (
+          showAlert()
+        ) : (
+          <ErrorBoundary>
             <Switch>
               <Redirect exact={true} from="/" to={Routes.Main} />
               <Route component={Main} path={Routes.Main} />
               <Route component={Calendar} path={Routes.Calendar} />
               <Route component={List} path={Routes.List} />
             </Switch>
-          </Router>
-        </ErrorBoundary>
-      )}
+          </ErrorBoundary>
+        )}
+      </Router>
     </Provider>
   );
 };
