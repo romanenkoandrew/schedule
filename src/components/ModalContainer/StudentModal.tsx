@@ -90,8 +90,7 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
   const newEventFeedbackHandler = (e: any) => {
     setNewEvent({ ...newEvent, feedBack: [...feedBack, e.target.value] });
   };
-  const sendFeedback = (e: React.SyntheticEvent) => {
-    e.preventDefault();
+  const sendFeedback = () => {
     updateEvent(newEvent);
   };
 
@@ -233,7 +232,7 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
             This event was prepared by <b>{trainee}</b>
           </div>
           {isFeedback && isStudent ? (
-            <Form name="form" onFinish={e => sendFeedback(e)} layout="vertical" css={marginTop}>
+            <Form name="form" onFinish={sendFeedback} layout="vertical" css={marginTop}>
               <Form.Item
                 label="Feedback:"
                 name="feedBack"
@@ -252,7 +251,7 @@ const StudentModal: React.FC<IStudentModal> = ({ eventData, updateEvent, isStude
             </Button>
           ) : null}
           {!isStudent && isOpenFeedbaks ? (
-            feedBack.length ? (
+            !feedBack.length ? (
               <p>Oops!!! No feedbaks...</p>
             ) : (
               <ol>
