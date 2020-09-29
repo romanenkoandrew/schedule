@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import ScheduleTable from 'components/schedule-table';
 import { css } from '@emotion/core';
 import ModalContainer from 'components/ModalContainer';
-import { Button } from 'antd';
-import BugCatcher from 'components/bug-catcher';
 
 const Main: React.FC = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -17,7 +15,6 @@ const Main: React.FC = () => {
   };
 
   const addId = (id: string) => {
-    console.log(id);
     setId(id);
   };
 
