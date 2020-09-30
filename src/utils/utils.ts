@@ -36,7 +36,6 @@ const getTimeFromString = (dateData: [number, string], timeZoneNow: number, time
   let hoursWithNowTimeZone: number = 0;
   if (hoursWithUTCTimeZone + timeZoneNow < 0) {
     hoursWithNowTimeZone = 24 + (timeZoneNow + hoursWithUTCTimeZone);
-    console.log(hoursWithNowTimeZone);
   } else if (hoursWithUTCTimeZone + timeZoneNow > 24) {
     hoursWithNowTimeZone = hoursWithUTCTimeZone + timeZoneNow - 24;
   } else if (hoursWithUTCTimeZone + timeZoneNow === 24 || hoursWithUTCTimeZone + timeZoneNow === 0) {

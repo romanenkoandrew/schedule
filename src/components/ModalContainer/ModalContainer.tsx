@@ -191,7 +191,7 @@ const ModalContainer: React.FC<IModal> = props => {
     setEditMode(true);
     defaultState();
   };
-  const tagRender = FILTERS.map(el => {
+  const tagRender = FILTERS.filter(el => el.value !== 'deadline').map(el => {
     return (
       <Select.Option value={el.value} key={el.value}>
         <Tag
@@ -234,14 +234,14 @@ const ModalContainer: React.FC<IModal> = props => {
   const newEventChangeTimeStart = (moment: any, timeString: string) => {
     setNewEvent({
       ...newEvent,
-      timeZone,
+      // timeZone,
       dateTime: [newEvent.dateTime[0], timeString]
     });
   };
   const newEventChangeDeadline = (moment: any, timeString: string) => {
     setNewEvent({
       ...newEvent,
-      timeZone,
+      // timeZone,
       deadline: [newEvent.deadline[0], timeString]
     });
   };
@@ -249,7 +249,7 @@ const ModalContainer: React.FC<IModal> = props => {
     const date = new Date(moment);
     setNewEvent({
       ...newEvent,
-      timeZone,
+      // timeZone,
       dateTime: [date.getTime(), newEvent.dateTime[1]]
     });
   };
@@ -257,7 +257,7 @@ const ModalContainer: React.FC<IModal> = props => {
     const date = new Date(moment);
     setNewEvent({
       ...newEvent,
-      timeZone,
+      // timeZone,
       deadline: [date.getTime(), newEvent.dateTime[1]]
     });
   };
@@ -395,7 +395,6 @@ const ModalContainer: React.FC<IModal> = props => {
         !newEvent.courseName.length
       )
         return;
-
       addNewEvent(newEvent);
       closeModalHandler();
     } else {
@@ -404,7 +403,6 @@ const ModalContainer: React.FC<IModal> = props => {
       closeModalHandler();
     }
   };
-  React.useEffect(() => console.log(newEvent.dateTime), [newEvent]);
   const showPopover = () => {
     if (!newEvent.name) {
       return <span>Please, enter the name of the event</span>;
