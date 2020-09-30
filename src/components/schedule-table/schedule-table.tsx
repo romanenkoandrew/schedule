@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Table,
   Tag,
@@ -16,7 +16,6 @@ import {
 } from 'antd';
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
-// import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 import { FILTERS } from 'constants/dataForTable';
 import { TYPE_COLORS, COLUMN_OPTIONS, IColorsOfTypes, HIDE_ROWS } from 'constants/globalConstants';
 import { SketchPicker } from 'react-color';
@@ -60,7 +59,6 @@ const ScheduleTable = (props: any) => {
     isStudent,
     timeZone,
     courses,
-    addNewEvent,
     deleteEvent,
     updateEvent,
     typeColors,

@@ -9,11 +9,6 @@ import Loading from 'helpers/Loading';
 const getDateFromTimeStamp = (dateData: [number, string], timeZone: number) => {
   const timestamp = dateData[0];
   const [hours, minutes] = dateData[1].split(':');
-  const options = {
-    year: 'numeric',
-    day: 'numeric',
-    month: 'numeric'
-  };
   const dateWithUserUTC =
     timestamp -
     -new Date().getTimezoneOffset() * 60000 +
@@ -395,20 +390,6 @@ const CalendarApp: React.FC<any> = (props: any) => {
 };
 
 export default CalendarApp;
-
-const styles = {
-  styleA: {
-    fontSize: '12px'
-  },
-  styleLi: {
-    display: 'flex',
-    justifyContent: 'space-around',
-    borderBottom: '2px solid #494e5c10',
-    color: '#5b5a59',
-    padding: '5px 0',
-    lineHeight: '18px'
-  }
-};
 
 const eventPanelWrapper = css`
   position: relative;

@@ -7,10 +7,9 @@ import { css } from '@emotion/core';
 import ModalContainer from 'components/ModalContainer';
 import Timezones from 'constants/timezone/timezone';
 import { Courses, Layouts } from 'constants/header/header';
+import Routes from 'constants/routes';
 
-//const logoSrc = require('../../assets/img/rsschool-logo.jpg');
 const logoSrc = 'assets/img/rsschool-logo.jpg';
-//const avatarSrc = require('../../assets/img/user.jpg');
 const avatarSrc = 'assets/img/user.jpg';
 
 const header = css`
@@ -237,17 +236,17 @@ const Header: React.FC<IHeader> = props => {
       <div css={middleline}>
         <nav css={scheduleLayout}>
           <Tooltip title="Calendar" placement="bottom" color={color}>
-            <Link to="/calendar" onClick={handleSwitchlayout} data-layout="calendar">
+            <Link to={Routes.Calendar} onClick={handleSwitchlayout} data-layout="calendar">
               <ScheduleOutlined css={layout === Layouts.Calendar ? btniconactive : btnicon} />
             </Link>
           </Tooltip>
           <Tooltip title="Table" placement="bottom" color={color}>
-            <Link to="/main" onClick={handleSwitchlayout} data-layout="table">
+            <Link to={Routes.Main} onClick={handleSwitchlayout} data-layout="table">
               <DatabaseOutlined css={layout === Layouts.Table ? btniconactive : btnicon} />
             </Link>
           </Tooltip>
           <Tooltip title="List" placement="bottom" color={color}>
-            <Link to="/list" onClick={handleSwitchlayout} data-layout="list">
+            <Link to={Routes.List} onClick={handleSwitchlayout} data-layout="list">
               <ProfileOutlined css={layout === Layouts.List ? btniconactive : btnicon} />
             </Link>
           </Tooltip>

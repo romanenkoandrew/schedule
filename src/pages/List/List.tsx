@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import ScheduleList from 'components/schedule-list';
-import BugCatcher from 'components/bug-catcher';
 import ModalContainer from 'components/ModalContainer';
 
 const List: React.FC = () => {

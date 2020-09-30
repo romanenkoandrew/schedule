@@ -36,10 +36,10 @@ const Routers = () => {
         ) : (
           <ErrorBoundary>
             <Switch>
-              <Redirect exact={true} from="/" to={Routes.Main} />
-              <Route component={Main} path={Routes.Main} />
-              <Route component={Calendar} path={Routes.Calendar} />
-              <Route component={List} path={Routes.List} />
+              <Route exact component={Main} path={Routes.Main} />
+              <Route exact component={Calendar} path={Routes.Calendar} />
+              <Route exact component={List} path={Routes.List} />
+              <Redirect from="/" to={Routes.Main} />
             </Switch>
           </ErrorBoundary>
         )}

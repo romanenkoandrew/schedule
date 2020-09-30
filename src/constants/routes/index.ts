@@ -1,5 +1,5 @@
 enum Routes {
-  Main = '/main',
+  Main = '/',
   Calendar = '/calendar',
   List = '/list'
 }

@@ -12,7 +12,8 @@ import {
   DatePicker,
   Checkbox,
   Tooltip,
-  Radio
+  Radio,
+  Popover
 } from 'antd';
 import { css } from '@emotion/core';
 import { WrapperModalMentor } from './WrapperModalMentor';
@@ -291,12 +292,22 @@ const ModalContainer: React.FC<IModal> = props => {
     );
   };
   const currentEventDataStart = () => {
-    const date = getDateFromTimeStamp(newEvent.dateTime, newEvent.timeZone);
+    if (newEvent.id) {
+      const date = getDateFromTimeStamp(newEvent.dateTime, newEvent.timeZone);
+      return (
+        <DatePicker
+          format={'DD/MM/YYYY'}
+          defaultValue={moment(date, 'DD/MM/YYYY')}
+          value={moment(date, 'DD/MM/YYYY')}
+          onChange={(moment, dateString) => {
+            newEventChangeDateStart(moment, dateString);
+          }}
+        />
+      );
+    }
     return (
       <DatePicker
         format={'DD/MM/YYYY'}
-        defaultValue={moment(date, 'DD/MM/YYYY')}
-        value={moment(date, 'DD/MM/YYYY')}
         onChange={(moment, dateString) => {
           newEventChangeDateStart(moment, dateString);
         }}
@@ -304,22 +315,42 @@ const ModalContainer: React.FC<IModal> = props => {
     );
   };
   const currentEventDataDeadline = () => {
-    const date = getDateFromTimeStamp(newEvent.deadline, newEvent.timeZone);
+    if (newEvent.id) {
+      const date = getDateFromTimeStamp(newEvent.deadline, newEvent.timeZone);
+      return (
+        <DatePicker
+          format={'DD/MM/YYYY'}
+          defaultValue={moment(date, 'DD/MM/YYYY')}
+          value={moment(date, 'DD/MM/YYYY')}
+          onChange={(moment, dateString) => {
+            newEventChangeDateDeadline(moment, dateString);
+          }}
+        />
+      );
+    }
     return (
       <DatePicker
         format={'DD/MM/YYYY'}
-        defaultValue={moment(date, 'DD/MM/YYYY')}
-        value={moment(date, 'DD/MM/YYYY')}
         onChange={(moment, dateString) => {
-          newEventChangeDateDeadline(moment, dateString);
+          newEventChangeDateStart(moment, dateString);
         }}
       />
     );
   };
-  const newFieldTextArea = (tagName: string, id: string, placeholder: string, rows: number, value: string) => {
+  const newFieldTextArea = (
+    tagName: string,
+    id: string,
+    placeholder: string,
+    rows: number,
+    value: string,
+    required: boolean
+  ) => {
     return (
       <>
-        <h2>{tagName}:</h2>
+        <h2>
+          {tagName}
+          {required ? <span css={colorRed}>*</span> : null}:
+        </h2>
         <TextArea
           id={id}
           placeholder={placeholder}
@@ -354,6 +385,17 @@ const ModalContainer: React.FC<IModal> = props => {
   };
   const createOrUpdateEvent = () => {
     if (eventId === '') {
+      if (
+        !newEvent.name ||
+        !newEvent.description ||
+        !newEvent.descriptionUrl ||
+        !newEvent.type.length ||
+        !newEvent.trainee ||
+        !newEvent.result ||
+        !newEvent.courseName.length
+      )
+        return;
+
       addNewEvent(newEvent);
       closeModalHandler();
     } else {
@@ -361,6 +403,46 @@ const ModalContainer: React.FC<IModal> = props => {
       setEditMode(false);
       closeModalHandler();
     }
+  };
+  React.useEffect(() => console.log(newEvent.dateTime), [newEvent]);
+  const showPopover = () => {
+    if (!newEvent.name) {
+      return <span>Please, enter the name of the event</span>;
+    } else if (!newEvent.type.length) {
+      return <span>Please, select one type for event</span>;
+    } else if (!newEvent.courseName.length) {
+      return <span>Please, select course name for event</span>;
+    } else if (!newEvent.descriptionUrl) {
+      return <span>Please, enter the link to the event</span>;
+    } else if (!newEvent.description) {
+      return <span>Please, enter the description of the event</span>;
+    } else if (!newEvent.trainee) {
+      return <span>Please, enter the author event</span>;
+    } else if (!newEvent.result) {
+      return <span>Please, enter the result of the event</span>;
+    } else if (newEvent.dateTime.length !== 2) {
+      return <span>Please, select time and date when event will start</span>;
+    } else if (newEvent.deadline.length !== 2) {
+      return <span>Please, select time and date when event will end</span>;
+    } else return null;
+  };
+
+  const showTitleOfPopover = () => {
+    if (!newEvent.name) {
+      return <span>Event name not entered</span>;
+    } else if (!newEvent.type.length) {
+      return <span>Event type not selected</span>;
+    } else if (!newEvent.courseName.length) {
+      return <span>Course name not selected</span>;
+    } else if (!newEvent.descriptionUrl) {
+      return <span>Link to event description not entered</span>;
+    } else if (!newEvent.description) {
+      return <span>Event description not entered</span>;
+    } else if (!newEvent.result) {
+      return <span>Event result not entered</span>;
+    } else if (!newEvent.trainee) {
+      return <span>The author of event not entered</span>;
+    } else return null;
   };
   React.useEffect(() => {
     if (!eventId) {
@@ -390,18 +472,22 @@ const ModalContainer: React.FC<IModal> = props => {
                     <img src={editMode ? './assets/img/edit-disabled.svg' : './assets/img/edit.svg'} alt="edit" />
                   </Button>
                 </Tooltip>
-                <Tooltip placement="left" title="Save" color={'green'}>
-                  <Button disabled={!editMode} onClick={createOrUpdateEvent}>
-                    <img src={editMode ? './assets/img/check.svg' : './assets/img/check-disabled.svg'} alt="right" />
-                  </Button>
-                </Tooltip>
+                <Popover content={showPopover()} title={showTitleOfPopover()} trigger="click" placement="left">
+                  <Tooltip placement="bottom" title="Save" color={'green'}>
+                    <Button disabled={!editMode} onClick={createOrUpdateEvent}>
+                      <img src={editMode ? './assets/img/check.svg' : './assets/img/check-disabled.svg'} alt="right" />
+                    </Button>
+                  </Tooltip>
+                </Popover>
               </div>
             )}
             {editMode ? (
               <>
                 <div className="wrapper-title">
                   <Divider />
-                  <h2>Event name:</h2>
+                  <h2>
+                    Event name<span css={colorRed}>*</span>:
+                  </h2>
                   <TextArea
                     id="name"
                     placeholder="Сourse name"
@@ -412,7 +498,9 @@ const ModalContainer: React.FC<IModal> = props => {
                   />
                   <div>
                     <label style={{ marginRight: '3px' }}>
-                      <b>Event type:</b>
+                      <b>
+                        Event type<span css={colorRed}>*</span>:
+                      </b>
                     </label>
                     <Select
                       mode="multiple"
@@ -472,27 +560,45 @@ const ModalContainer: React.FC<IModal> = props => {
                         <Radio value={'Online'}>Online</Radio>
                         <Radio value={'Offline'}>Offline</Radio>
                       </Radio.Group>
-                      {!newEvent.isEventOnline && newFieldTextArea('Location', 'place', 'City', 1, newEvent.place)}
+                      {newEvent.isEventOnline
+                        ? newFieldTextArea(
+                            'Youtube link',
+                            'broadcastUrl',
+                            'Event link to youtube',
+                            1,
+                            newEvent.broadcastUrl,
+                            false
+                          )
+                        : newFieldTextArea('Location', 'place', 'City', 1, newEvent.place, false)}
                     </div>
                   </aside>
                   <section className="description">
                     <div css={courseswitch}>
                       <label>
-                        <b>Course:</b>
+                        <b>
+                          Course<span css={colorRed}>*</span>:
+                        </b>
                       </label>
                       <Select defaultValue={defaultCourse} css={coursesSelect} onChange={newEventCourseNameHandler}>
                         {coursesOptions}
                       </Select>
                     </div>
-                    {newFieldTextArea('Event link', 'descriptionUrl', 'Link to event', 1, newEvent.descriptionUrl)}
                     {newFieldTextArea(
-                      'Youtube link',
-                      'broadcastUrl',
-                      'Event link to youtube',
+                      'Event link',
+                      'descriptionUrl',
+                      'Link to event',
                       1,
-                      newEvent.broadcastUrl
+                      newEvent.descriptionUrl,
+                      true
                     )}
-                    {newFieldTextArea('Event Description', 'description', 'Event description', 3, newEvent.description)}
+                    {newFieldTextArea(
+                      'Event Description',
+                      'description',
+                      'Event description',
+                      3,
+                      newEvent.description,
+                      true
+                    )}
                     <div className="links-wrapper">
                       <h2>Materials:</h2>
                       <TextArea
@@ -508,10 +614,11 @@ const ModalContainer: React.FC<IModal> = props => {
                       'result',
                       'What knowledge the student will receive as a result',
                       3,
-                      newEvent.result
+                      newEvent.result,
+                      true
                     )}
-                    {newFieldTextArea('Comment', 'comment', 'Extra comment from mentor', 3, newEvent.comment)}
-                    {newFieldTextArea('Author', 'trainee', 'Author name', 1, newEvent.trainee)}
+                    {newFieldTextArea('Comment', 'comment', 'Extra comment from mentor', 3, newEvent.comment, false)}
+                    {newFieldTextArea('Author', 'trainee', 'Author name', 1, newEvent.trainee, true)}
                     <Checkbox onChange={newEventFeedbackHandler} defaultChecked={newEvent.isFeedback}>
                       Can a student leave a feedback?
                     </Checkbox>
@@ -562,6 +669,10 @@ const timezoneswitch = css`
 const timezoneSelect = css`
   width: 230px;
   margin-bottom: 10px;
+`;
+
+const colorRed = css`
+  color: red;
 `;
 
 export default ModalContainer;
