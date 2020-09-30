@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="12px" height="8px" viewBox="0 0 12 8" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.1 (47250) - http://www.bohemiancoding.com/sketch -->
+    <title>Combined Shape</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Speakers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-1236.000000, -230.000000)">
+        <g id="Filters" transform="translate(84.000000, 204.000000)" fill="#C0C3CE">
+            <g id="Group-2" transform="translate(1152.000000, 25.573770)">
+                <path d="M6,7.87223416 C5.7218693,7.89111627 5.4373517,7.7942553 5.22474764,7.58165123 L0.33406497,2.69096857 C-0.0564593218,2.30044428 -0.0564593218,1.6672793 0.33406497,1.27675501 L0.340012193,1.27080778 C0.730536485,0.880283491 1.36370146,0.880283491 1.75422576,1.27080778 L6,5.51658203 L10.2457742,1.27080778 C10.6362985,0.880283491 11.2694635,0.880283491 11.6599878,1.27080778 L11.665935,1.27675501 C12.0564593,1.6672793 12.0564593,2.30044428 11.665935,2.69096857 L6.77525236,7.58165123 C6.5626483,7.7942553 6.2781307,7.89111627 6,7.87223416 Z" id="Combined-Shape"></path>
+            </g>
+        </g>
+    </g>
+</svg>
