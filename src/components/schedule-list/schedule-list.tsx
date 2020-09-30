@@ -1,12 +1,13 @@
 import './list.css';
 
 import React, { useState, useEffect } from 'react';
-import { Tag, Spin, List, message } from 'antd';
+import { Tag, Spin, List, Button } from 'antd';
 import { TYPE_COLORS } from 'constants/globalConstants';
 import { FILTERS } from 'constants/dataForTable';
 import { IEvent } from '../../services/events-service';
 import { getDateFromTimeStamp, getTimeFromString } from '../../utils/utils';
 import { css } from '@emotion/core';
+
 
 const ScheduleList = (props: any) => {
   const {
@@ -18,16 +19,17 @@ const ScheduleList = (props: any) => {
     typeColors,
     changeTypeColors,
     openModal,
-    addId,
-    error
+    addId
   } = props;
-
+  
   const [data, setData] = useState([]);
+  const [selectedRows, setSelectedRow] = useState<Array<string>>([]);
+  const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
     getEvents();
   }, []);
-
+  
   useEffect(() => {
     let newData: IEvent[] = eventsData.map((item: any, idx: number) => {
       const key = item.id;
@@ -53,7 +55,7 @@ const ScheduleList = (props: any) => {
       .sort((a: IEvent, b: IEvent) => a.dateTime[0] - b.dateTime[0]);
     setData(result);
   }, [eventsData, courses]);
-
+  
   useEffect(() => {
     getEvents();
     if (localStorage.getItem(TYPE_COLORS)) {
@@ -61,79 +63,72 @@ const ScheduleList = (props: any) => {
       changeTypeColors(colors);
     }
   }, []);
-
-  const showMessage = () => {
-    if (loading) {
-      return message.loading({ content: 'request...', key: 'updatable' });
-    }
-    if (!loading && error) {
-      return message.error({ content: 'Bad Request!', key: 'updatable', duration: 2 });
-    }
-    if (!loading && !error) {
-      return message.success({ content: 'Success!', key: 'updatable', duration: 2 });
-    }
-  };
-
-  useEffect(() => {
-    showMessage();
-  }, [loading, error]);
-
+  
   const handleClick = (evt: any) => {
-    addId(evt.currentTarget.dataset.id);
-  };
-
-  const handleDblClick = (item: IEvent) => {
-    if (item.type.includes('deadline')) {
-      const id = item.id.slice(0, item.id.length - 1);
-      addId(id);
-      openModal();
-      return;
+    const id = evt.currentTarget.dataset.id;
+    if (selectedRows.includes(id)) {
+      setSelectedRow(selectedRows.filter(item => item !== id));
     }
-    addId(item.id);
+    else {
+      setSelectedRow([...selectedRows, id]);
+    }    
+  };
+  
+  const setBgColor = (id: string) => {
+    if (selectedRows.includes(id)) {
+      return '#e6f7ff';
+    }
+    else {
+      return '#fff';
+    }
+  };
+  
+  const handleDblClick = (evt: any) => {
+    addId(evt.currentTarget.dataset.id);
     openModal();
   };
 
   const getData = (items: any, query: string) =>
-    [items.find((item: any) => query === item.value)].map(x => x && x.text).shift();
+    [items.find((item:any) => query === item.value)]
+    .map(x => x && x.text).shift();
 
-  if (loading && eventsData.length === 0) return <Spin css={centerSpin} />;
+  const buttonCaption = (isHidden) ? "Show" : "Hide";
+  const isVisible = (selectedRows.length) ? "display:block" : "display:none";
+  
+  const handleHideShowSelectedItems = () => {
+    setIsHidden(!isHidden);
+  };
+  
+  const getFilteredData: IEvent[] = data.filter((item: IEvent) => 
+    !selectedRows.includes(item.id) || !isHidden);
 
-  return (
+  if (loading && eventsData.length === 0) return <Spin css={centerSpin}/>;  
+
+  return (    
     <div className="schedule-list-container" css={container}>
-      <List
-        css={listStyles}
+      <Button css={btnHideShow} onClick={handleHideShowSelectedItems}>{buttonCaption}</Button>
+      <List css={listStyles}
         bordered={true}
-        header={
+        header={ 
           <div className="listHeader">
-            <p className="headerDate">{'Date'}</p>
-            <p className="headerTime">{'Time'}</p>
-            <p className="headerName">{'Event Name'}</p>
+            <p className="headerDate">{"Date"}</p>
+            <p className="headerTime">{"Time"}</p>
+            <p className="headerName">{"Event Name"}</p>
           </div>
         }
-        dataSource={data}
+        dataSource={getFilteredData}
         size="large"
-        renderItem={(item: IEvent) => (
-          <List.Item css={listitem} data-id={item.id} onClick={handleClick} onDoubleClick={() => handleDblClick(item)}>
+        renderItem={(item:IEvent) => (
+          <List.Item css={listitem} data-id={item.id} style={{ backgroundColor: setBgColor(item.id) }}
+            onClick={handleClick} onDoubleClick={handleDblClick}>
             <div css={listItemContainer}>
               <p css={listItemDate}>{getDateFromTimeStamp(item.dateTime, timeZone)}</p>
               <p css={listItemTime}>{getTimeFromString(item.dateTime, timeZone, item.timeZone)}</p>
-              <p css={listItemName}>
-                <a target="_blank" rel="noopener noreferrer" href={item.descriptionUrl}>
-                  {item.name}
-                </a>
-              </p>
+              <p><a target="_blank" rel="noopener noreferrer" href={item.descriptionUrl}>{item.name}</a></p>
             </div>
             <div css={tagsStyles}>
               {item.type.map((typeitem, idx) => {
-                return (
-                  <Tag
-                    color={typeColors[typeitem].background}
-                    style={{ border: '0px', marginBottom: '3px', color: typeColors[typeitem].textColor }}
-                    key={idx.toString()}
-                  >
-                    {getData(FILTERS, typeitem)}
-                  </Tag>
-                );
+                return <Tag color={typeColors[typeitem].background} style={{ border: '0px', marginBottom: '3px', color: typeColors[typeitem].textColor }} key={idx.toString()}>{getData(FILTERS, typeitem)}</Tag>
               })}
             </div>
           </List.Item>
@@ -157,7 +152,7 @@ const listStyles = css`
 const listItemContainer = css`
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: flex-start;  
 `;
 
 const listitem = css`
@@ -176,7 +171,10 @@ const listItemTime = css`
   width: 60px;
 `;
 
-const listItemName = css``;
+const btnHideShow = css`
+  position: absolute;
+  right: 0;
+`;
 
 const tagsStyles = css`
   width: 150px;
@@ -187,6 +185,6 @@ const tagsStyles = css`
 
 const centerSpin = css`
   position: absolute;
-  left: calc(100vw / 2);
-  top: calc(100vh / 2);
+  left: calc(100vw/2);
+  top: calc(100vh/2);
 `;
