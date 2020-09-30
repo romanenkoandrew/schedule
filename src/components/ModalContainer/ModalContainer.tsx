@@ -234,14 +234,12 @@ const ModalContainer: React.FC<IModal> = props => {
   const newEventChangeTimeStart = (moment: any, timeString: string) => {
     setNewEvent({
       ...newEvent,
-      // timeZone,
       dateTime: [newEvent.dateTime[0], timeString]
     });
   };
   const newEventChangeDeadline = (moment: any, timeString: string) => {
     setNewEvent({
       ...newEvent,
-      // timeZone,
       deadline: [newEvent.deadline[0], timeString]
     });
   };
@@ -249,7 +247,6 @@ const ModalContainer: React.FC<IModal> = props => {
     const date = new Date(moment);
     setNewEvent({
       ...newEvent,
-      // timeZone,
       dateTime: [date.getTime(), newEvent.dateTime[1]]
     });
   };
@@ -257,7 +254,6 @@ const ModalContainer: React.FC<IModal> = props => {
     const date = new Date(moment);
     setNewEvent({
       ...newEvent,
-      // timeZone,
       deadline: [date.getTime(), newEvent.dateTime[1]]
     });
   };
